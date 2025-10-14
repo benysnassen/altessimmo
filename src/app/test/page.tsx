@@ -1,11 +1,7 @@
-import Hero from './components/Hero';
-
-
-export default function Home() {
+export default function TestPage() {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-        
-    <Hero />
+      <h1 className="text-white text-4xl">Test Page</h1>
     </div>
   );
 }

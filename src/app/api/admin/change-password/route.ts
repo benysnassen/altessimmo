@@ -1,0 +1,86 @@
+import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
+
+export async function PUT(request: NextRequest) {
+  try {
+    const { currentPassword, newPassword } = await request.json();
+
+    // Récupérer le token depuis les cookies
+    const token = request.cookies.get('admin-token')?.value;
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Non autorisé' },
+        { status: 401 }
+      );
+    }
+
+    // Vérifier le token JWT
+    const jwt = require('jsonwebtoken');
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return NextResponse.json(
+        { error: 'Token invalide' },
+        { status: 401 }
+      );
+    }
+
+    // Récupérer l'admin
+    const admin = await prisma.admin.findUnique({
+      where: { id: decoded.adminId }
+    });
+
+    if (!admin) {
+      return NextResponse.json(
+        { error: 'Administrateur non trouvé' },
+        { status: 404 }
+      );
+    }
+
+    // Vérifier l'ancien mot de passe
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, admin.password);
+    if (!isCurrentPasswordValid) {
+      return NextResponse.json(
+        { error: 'Mot de passe actuel incorrect' },
+        { status: 400 }
+      );
+    }
+
+    // Validation du nouveau mot de passe
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return NextResponse.json(
+        { error: 'Nouveau mot de passe invalide. Doit contenir au moins 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (@$!%*?&)' },
+        { status: 400 }
+      );
+    }
+
+    // Hacher le nouveau mot de passe
+    const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
+    // Mettre à jour le mot de passe
+    await prisma.admin.update({
+      where: { id: admin.id },
+      data: {
+        password: hashedNewPassword,
+        updatedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Mot de passe modifié avec succès'
+    });
+
+  } catch (error) {
+    console.error('Erreur lors du changement de mot de passe:', error);
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    );
+  }
+}
+
+

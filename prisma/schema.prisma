@@ -1,0 +1,212 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Contact {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  email       String?
+  type        ContactType
+  budget      String?
+  estimation  String?
+  message     String?
+  confidential Boolean @default(false)
+  status      ContactStatus @default(NEW)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contacts")
+}
+
+model Buyer {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  email       String?
+  budget      String
+  message     String?
+  confidential Boolean @default(false)
+  status      BuyerStatus @default(NEW)
+  
+  // Préférences
+  propertyType String? // Villa, Appartement, Terrain, etc.
+  location     String? // Tétouan, Cabo Negro, Martil, etc.
+  minSurface   Int?    // Surface minimale en m²
+  maxSurface   Int?    // Surface maximale en m²
+  minRooms     Int?    // Nombre de pièces minimum
+  maxRooms     Int?    // Nombre de pièces maximum
+  hasGarden    Boolean @default(false)
+  hasPool      Boolean @default(false)
+  hasSeaView   Boolean @default(false)
+  
+  // Historique
+  visits       Visit[]
+  offers       Offer[]
+  notes        Note[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("buyers")
+}
+
+model Seller {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  email       String?
+  message     String?
+  confidential Boolean @default(false)
+  status      SellerStatus @default(NEW)
+  
+  // Bien à vendre
+  propertyType String? // Villa, Appartement, Terrain, etc.
+  location     String? // Tétouan, Cabo Negro, Martil, etc.
+  surface      Int?    // Surface en m²
+  rooms        Int?    // Nombre de pièces
+  price        String? // Prix demandé
+  hasGarden    Boolean @default(false)
+  hasPool      Boolean @default(false)
+  hasSeaView   Boolean @default(false)
+  description  String? // Description détaillée
+  
+  // Historique
+  visits       Visit[]
+  offers       Offer[]
+  notes        Note[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("sellers")
+}
+
+model Visit {
+  id          String   @id @default(cuid())
+  buyerId     String?
+  sellerId    String?
+  buyer       Buyer?   @relation(fields: [buyerId], references: [id])
+  seller      Seller?  @relation(fields: [sellerId], references: [id])
+  date        DateTime
+  status      VisitStatus @default(SCHEDULED)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("visits")
+}
+
+model Offer {
+  id          String   @id @default(cuid())
+  buyerId     String?
+  sellerId    String?
+  buyer       Buyer?   @relation(fields: [buyerId], references: [id])
+  seller      Seller?  @relation(fields: [sellerId], references: [id])
+  amount      String
+  status      OfferStatus @default(PENDING)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("offers")
+}
+
+model Note {
+  id          String   @id @default(cuid())
+  buyerId     String?
+  sellerId    String?
+  buyer       Buyer?   @relation(fields: [buyerId], references: [id])
+  seller      Seller?  @relation(fields: [sellerId], references: [id])
+  content     String
+  type        NoteType @default(GENERAL)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notes")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  email     String?
+  lastLogin DateTime?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+enum ContactType {
+  BUYER
+  SELLER
+}
+
+enum ContactStatus {
+  NEW
+  CONTACTED
+  INTERESTED
+  VIEWING
+  OFFER
+  SOLD
+  ARCHIVED
+}
+
+enum BuyerStatus {
+  NEW
+  CONTACTED
+  INTERESTED
+  VIEWING
+  OFFER_MADE
+  NEGOTIATING
+  PURCHASED
+  ARCHIVED
+}
+
+enum SellerStatus {
+  NEW
+  CONTACTED
+  EVALUATED
+  LISTED
+  VIEWING
+  OFFER_RECEIVED
+  NEGOTIATING
+  SOLD
+  ARCHIVED
+}
+
+enum VisitStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COUNTER_OFFER
+  EXPIRED
+}
+
+enum NoteType {
+  GENERAL
+  CALL
+  EMAIL
+  VISIT
+  OFFER
+  NEGOTIATION
+  IMPORTANT
+}

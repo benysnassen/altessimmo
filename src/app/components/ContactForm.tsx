@@ -1,0 +1,487 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { Mail, Phone, User, MessageSquare, Shield, DollarSign, ArrowRight, Home, ShoppingCart } from 'lucide-react';
+
+export default function ContactForm() {
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type');
+  
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [budgetValue, setBudgetValue] = useState(1500000); // 1.5M MAD par défaut
+
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, setValue, watch } = useForm({
+    defaultValues: {
+      name: '',
+      phone: '',
+      email: '',
+      budget: '1500000',
+      estimation: '',
+      message: '',
+      confidential: false,
+      type: typeParam === 'sell' ? 'seller' : 'buyer'
+    }
+  });
+
+  const phoneValue = watch('phone');
+
+  useEffect(() => {
+    if (typeParam === 'sell') {
+      reset({ type: 'seller' });
+    } else if (typeParam === 'buy') {
+      reset({ type: 'buyer' });
+    }
+  }, [typeParam, reset]);
+
+  // Fonction pour formater le numéro de téléphone
+  const formatPhoneNumber = (value: string) => {
+    // Supprimer tous les espaces et caractères non numériques
+    const cleaned = value.replace(/\D/g, '');
+    
+    // Formatage selon la longueur
+    if (cleaned.length <= 3) {
+      return cleaned;
+    } else if (cleaned.length <= 6) {
+      return `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`;
+    } else if (cleaned.length <= 9) {
+      return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6)}`;
+    } else {
+      return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6, 9)} ${cleaned.slice(9, 12)}`;
+    }
+  };
+
+  const onSubmit = async (data: Record<string, unknown>) => {
+    // Validation côté client
+    if (!data.name || !data.phone) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        reset();
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
+
+  const formatBudget = (value: number) => {
+    if (value >= 1000000) {
+      const millions = value / 1000000;
+      if (millions >= 25) {
+        return `25M+`;
+      }
+      return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `${(value / 1000).toFixed(0)}K`;
+    }
+    return `${value.toLocaleString()}`;
+  };
+
+  const handleBudgetChange = (value: number) => {
+    setBudgetValue(value);
+    setValue('budget', value.toString());
+  };
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center py-16">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-md mx-auto px-4 md:px-8"
+        >
+          <div className="bg-white rounded-sm shadow-lg p-6 md:p-12 text-center">
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="w-16 h-px bg-black mx-auto mb-6"
+            ></motion.div>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="font-display text-2xl font-light text-black mb-4 tracking-wide"
+            >
+              Message envoyé
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-black/60 font-light leading-relaxed"
+            >
+              Merci pour votre confiance. Nous vous contacterons dans les plus brefs délais 
+              pour échanger sur votre projet en toute discrétion.
+            </motion.p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  const isBuyer = typeParam === 'buy';
+  const isSeller = typeParam === 'sell';
+
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center py-16">
+      <motion.div 
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="max-w-lg md:max-w-2xl mx-auto px-4 md:px-8 w-full"
+      >
+        <div className="bg-white rounded-sm shadow-lg p-6 md:p-12">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="font-display text-3xl font-light text-black mb-4 tracking-wide"
+            >
+              {isSeller ? 'Confiez votre bien' : 'Trouvez votre bien'}
+            </motion.h2>
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: "4rem" }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="h-px bg-black mx-auto mb-6"
+            ></motion.div>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="text-black/60 font-light text-sm leading-relaxed"
+            >
+              {isSeller 
+                ? 'Nous vous accompagnons dans la vente de votre propriété d\'exception en toute confidentialité.'
+                : 'Nous vous aidons à trouver la propriété de vos rêves à Tétouan & Cabo Negro.'
+              }
+            </motion.p>
+          </div>
+
+          {/* Switch Button */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="text-center mb-8"
+          >
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-block"
+            >
+              <a
+                href={isSeller ? '/contact?type=buy' : '/contact?type=sell'}
+                className="group inline-flex items-center gap-3 px-6 py-3 border border-black/20 text-black/60 hover:border-black/40 hover:text-black transition-all duration-300 rounded-sm bg-white/50 hover:bg-white/80"
+              >
+                {isSeller ? (
+                  <>
+                    <ShoppingCart className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                    <span className="text-sm font-light tracking-wide">
+                      Vous cherchez plutôt à acheter ?
+                    </span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </>
+                ) : (
+                  <>
+                    <Home className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                    <span className="text-sm font-light tracking-wide">
+                      Vous souhaitez plutôt vendre ?
+                    </span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </>
+                )}
+              </a>
+            </motion.div>
+          </motion.div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            {/* Name */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <label htmlFor="name" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
+                <User className="inline w-4 h-4 mr-2" />
+                Nom complet *
+              </label>
+              <input
+                {...register('name', { required: 'Nom requis' })}
+                className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm"
+                placeholder="Votre nom complet"
+              />
+            </motion.div>
+
+            {/* Phone with Custom Country Selector */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+            >
+              <label className="block text-sm text-black/60 font-light mb-3 tracking-wide">
+                <Phone className="inline w-4 h-4 mr-2" />
+                Téléphone / WhatsApp *
+              </label>
+              <div className="flex gap-3">
+                {/* Country Selector */}
+                <div className="relative flex-shrink-0">
+                  <select
+                    value={phoneValue?.split(' ')[0] || '+212'}
+                    onChange={(e) => {
+                      const countryCode = e.target.value;
+                      const currentNumber = phoneValue?.split(' ')[1] || '';
+                      setValue('phone', `${countryCode} ${currentNumber}`);
+                    }}
+                    className="w-28 md:w-32 px-2 md:px-3 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm appearance-none cursor-pointer text-sm h-12"
+                  >
+                    <option value="+212">🇲🇦 +212</option>
+                    <option value="+33">🇫🇷 +33</option>
+                    <option value="+34">🇪🇸 +34</option>
+                    <option value="+32">🇧🇪 +32</option>
+                    <option value="+31">🇳🇱 +31</option>
+                    <option value="+39">🇮🇹 +39</option>
+                    <option value="+1">🇨🇦 +1</option>
+                    <option value="+49">🇩🇪 +49</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+971">🇦🇪 +971</option>
+                    <option value="+966">🇸🇦 +966</option>
+                    <option value="+213">🇩🇿 +213</option>
+                    <option value="+216">🇹🇳 +216</option>
+                    <option value="+20">🇪🇬 +20</option>
+                    <option value="+90">🇹🇷 +90</option>
+                    <option value="+7">🇷🇺 +7</option>
+                    <option value="+86">🇨🇳 +86</option>
+                    <option value="+81">🇯🇵 +81</option>
+                    <option value="+82">🇰🇷 +82</option>
+                    <option value="+91">🇮🇳 +91</option>
+                    <option value="+55">🇧🇷 +55</option>
+                    <option value="+54">🇦🇷 +54</option>
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+27">🇿🇦 +27</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <svg className="w-3 h-3 text-black/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+                
+                {/* Phone Number Input */}
+                <div className="relative flex-1">
+                  <input
+                    type="tel"
+                    value={phoneValue?.split(' ')[1] ? formatPhoneNumber(phoneValue.split(' ')[1]) : ''}
+                    onChange={(e) => {
+                      const countryCode = phoneValue?.split(' ')[0] || '+212';
+                      const rawNumber = e.target.value.replace(/\D/g, ''); // Garder seulement les chiffres
+                      setValue('phone', `${countryCode} ${rawNumber}`);
+                    }}
+                    placeholder="689 905 632"
+                    className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12"
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Email */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              <label htmlFor="email" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
+                <Mail className="inline w-4 h-4 mr-2" />
+                Email (optionnel)
+              </label>
+              <input
+                {...register('email')}
+                className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm"
+                placeholder="votre@email.com"
+              />
+            </motion.div>
+
+            {/* Budget Slider for Buyers */}
+            {(isBuyer || !typeParam) && (
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.9 }}
+                className="bg-white/5 border border-black/10 rounded-lg p-4 md:p-6"
+              >
+                <label className="block text-lg text-black/80 font-medium mb-4 tracking-wide">
+                  <DollarSign className="inline w-5 h-5 mr-2" />
+                  Budget estimé (MAD)
+                </label>
+                <div className="space-y-6">
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="500000"
+                      max="25000000"
+                      step="250000"
+                      value={budgetValue}
+                      onChange={(e) => handleBudgetChange(Number(e.target.value))}
+                      className="w-full h-3 bg-black/10 rounded-lg appearance-none cursor-pointer slider-custom"
+                      style={{
+                        background: `linear-gradient(to right, #000 0%, #000 ${(budgetValue - 500000) / (25000000 - 500000) * 100}%, #e5e5e5 ${(budgetValue - 500000) / (25000000 - 500000) * 100}%, #e5e5e5 100%)`
+                      }}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-black">{formatBudget(budgetValue)}</div>
+                  </div>
+                </div>
+                <input type="hidden" {...register('budget')} />
+              </motion.div>
+            )}
+
+            {/* Estimation Slider for Sellers */}
+            {isSeller && (
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.9 }}
+                className="bg-white/5 border border-black/10 rounded-lg p-4 md:p-6"
+              >
+                <label className="block text-lg text-black/80 font-medium mb-4 tracking-wide">
+                  <DollarSign className="inline w-5 h-5 mr-2" />
+                  Estimation du bien (MAD)
+                </label>
+                <div className="space-y-6">
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="500000"
+                      max="25000000"
+                      step="250000"
+                      value={budgetValue}
+                      onChange={(e) => handleBudgetChange(Number(e.target.value))}
+                      className="w-full h-3 bg-black/10 rounded-lg appearance-none cursor-pointer slider-custom"
+                      style={{
+                        background: `linear-gradient(to right, #000 0%, #000 ${(budgetValue - 500000) / (25000000 - 500000) * 100}%, #e5e5e5 ${(budgetValue - 500000) / (25000000 - 500000) * 100}%, #e5e5e5 100%)`
+                      }}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-black">{formatBudget(budgetValue)}</div>
+                  </div>
+                </div>
+                <input type="hidden" {...register('estimation')} />
+              </motion.div>
+            )}
+
+            {/* Message */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 1.0 }}
+            >
+              <label htmlFor="message" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
+                <MessageSquare className="inline w-4 h-4 mr-2" />
+                Message libre
+              </label>
+              <textarea
+                {...register('message')}
+                rows={5}
+                className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 resize-none rounded-sm"
+                placeholder={isSeller 
+                  ? "Décrivez votre propriété, sa localisation, ses caractéristiques..."
+                  : "Décrivez vos critères, vos préférences, vos besoins..."
+                }
+              />
+            </motion.div>
+
+            {/* Confidentiality Checkbox */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 1.1 }}
+              className="flex items-start space-x-3"
+            >
+              <input
+                {...register('confidential')}
+                type="checkbox"
+                className="mt-1 w-4 h-4 text-black border-black/20 rounded focus:ring-black focus:ring-2"
+              />
+              <label className="text-sm text-black/60 font-light leading-relaxed flex items-center">
+                <Shield className="w-4 h-4 mr-2" />
+                Je souhaite un accompagnement confidentiel et discret
+              </label>
+            </motion.div>
+
+            {/* Submit Button */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
+              className="text-center pt-6"
+            >
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-black text-white px-10 py-4 rounded-sm font-light tracking-wide text-lg hover:bg-black/90 transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {isSubmitting ? 'Envoi en cours...' : 'Envoyer en toute discrétion'}
+              </button>
+            </motion.div>
+          </form>
+        </div>
+      </motion.div>
+
+      <style jsx global>{`
+        .slider-custom::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #000;
+          cursor: pointer;
+          border: 2px solid #fff;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+          transition: all 0.3s ease;
+        }
+        
+        .slider-custom::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .slider-custom::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #000;
+          cursor: pointer;
+          border: 2px solid #fff;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+          transition: all 0.3s ease;
+        }
+        
+        .slider-custom::-moz-range-thumb:hover {
+          transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+      `}</style>
+    </div>
+  );
+}
