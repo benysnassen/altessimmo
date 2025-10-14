@@ -89,7 +89,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 2.5 }}
-          className="pt-8"
+          className="pt-4"
         >
           <motion.div
             whileHover={{ 
@@ -97,7 +97,7 @@ export default function Hero() {
               transition: { duration: 0.4, ease: "easeOut" }
             }}
             whileTap={{ scale: 0.98 }}
-            className="relative"
+            className="relative flex justify-center"
           >
             <Link 
               href="/contact"

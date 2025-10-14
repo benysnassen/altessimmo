@@ -276,7 +276,7 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating }: C
               <div className="flex items-start gap-2">
                 <StickyNote className="w-3 h-3 md:w-4 md:h-4 text-white/40 mt-1 flex-shrink-0" />
                 <p className="text-white/80 leading-relaxed text-xs md:text-sm break-words">
-                  {contact.personalNote || 'Aucune note personnelle'}
+                  {noteValue || 'Aucune note personnelle'}
                 </p>
               </div>
             )}

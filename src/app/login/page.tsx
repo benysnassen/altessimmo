@@ -153,6 +153,7 @@ export default function LoginPage() {
               </label>
               
               <input
+                id="username"
                 {...register('username', { 
                   required: 'Nom d\'utilisateur requis',
                   minLength: { value: 3, message: 'Minimum 3 caractères' }
@@ -183,6 +184,7 @@ export default function LoginPage() {
               
               <div className="relative">
                 <input
+                  id="password"
                   {...register('password', { 
                     required: 'Mot de passe requis'
                   })}

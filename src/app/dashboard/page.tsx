@@ -109,14 +109,14 @@ const typeConfig = {
   BUYER: {
     label: 'Acheteur',
     icon: ShoppingCart,
-    className: 'bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-300 border border-blue-500/30',
-    iconColor: 'text-blue-400'
+    className: 'bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-300 border border-green-500/30',
+    iconColor: 'text-green-400'
   },
   SELLER: {
     label: 'Vendeur',
     icon: Building2,
-    className: 'bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-300 border border-green-500/30',
-    iconColor: 'text-green-400'
+    className: 'bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-300 border border-blue-500/30',
+    iconColor: 'text-blue-400'
   }
 };
 
@@ -158,6 +158,14 @@ const formatDateTable = (dateString: string) => {
 
 // Fonction pour extraire le code pays du numéro de téléphone
 const getCountryCode = (phone: string): string => {
+  // Si le format est nouveau (+1|US|123456789), extraire directement le pays
+  if (phone.includes('|')) {
+    const parts = phone.split('|');
+    if (parts.length >= 2) {
+      return parts[1]; // Le pays est dans la deuxième partie
+    }
+  }
+
   // Mapping des indicatifs vers les codes pays ISO
   const countryCodes: { [key: string]: string } = {
     '+212': 'MA', // Maroc
@@ -166,7 +174,7 @@ const getCountryCode = (phone: string): string => {
     '+39': 'IT',  // Italie
     '+49': 'DE',  // Allemagne
     '+44': 'GB',  // Royaume-Uni
-    '+1': 'US',   // États-Unis/Canada
+    '+1': 'US',   // États-Unis (sera géré séparément pour le Canada)
     '+971': 'AE', // Émirats arabes unis
     '+966': 'SA', // Arabie saoudite
     '+213': 'DZ', // Algérie
@@ -184,6 +192,21 @@ const getCountryCode = (phone: string): string => {
     '+27': 'ZA',  // Afrique du Sud
   };
 
+  // Cas spécial pour l'indicatif +1 (États-Unis/Canada)
+  if (phone.startsWith('+1')) {
+    // Les numéros canadiens commencent généralement par +1 suivi de codes régionaux spécifiques
+    // Codes régionaux canadiens principaux
+    const canadianAreaCodes = ['204', '226', '236', '249', '250', '263', '289', '306', '343', '354', '365', '367', '368', '382', '387', '403', '416', '418', '428', '431', '437', '438', '450', '468', '474', '506', '514', '519', '548', '579', '581', '584', '587', '604', '613', '639', '647', '672', '683', '705', '709', '742', '753', '778', '780', '782', '807', '819', '825', '867', '873', '879', '902', '905'];
+    
+    // Extraire le code régional (3 chiffres après +1, en ignorant les espaces)
+    const cleanPhone = phone.replace(/\s/g, '');
+    const areaCode = cleanPhone.substring(2, 5);
+    if (canadianAreaCodes.includes(areaCode)) {
+      return 'CA';
+    }
+    return 'US';
+  }
+
   // Extraire l'indicatif du numéro
   for (const [code, country] of Object.entries(countryCodes)) {
     if (phone.startsWith(code)) {
@@ -197,7 +220,30 @@ const getCountryCode = (phone: string): string => {
 
 // Fonction pour formater le numéro de téléphone avec des traits d'union
 const formatPhoneDisplay = (phone: string): string => {
-  // Séparer l'indicatif du numéro
+  // Si le format est nouveau (+1|US|123456789), extraire les parties
+  if (phone.includes('|')) {
+    const parts = phone.split('|');
+    if (parts.length >= 3) {
+      const countryCode = parts[0];
+      const number = parts[2];
+      
+      // Supprimer tous les caractères non numériques du numéro
+      const cleanedNumber = number.replace(/\D/g, '');
+      
+      // Formatage selon la longueur
+      if (cleanedNumber.length <= 3) {
+        return `${countryCode} ${cleanedNumber}`;
+      } else if (cleanedNumber.length <= 6) {
+        return `${countryCode} ${cleanedNumber.slice(0, 3)}-${cleanedNumber.slice(3)}`;
+      } else if (cleanedNumber.length <= 9) {
+        return `${countryCode} ${cleanedNumber.slice(0, 3)}-${cleanedNumber.slice(3, 6)}-${cleanedNumber.slice(6)}`;
+      } else {
+        return `${countryCode} ${cleanedNumber.slice(0, 3)}-${cleanedNumber.slice(3, 6)}-${cleanedNumber.slice(6, 9)}-${cleanedNumber.slice(9, 12)}`;
+      }
+    }
+  }
+
+  // Format ancien - Séparer l'indicatif du numéro
   const parts = phone.split(' ');
   if (parts.length < 2) return phone;
   
@@ -813,6 +859,10 @@ export default function Dashboard() {
         setContacts(contacts.map(contact =>
           contact.id === contactId ? { ...contact, personalNote } : contact
         ));
+        // Mettre à jour aussi le contact sélectionné si c'est le même
+        if (selectedContact && selectedContact.id === contactId) {
+          setSelectedContact({ ...selectedContact, personalNote });
+        }
       } else {
         console.error('Failed to update personal note:', response.status);
         throw new Error('Erreur lors de la mise à jour de la note');
@@ -836,6 +886,10 @@ export default function Dashboard() {
         setContacts(contacts.map(contact =>
           contact.id === contactId ? { ...contact, rating } : contact
         ));
+        // Mettre à jour aussi le contact sélectionné si c'est le même
+        if (selectedContact && selectedContact.id === contactId) {
+          setSelectedContact({ ...selectedContact, rating });
+        }
       } else {
         console.error('Failed to update rating:', response.status);
         throw new Error('Erreur lors de la mise à jour de l\'évaluation');
@@ -1022,40 +1076,40 @@ export default function Dashboard() {
           </div>
 
           {/* Acheteurs actifs */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 rounded-xl p-4 md:p-6 transition-all duration-300 hover:border-green-400/40 hover:shadow-lg hover:shadow-green-500/10">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-xl p-4 md:p-6 transition-all duration-300 hover:border-purple-400/40 hover:shadow-lg hover:shadow-purple-500/10">
             <div className="flex flex-col h-full">
               <div className="text-center mb-3">
                 <p className="text-white/70 text-sm md:text-base font-semibold mb-2">Acheteurs actifs</p>
                 <div className="flex justify-center mb-2">
-                  <div className="p-3 bg-green-500/20 rounded-xl">
-                    <Home className="w-6 h-6 md:w-7 md:h-7 text-green-400" />
+                  <div className="p-3 bg-purple-500/20 rounded-xl">
+                    <Home className="w-6 h-6 md:w-7 md:h-7 text-purple-400" />
                   </div>
                 </div>
                 <p className="text-2xl md:text-3xl font-bold text-white">{buyers.filter(b => b.status !== 'ARCHIVED').length}</p>
               </div>
               <div className="mt-auto">
                 <div className="w-full bg-white/10 rounded-full h-1">
-                  <div className="bg-gradient-to-r from-green-400 to-green-500 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min((buyers.filter(b => b.status !== 'ARCHIVED').length / Math.max(contacts.length, 1)) * 100, 100)}%` }}></div>
+                  <div className="bg-gradient-to-r from-purple-400 to-purple-500 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min((buyers.filter(b => b.status !== 'ARCHIVED').length / Math.max(contacts.length, 1)) * 100, 100)}%` }}></div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Vendeurs actifs */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-xl p-4 md:p-6 transition-all duration-300 hover:border-purple-400/40 hover:shadow-lg hover:shadow-purple-500/10">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 rounded-xl p-4 md:p-6 transition-all duration-300 hover:border-green-400/40 hover:shadow-lg hover:shadow-green-500/10">
             <div className="flex flex-col h-full">
               <div className="text-center mb-3">
                 <p className="text-white/70 text-sm md:text-base font-semibold mb-2">Vendeurs actifs</p>
                 <div className="flex justify-center mb-2">
-                  <div className="p-3 bg-purple-500/20 rounded-xl">
-                    <Shield className="w-6 h-6 md:w-7 md:h-7 text-purple-400" />
+                  <div className="p-3 bg-green-500/20 rounded-xl">
+                    <Shield className="w-6 h-6 md:w-7 md:h-7 text-green-400" />
                   </div>
                 </div>
                 <p className="text-2xl md:text-3xl font-bold text-white">{sellers.filter(s => s.status !== 'ARCHIVED').length}</p>
               </div>
               <div className="mt-auto">
                 <div className="w-full bg-white/10 rounded-full h-1">
-                  <div className="bg-gradient-to-r from-purple-400 to-purple-500 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min((sellers.filter(s => s.status !== 'ARCHIVED').length / Math.max(contacts.length, 1)) * 100, 100)}%` }}></div>
+                  <div className="bg-gradient-to-r from-green-400 to-green-500 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min((sellers.filter(s => s.status !== 'ARCHIVED').length / Math.max(contacts.length, 1)) * 100, 100)}%` }}></div>
                 </div>
               </div>
             </div>
@@ -1198,7 +1252,7 @@ export default function Dashboard() {
                           <StickyNote className="w-3 h-3 text-blue-400 flex-shrink-0" />
                         )}
                         {contact.rating && (
-                          <ProportionalStar rating={contact.rating} size="sm" />
+                          <ProportionalStar rating={contact.rating} size="xl" />
                         )}
                       </div>
                     </td>

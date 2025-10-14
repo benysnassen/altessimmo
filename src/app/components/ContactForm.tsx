@@ -16,7 +16,7 @@ export default function ContactForm() {
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset, setValue, watch } = useForm({
     defaultValues: {
       name: '',
-      phone: '',
+      phone: '+212|MA|',
       email: '',
       budget: '1500000',
       estimation: '',
@@ -246,39 +246,39 @@ export default function ContactForm() {
                 {/* Country Selector */}
                 <div className="relative flex-shrink-0">
                   <select
-                    value={phoneValue?.split(' ')[0] || '+212'}
+                    value={phoneValue?.includes('|') ? `${phoneValue.split('|')[0]}|${phoneValue.split('|')[1]}` : phoneValue?.split(' ')[0] || '+212|MA'}
                     onChange={(e) => {
-                      const countryCode = e.target.value;
-                      const currentNumber = phoneValue?.split(' ')[1] || '';
-                      setValue('phone', `${countryCode} ${currentNumber}`);
+                      const [countryCode, country] = e.target.value.split('|');
+                      const currentNumber = phoneValue?.includes('|') ? phoneValue.split('|')[2] : phoneValue?.split(' ')[1] || '';
+                      setValue('phone', `${countryCode}|${country}|${currentNumber}`);
                     }}
                     className="w-28 md:w-32 px-2 md:px-3 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm appearance-none cursor-pointer text-sm h-12"
                   >
-                    <option value="+212">🇲🇦 +212</option>
-                    <option value="+33">🇫🇷 +33</option>
-                    <option value="+34">🇪🇸 +34</option>
-                    <option value="+32">🇧🇪 +32</option>
-                    <option value="+31">🇳🇱 +31</option>
-                    <option value="+39">🇮🇹 +39</option>
-                    <option value="+1">🇨🇦 +1</option>
-                    <option value="+49">🇩🇪 +49</option>
-                    <option value="+44">🇬🇧 +44</option>
-                    <option value="+1">🇺🇸 +1</option>
-                    <option value="+971">🇦🇪 +971</option>
-                    <option value="+966">🇸🇦 +966</option>
-                    <option value="+213">🇩🇿 +213</option>
-                    <option value="+216">🇹🇳 +216</option>
-                    <option value="+20">🇪🇬 +20</option>
-                    <option value="+90">🇹🇷 +90</option>
-                    <option value="+7">🇷🇺 +7</option>
-                    <option value="+86">🇨🇳 +86</option>
-                    <option value="+81">🇯🇵 +81</option>
-                    <option value="+82">🇰🇷 +82</option>
-                    <option value="+91">🇮🇳 +91</option>
-                    <option value="+55">🇧🇷 +55</option>
-                    <option value="+54">🇦🇷 +54</option>
-                    <option value="+61">🇦🇺 +61</option>
-                    <option value="+27">🇿🇦 +27</option>
+                    <option value="+212|MA">🇲🇦 +212</option>
+                    <option value="+33|FR">🇫🇷 +33</option>
+                    <option value="+34|ES">🇪🇸 +34</option>
+                    <option value="+32|BE">🇧🇪 +32</option>
+                    <option value="+31|NL">🇳🇱 +31</option>
+                    <option value="+39|IT">🇮🇹 +39</option>
+                    <option value="+1|CA">🇨🇦 +1</option>
+                    <option value="+49|DE">🇩🇪 +49</option>
+                    <option value="+44|GB">🇬🇧 +44</option>
+                    <option value="+1|US">🇺🇸 +1</option>
+                    <option value="+971|AE">🇦🇪 +971</option>
+                    <option value="+966|SA">🇸🇦 +966</option>
+                    <option value="+213|DZ">🇩🇿 +213</option>
+                    <option value="+216|TN">🇹🇳 +216</option>
+                    <option value="+20|EG">🇪🇬 +20</option>
+                    <option value="+90|TR">🇹🇷 +90</option>
+                    <option value="+7|RU">🇷🇺 +7</option>
+                    <option value="+86|CN">🇨🇳 +86</option>
+                    <option value="+81|JP">🇯🇵 +81</option>
+                    <option value="+82|KR">🇰🇷 +82</option>
+                    <option value="+91|IN">🇮🇳 +91</option>
+                    <option value="+55|BR">🇧🇷 +55</option>
+                    <option value="+54|AR">🇦🇷 +54</option>
+                    <option value="+61|AU">🇦🇺 +61</option>
+                    <option value="+27|ZA">🇿🇦 +27</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                     <svg className="w-3 h-3 text-black/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -291,11 +291,19 @@ export default function ContactForm() {
                 <div className="relative flex-1">
                   <input
                     type="tel"
-                    value={phoneValue?.split(' ')[1] ? formatPhoneNumber(phoneValue.split(' ')[1]) : ''}
+                    value={phoneValue?.includes('|') ? 
+                      (phoneValue.split('|')[2] ? formatPhoneNumber(phoneValue.split('|')[2]) : '') : 
+                      (phoneValue?.split(' ')[1] ? formatPhoneNumber(phoneValue.split(' ')[1]) : '')
+                    }
                     onChange={(e) => {
-                      const countryCode = phoneValue?.split(' ')[0] || '+212';
                       const rawNumber = e.target.value.replace(/\D/g, ''); // Garder seulement les chiffres
-                      setValue('phone', `${countryCode} ${rawNumber}`);
+                      if (phoneValue?.includes('|')) {
+                        const parts = phoneValue.split('|');
+                        setValue('phone', `${parts[0]}|${parts[1]}|${rawNumber}`);
+                      } else {
+                        const countryCode = phoneValue?.split(' ')[0] || '+212';
+                        setValue('phone', `${countryCode} ${rawNumber}`);
+                      }
                     }}
                     placeholder="689 905 632"
                     className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12"
