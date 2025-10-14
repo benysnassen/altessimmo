@@ -4,11 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:clean": "./start-dev.sh",
+    "dev:clean:win": "start-dev.bat",
     "build": "next build",
     "start": "node server.js",
     "lint": "eslint",
     "postbuild": "prisma generate",
-    "deploy": "npm run build && npm run postbuild"
+    "deploy": "npm run build && npm run postbuild",
+    "db:reset": "npx prisma db push --force-reset && npx prisma generate",
+    "db:sync": "npx prisma db push && npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",

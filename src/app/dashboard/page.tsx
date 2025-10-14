@@ -46,6 +46,7 @@ interface Contact {
   budget?: string | null;
   estimation?: string | null;
   message?: string | null;
+  personalNote?: string | null;
   confidential: boolean;
   status: 'NEW' | 'CONTACTED' | 'INTERESTED' | 'VIEWING' | 'OFFER' | 'SOLD' | 'ARCHIVED';
   createdAt: string;
@@ -370,9 +371,20 @@ const Badge = ({ config, size = 'sm' }: { config: any, size?: 'sm' | 'md' }) => 
 };
 
 // Composant Card de détail
-const ContactDetailCard = ({ contact, onClose }: { contact: Contact, onClose: () => void }) => {
+const ContactDetailCard = ({ contact, onClose, onUpdateNote }: { contact: Contact, onClose: () => void, onUpdateNote: (contactId: string, personalNote: string) => void }) => {
   const contactTypeConfig = contact.type === 'BUYER' ? typeConfig.BUYER : typeConfig.SELLER;
   const contactStatusConfig = statusConfig[contact.status] || statusConfig.NEW;
+  const [isEditingNote, setIsEditingNote] = useState(false);
+  const [noteValue, setNoteValue] = useState(contact.personalNote || '');
+  
+  const handleSaveNote = async () => {
+    try {
+      await onUpdateNote(contact.id, noteValue);
+      setIsEditingNote(false);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde de la note:', error);
+    }
+  };
   
   return (
     <motion.div
@@ -405,13 +417,13 @@ const ContactDetailCard = ({ contact, onClose }: { contact: Contact, onClose: ()
           </button>
         </div>
         
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3">
-                      <Phone className="w-4 h-4 text-white/40" />
-                      <FlagIcon countryCode={getCountryCode(contact.phone)} />
-                      <span className="text-white/80 font-mono tracking-wider">{formatPhoneDisplay(contact.phone)}</span>
-                    </div>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3">
+              <Phone className="w-4 h-4 text-white/40" />
+              <FlagIcon countryCode={getCountryCode(contact.phone)} />
+              <span className="text-white/80 font-mono tracking-wider">{formatPhoneDisplay(contact.phone)}</span>
+            </div>
             {contact.email && (
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-white/40" />
@@ -426,6 +438,60 @@ const ContactDetailCard = ({ contact, onClose }: { contact: Contact, onClose: ()
               <div className="flex items-center gap-3">
                 <Shield className="w-4 h-4 text-white/40" />
                 <span className="text-white/80">Confidentiel</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Note personnelle */}
+          <div className="border-t border-white/10 pt-4">
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="text-sm font-light text-white/60 uppercase tracking-wider">Note personnelle</h4>
+              {!isEditingNote && (
+                <button
+                  onClick={() => setIsEditingNote(true)}
+                  className="flex items-center gap-2 px-3 py-1 text-xs text-white/60 hover:text-white/80 hover:bg-white/10 rounded-sm transition-colors"
+                >
+                  <Edit3 className="w-3 h-3" />
+                  {contact.personalNote ? 'Modifier' : 'Ajouter'}
+                </button>
+              )}
+            </div>
+            
+            {isEditingNote ? (
+              <div className="space-y-3">
+                <textarea
+                  value={noteValue}
+                  onChange={(e) => setNoteValue(e.target.value)}
+                  placeholder="Ex: Très bon investisseur, recherche que du top..."
+                  className="w-full bg-white/5 border border-white/20 rounded-sm px-3 py-2 text-white/80 placeholder-white/40 resize-none focus:outline-none focus:border-white/40"
+                  rows={3}
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSaveNote}
+                    className="flex items-center gap-2 px-3 py-1 text-xs bg-green-500/20 text-green-300 hover:bg-green-500/30 rounded-sm transition-colors"
+                  >
+                    <Save className="w-3 h-3" />
+                    Sauvegarder
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsEditingNote(false);
+                      setNoteValue(contact.personalNote || '');
+                    }}
+                    className="flex items-center gap-2 px-3 py-1 text-xs bg-red-500/20 text-red-300 hover:bg-red-500/30 rounded-sm transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-3">
+                <Key className="w-4 h-4 text-white/40 mt-1" />
+                <p className="text-white/80 leading-relaxed">
+                  {contact.personalNote || 'Aucune note personnelle'}
+                </p>
               </div>
             )}
           </div>
@@ -857,6 +923,29 @@ export default function Dashboard() {
     }
   };
 
+  const handleUpdatePersonalNote = async (contactId: string, personalNote: string) => {
+    try {
+      const response = await fetch('/api/contacts/personal-note', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactId, personalNote })
+      });
+
+      if (response.ok) {
+        console.log('Note personnelle mise à jour avec succès');
+        setContacts(contacts.map(contact =>
+          contact.id === contactId ? { ...contact, personalNote } : contact
+        ));
+      } else {
+        console.error('Failed to update personal note:', response.status);
+        throw new Error('Erreur lors de la mise à jour de la note');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la note personnelle:', error);
+      throw error;
+    }
+  };
+
   const handleEditContact = async (updatedContact: Contact) => {
     try {
       const response = await fetch('/api/contacts/', {
@@ -1189,6 +1278,9 @@ export default function Dashboard() {
                           <User className="w-4 h-4 text-white/40" />
                           <FlagIcon countryCode={getCountryCode(contact.phone)} />
                           <span className="truncate max-w-[120px] md:max-w-none">{contact.name}</span>
+                          {contact.personalNote && (
+                            <Key className="w-3 h-3 text-yellow-400" title="Note personnelle" />
+                          )}
                         </div>
                         <div className="hidden md:block text-sm text-white/60 flex items-center mt-2 gap-2">
                           <Phone className="w-3 h-3 text-white/40" />
@@ -1311,6 +1403,7 @@ export default function Dashboard() {
         <ContactDetailCard 
           contact={selectedContact} 
           onClose={() => setSelectedContact(null)} 
+          onUpdateNote={handleUpdatePersonalNote}
         />
       )}
       

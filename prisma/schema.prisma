@@ -19,6 +19,7 @@ model Contact {
   budget      String?
   estimation  String?
   message     String?
+  personalNote String? // Note personnelle de l'admin
   confidential Boolean @default(false)
   status      ContactStatus @default(NEW)
   createdAt   DateTime @default(now())
