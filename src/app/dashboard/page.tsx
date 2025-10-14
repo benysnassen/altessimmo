@@ -32,9 +32,12 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
-  Key
+  Key,
+  StickyNote
 } from 'lucide-react';
 import ChangePasswordModal from '@/app/components/ChangePasswordModal';
+import StarRating from '@/app/components/StarRating';
+import ProportionalStar from '@/app/components/ProportionalStar';
 import { useDropdownPosition } from '../hooks/useDropdownPosition';
 
 interface Contact {
@@ -47,6 +50,7 @@ interface Contact {
   estimation?: string | null;
   message?: string | null;
   personalNote?: string | null;
+  rating?: number | null;
   confidential: boolean;
   status: 'NEW' | 'CONTACTED' | 'INTERESTED' | 'VIEWING' | 'OFFER' | 'SOLD' | 'ARCHIVED';
   createdAt: string;
@@ -131,7 +135,7 @@ const formatAmount = (amount: string) => {
   }
 };
 
-// Fonction de formatage des dates
+// Fonction de formatage des dates (avec heure pour la carte de détail)
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('fr-FR', {
     day: '2-digit',
@@ -139,6 +143,15 @@ const formatDate = (dateString: string) => {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
+  });
+};
+
+// Fonction de formatage des dates (sans heure pour le tableau)
+const formatDateTable = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
   });
 };
 
@@ -371,11 +384,23 @@ const Badge = ({ config, size = 'sm' }: { config: any, size?: 'sm' | 'md' }) => 
 };
 
 // Composant Card de détail
-const ContactDetailCard = ({ contact, onClose, onUpdateNote }: { contact: Contact, onClose: () => void, onUpdateNote: (contactId: string, personalNote: string) => void }) => {
+const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating }: { 
+  contact: Contact, 
+  onClose: () => void, 
+  onUpdateNote: (contactId: string, personalNote: string) => void,
+  onUpdateRating: (contactId: string, rating: number | null) => void
+}) => {
   const contactTypeConfig = contact.type === 'BUYER' ? typeConfig.BUYER : typeConfig.SELLER;
   const contactStatusConfig = statusConfig[contact.status] || statusConfig.NEW;
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteValue, setNoteValue] = useState(contact.personalNote || '');
+  const [currentRating, setCurrentRating] = useState(contact.rating);
+  
+  // Synchroniser l'état local avec les props
+  useEffect(() => {
+    setCurrentRating(contact.rating);
+    setNoteValue(contact.personalNote || '');
+  }, [contact.rating, contact.personalNote]);
   
   const handleSaveNote = async () => {
     try {
@@ -383,6 +408,15 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote }: { contact: Contac
       setIsEditingNote(false);
     } catch (error) {
       console.error('Erreur lors de la sauvegarde de la note:', error);
+    }
+  };
+
+  const handleRatingChange = async (rating: number | null) => {
+    try {
+      await onUpdateRating(contact.id, rating);
+      setCurrentRating(rating);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de l\'évaluation:', error);
     }
   };
   
@@ -409,12 +443,28 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote }: { contact: Contac
               <Badge config={contactStatusConfig} />
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-sm transition-colors"
-          >
-            <XCircle className="w-5 h-5 text-white/60" />
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                onClose();
+                // Déclencher l'édition du contact
+                setTimeout(() => {
+                  const event = new CustomEvent('editContact', { detail: contact });
+                  window.dispatchEvent(event);
+                }, 100);
+              }}
+              className="p-2 hover:bg-white/10 rounded-sm transition-colors"
+              title="Modifier le contact"
+            >
+              <Edit3 className="w-5 h-5 text-blue-400" />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-white/10 rounded-sm transition-colors"
+            >
+              <XCircle className="w-5 h-5 text-white/60" />
+            </button>
+          </div>
         </div>
         
         <div className="space-y-4">
@@ -487,13 +537,35 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote }: { contact: Contac
                 </div>
               </div>
             ) : (
-              <div className="flex items-start gap-3">
-                <Key className="w-4 h-4 text-white/40 mt-1" />
-                <p className="text-white/80 leading-relaxed">
-                  {contact.personalNote || 'Aucune note personnelle'}
-                </p>
-              </div>
+                      <div className="flex items-start gap-3">
+                        <StickyNote className="w-4 h-4 text-white/40 mt-1" />
+                        <p className="text-white/80 leading-relaxed">
+                          {contact.personalNote || 'Aucune note personnelle'}
+                        </p>
+                      </div>
             )}
+          </div>
+          
+          {/* Évaluation */}
+          <div className="border-t border-white/10 pt-4">
+            <h4 className="text-sm font-light text-white/60 mb-3 uppercase tracking-wider">Évaluation</h4>
+            <div className="flex items-center gap-3">
+              <StarRating
+                rating={currentRating ?? null}
+                onRatingChange={handleRatingChange}
+                size="lg"
+                interactive={true}
+              />
+              {currentRating && (
+                <span className="text-sm text-white/60">
+                  {currentRating === 1 && 'Très faible'}
+                  {currentRating === 2 && 'Faible'}
+                  {currentRating === 3 && 'Moyen'}
+                  {currentRating === 4 && 'Bon'}
+                  {currentRating === 5 && 'Excellent'}
+                </span>
+              )}
+            </div>
           </div>
           
           {(contact.budget || contact.estimation) && (
@@ -656,6 +728,7 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
     budget: contact.budget || '',
     estimation: contact.estimation || '',
     message: contact.message || '',
+    personalNote: contact.personalNote || '',
     confidential: contact.confidential
   });
 
@@ -768,6 +841,17 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
             />
           </div>
           
+          <div>
+            <label className="block text-sm font-light text-white/60 mb-2">Note personnelle</label>
+            <textarea
+              value={formData.personalNote}
+              onChange={(e) => setFormData({ ...formData, personalNote: e.target.value })}
+              rows={3}
+              placeholder="Ex: Très bon investisseur, recherche que du top..."
+              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none resize-none"
+            />
+          </div>
+          
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
@@ -822,6 +906,17 @@ export default function Dashboard() {
 
   useEffect(() => {
     checkAuth();
+    
+    // Écouter l'événement d'édition depuis la carte de détail
+    const handleEditContact = (event: CustomEvent) => {
+      setEditingContact(event.detail);
+    };
+    
+    window.addEventListener('editContact', handleEditContact as EventListener);
+    
+    return () => {
+      window.removeEventListener('editContact', handleEditContact as EventListener);
+    };
   }, []);
 
   useEffect(() => {
@@ -946,6 +1041,29 @@ export default function Dashboard() {
     }
   };
 
+  const handleUpdateRating = async (contactId: string, rating: number | null) => {
+    try {
+      const response = await fetch('/api/contacts/rating/', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactId, rating })
+      });
+
+      if (response.ok) {
+        console.log('Évaluation mise à jour avec succès');
+        setContacts(contacts.map(contact =>
+          contact.id === contactId ? { ...contact, rating } : contact
+        ));
+      } else {
+        console.error('Failed to update rating:', response.status);
+        throw new Error('Erreur lors de la mise à jour de l\'évaluation');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de l\'évaluation:', error);
+      throw error;
+    }
+  };
+
   const handleEditContact = async (updatedContact: Contact) => {
     try {
       const response = await fetch('/api/contacts/', {
@@ -955,9 +1073,16 @@ export default function Dashboard() {
       });
 
       if (response.ok) {
-        setContacts(contacts.map(contact =>
+        const updatedContacts = contacts.map(contact =>
           contact.id === updatedContact.id ? updatedContact : contact
-        ));
+        );
+        setContacts(updatedContacts);
+        
+        // Mettre à jour selectedContact si c'est le contact actuellement sélectionné
+        if (selectedContact && selectedContact.id === updatedContact.id) {
+          setSelectedContact(updatedContact);
+        }
+        
         setEditingContact(null);
       } else {
         console.error('Failed to update contact');
@@ -1273,41 +1398,14 @@ export default function Dashboard() {
                     onClick={() => setSelectedContact(contact)}
                   >
                     <td className="px-3 md:px-6 py-4">
-                      <div>
-                        <div className="font-light text-white flex items-center gap-2">
-                          <User className="w-4 h-4 text-white/40" />
-                          <FlagIcon countryCode={getCountryCode(contact.phone)} />
-                          <span className="truncate max-w-[120px] md:max-w-none">{contact.name}</span>
-                          {contact.personalNote && (
-                            <Key className="w-3 h-3 text-yellow-400" title="Note personnelle" />
-                          )}
-                        </div>
-                        <div className="hidden md:block text-sm text-white/60 flex items-center mt-2 gap-2">
-                          <Phone className="w-3 h-3 text-white/40" />
-                          <span className="font-mono tracking-wider">{formatPhoneDisplay(contact.phone)}</span>
-                        </div>
-                        {contact.email && (
-                          <div className="hidden md:flex text-sm text-white/60 items-center mt-1 gap-2">
-                            <Mail className="w-3 h-3 text-white/40" />
-                            <span>{contact.email}</span>
-                          </div>
+                      <div className="font-light text-white flex items-center gap-2">
+                        <FlagIcon countryCode={getCountryCode(contact.phone)} />
+                        <span className="truncate max-w-[120px] md:max-w-none">{contact.name}</span>
+                        {contact.personalNote && (
+                          <StickyNote className="w-3 h-3 text-blue-400" />
                         )}
-                        {contact.message && (
-                          <div className="hidden md:flex text-sm text-white/50 items-center mt-1 gap-2">
-                            <MessageSquare className="w-3 h-3 text-white/30" />
-                            <span className="truncate max-w-xs">
-                              {contact.message.length > 15 
-                                ? `${contact.message.substring(0, 15)}...` 
-                                : contact.message
-                              }
-                            </span>
-                          </div>
-                        )}
-                        {contact.confidential && (
-                          <div className="hidden md:flex text-xs text-white/40 items-center mt-2 gap-1">
-                            <Shield className="w-3 h-3 text-white/30" />
-                            <span>Confidentiel</span>
-                          </div>
+                        {contact.rating && (
+                          <ProportionalStar rating={contact.rating} size="md" />
                         )}
                       </div>
                     </td>
@@ -1337,7 +1435,7 @@ export default function Dashboard() {
                     </td>
                     
                     <td className="px-3 md:px-6 py-4">
-                      <ClickableStatusBadge 
+                      <ClickableStatusBadge
                         contact={contact} 
                         onStatusChange={updateContactStatus} 
                       />
@@ -1346,7 +1444,7 @@ export default function Dashboard() {
                     <td className="hidden md:table-cell px-6 py-4">
                       <div className="text-sm text-white/60 flex items-center gap-2">
                         <Calendar className="w-3 h-3 text-white/40" />
-                        <span>{formatDate(contact.createdAt)}</span>
+                        <span>{formatDateTable(contact.createdAt)}</span>
                       </div>
                     </td>
                     
@@ -1404,6 +1502,7 @@ export default function Dashboard() {
           contact={selectedContact} 
           onClose={() => setSelectedContact(null)} 
           onUpdateNote={handleUpdatePersonalNote}
+          onUpdateRating={handleUpdateRating}
         />
       )}
       

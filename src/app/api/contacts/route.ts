@@ -44,6 +44,8 @@ export async function GET(request: NextRequest) {
         budget: buyer.budget,
         estimation: null,
         message: buyer.message,
+        personalNote: buyer.personalNote,
+        rating: buyer.rating,
         confidential: buyer.confidential,
         status: mapBuyerStatusToDashboard(buyer.status),
         createdAt: buyer.createdAt.toISOString(),
@@ -58,6 +60,8 @@ export async function GET(request: NextRequest) {
         budget: null,
         estimation: seller.price,
         message: seller.message,
+        personalNote: seller.personalNote,
+        rating: seller.rating,
         confidential: seller.confidential,
         status: mapSellerStatusToDashboard(seller.status),
         createdAt: seller.createdAt.toISOString(),
@@ -72,6 +76,8 @@ export async function GET(request: NextRequest) {
         budget: contact.budget,
         estimation: contact.estimation,
         message: contact.message,
+        personalNote: contact.personalNote,
+        rating: contact.rating,
         confidential: contact.confidential,
         status: contact.status,
         createdAt: contact.createdAt.toISOString(),
@@ -89,7 +95,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const data = await request.json();
-    const { id, status, name, phone, email, budget, estimation, message, confidential } = data;
+    const { id, status, name, phone, email, budget, estimation, message, personalNote, confidential } = data;
     
     if (!id) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
@@ -156,8 +162,9 @@ export async function PUT(request: NextRequest) {
           name,
           phone,
           email: email || null,
-          budget: budget || null,
+          budget: budget || null, // Maintenant budget peut être null
           message: message || null,
+          personalNote: personalNote || null,
           confidential: confidential || false
         }
       });
@@ -175,6 +182,7 @@ export async function PUT(request: NextRequest) {
           email: email || null,
           price: estimation || null,
           message: message || null,
+          personalNote: personalNote || null,
           confidential: confidential || false
         }
       });
@@ -193,6 +201,7 @@ export async function PUT(request: NextRequest) {
           budget: budget || null,
           estimation: estimation || null,
           message: message || null,
+          personalNote: personalNote || null,
           confidential: confidential || false
         }
       });
