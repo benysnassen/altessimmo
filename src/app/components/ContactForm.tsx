@@ -83,9 +83,10 @@ export default function ContactForm() {
       if (millions >= 25) {
         return `25M+`;
       }
-      return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)}M`;
+      return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(2).replace(/\.?0+$/, '')}M`;
     } else if (value >= 1000) {
-      return `${(value / 1000).toFixed(0)}K`;
+      const milliers = value / 1000;
+      return `${milliers % 1 === 0 ? milliers.toFixed(0) : milliers.toFixed(2).replace(/\.?0+$/, '')}K`;
     }
     return `${value.toLocaleString()}`;
   };
@@ -170,7 +171,7 @@ export default function ContactForm() {
             >
               {isSeller 
                 ? 'Nous vous accompagnons dans la vente de votre propriété d\'exception en toute confidentialité.'
-                : 'Nous vous aidons à trouver la propriété de vos rêves à Tétouan & Cabo Negro.'
+                : 'Nous vous aidons à trouver la propriété de vos rêves à Tétouan et ses alentours.'
               }
             </motion.p>
           </div>
@@ -421,7 +422,7 @@ export default function ContactForm() {
               <input
                 {...register('confidential')}
                 type="checkbox"
-                className="mt-1 w-4 h-4 text-black border-black/20 rounded focus:ring-black focus:ring-2"
+                className="mt-1 w-4 h-4 text-black border-black/20 rounded focus:ring-black focus:ring-2 accent-black"
               />
               <label className="text-sm text-black/60 font-light leading-relaxed flex items-center">
                 <Shield className="w-4 h-4 mr-2" />

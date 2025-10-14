@@ -36,6 +36,7 @@ import {
   StickyNote
 } from 'lucide-react';
 import ChangePasswordModal from '@/app/components/ChangePasswordModal';
+import ContactDetailCard from '@/app/components/ContactDetailCard';
 import StarRating from '@/app/components/StarRating';
 import ProportionalStar from '@/app/components/ProportionalStar';
 import { useDropdownPosition } from '../hooks/useDropdownPosition';
@@ -126,10 +127,10 @@ const formatAmount = (amount: string) => {
   
   if (num >= 1000000) {
     const millions = num / 1000000;
-    return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)}M`;
+    return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(2).replace(/\.?0+$/, '')}M`;
   } else if (num >= 1000) {
     const milliers = num / 1000;
-    return `${milliers % 1 === 0 ? milliers.toFixed(0) : milliers.toFixed(1)}K`;
+    return `${milliers % 1 === 0 ? milliers.toFixed(0) : milliers.toFixed(2).replace(/\.?0+$/, '')}K`;
   } else {
     return `${num.toLocaleString('fr-FR')}`;
   }
@@ -383,225 +384,6 @@ const Badge = ({ config, size = 'sm' }: { config: any, size?: 'sm' | 'md' }) => 
   );
 };
 
-// Composant Card de détail
-const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating }: { 
-  contact: Contact, 
-  onClose: () => void, 
-  onUpdateNote: (contactId: string, personalNote: string) => void,
-  onUpdateRating: (contactId: string, rating: number | null) => void
-}) => {
-  const contactTypeConfig = contact.type === 'BUYER' ? typeConfig.BUYER : typeConfig.SELLER;
-  const contactStatusConfig = statusConfig[contact.status] || statusConfig.NEW;
-  const [isEditingNote, setIsEditingNote] = useState(false);
-  const [noteValue, setNoteValue] = useState(contact.personalNote || '');
-  const [currentRating, setCurrentRating] = useState(contact.rating);
-  
-  // Synchroniser l'état local avec les props
-  useEffect(() => {
-    setCurrentRating(contact.rating);
-    setNoteValue(contact.personalNote || '');
-  }, [contact.rating, contact.personalNote]);
-  
-  const handleSaveNote = async () => {
-    try {
-      await onUpdateNote(contact.id, noteValue);
-      setIsEditingNote(false);
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde de la note:', error);
-    }
-  };
-
-  const handleRatingChange = async (rating: number | null) => {
-    try {
-      await onUpdateRating(contact.id, rating);
-      setCurrentRating(rating);
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour de l\'évaluation:', error);
-    }
-  };
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-black border border-white/20 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h3 className="text-xl font-light text-white mb-2">{contact.name}</h3>
-            <div className="flex gap-2">
-              <Badge config={contactTypeConfig} />
-              <Badge config={contactStatusConfig} />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                onClose();
-                // Déclencher l'édition du contact
-                setTimeout(() => {
-                  const event = new CustomEvent('editContact', { detail: contact });
-                  window.dispatchEvent(event);
-                }, 100);
-              }}
-              className="p-2 hover:bg-white/10 rounded-sm transition-colors"
-              title="Modifier le contact"
-            >
-              <Edit3 className="w-5 h-5 text-blue-400" />
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-white/10 rounded-sm transition-colors"
-            >
-              <XCircle className="w-5 h-5 text-white/60" />
-            </button>
-          </div>
-        </div>
-        
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <Phone className="w-4 h-4 text-white/40" />
-              <FlagIcon countryCode={getCountryCode(contact.phone)} />
-              <span className="text-white/80 font-mono tracking-wider">{formatPhoneDisplay(contact.phone)}</span>
-            </div>
-            {contact.email && (
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-white/40" />
-                <span className="text-white/80">{contact.email}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-3">
-              <Calendar className="w-4 h-4 text-white/40" />
-              <span className="text-white/80">{formatDate(contact.createdAt)}</span>
-            </div>
-            {contact.confidential && (
-              <div className="flex items-center gap-3">
-                <Shield className="w-4 h-4 text-white/40" />
-                <span className="text-white/80">Confidentiel</span>
-              </div>
-            )}
-          </div>
-          
-          {/* Note personnelle */}
-          <div className="border-t border-white/10 pt-4">
-            <div className="flex justify-between items-center mb-3">
-              <h4 className="text-sm font-light text-white/60 uppercase tracking-wider">Note personnelle</h4>
-              {!isEditingNote && (
-                <button
-                  onClick={() => setIsEditingNote(true)}
-                  className="flex items-center gap-2 px-3 py-1 text-xs text-white/60 hover:text-white/80 hover:bg-white/10 rounded-sm transition-colors"
-                >
-                  <Edit3 className="w-3 h-3" />
-                  {contact.personalNote ? 'Modifier' : 'Ajouter'}
-                </button>
-              )}
-            </div>
-            
-            {isEditingNote ? (
-              <div className="space-y-3">
-                <textarea
-                  value={noteValue}
-                  onChange={(e) => setNoteValue(e.target.value)}
-                  placeholder="Ex: Très bon investisseur, recherche que du top..."
-                  className="w-full bg-white/5 border border-white/20 rounded-sm px-3 py-2 text-white/80 placeholder-white/40 resize-none focus:outline-none focus:border-white/40"
-                  rows={3}
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleSaveNote}
-                    className="flex items-center gap-2 px-3 py-1 text-xs bg-green-500/20 text-green-300 hover:bg-green-500/30 rounded-sm transition-colors"
-                  >
-                    <Save className="w-3 h-3" />
-                    Sauvegarder
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsEditingNote(false);
-                      setNoteValue(contact.personalNote || '');
-                    }}
-                    className="flex items-center gap-2 px-3 py-1 text-xs bg-red-500/20 text-red-300 hover:bg-red-500/30 rounded-sm transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                    Annuler
-                  </button>
-                </div>
-              </div>
-            ) : (
-                      <div className="flex items-start gap-3">
-                        <StickyNote className="w-4 h-4 text-white/40 mt-1" />
-                        <p className="text-white/80 leading-relaxed">
-                          {contact.personalNote || 'Aucune note personnelle'}
-                        </p>
-                      </div>
-            )}
-          </div>
-          
-          {/* Évaluation */}
-          <div className="border-t border-white/10 pt-4">
-            <h4 className="text-sm font-light text-white/60 mb-3 uppercase tracking-wider">Évaluation</h4>
-            <div className="flex items-center gap-3">
-              <StarRating
-                rating={currentRating ?? null}
-                onRatingChange={handleRatingChange}
-                size="lg"
-                interactive={true}
-              />
-              {currentRating && (
-                <span className="text-sm text-white/60">
-                  {currentRating === 1 && 'Très faible'}
-                  {currentRating === 2 && 'Faible'}
-                  {currentRating === 3 && 'Moyen'}
-                  {currentRating === 4 && 'Bon'}
-                  {currentRating === 5 && 'Excellent'}
-                </span>
-              )}
-            </div>
-          </div>
-          
-          {(contact.budget || contact.estimation) && (
-            <div className="border-t border-white/10 pt-4">
-              <h4 className="text-sm font-light text-white/60 mb-3 uppercase tracking-wider">Montants</h4>
-              <div className="space-y-2">
-                {contact.budget && (
-                  <div className="flex items-center gap-3">
-                    <DollarSign className="w-4 h-4 text-green-400" />
-                    <span className="text-green-300 font-mono">{formatAmount(contact.budget)}</span>
-                  </div>
-                )}
-                {contact.estimation && (
-                  <div className="flex items-center gap-3">
-                    <DollarSign className="w-4 h-4 text-blue-400" />
-                    <span className="text-blue-300 font-mono">{formatAmount(contact.estimation)}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          
-          {contact.message && (
-            <div className="border-t border-white/10 pt-4">
-              <h4 className="text-sm font-light text-white/60 mb-3 uppercase tracking-wider">Message</h4>
-              <div className="flex items-start gap-3">
-                <MessageSquare className="w-4 h-4 text-white/40 mt-1" />
-                <p className="text-white/80 leading-relaxed">{contact.message}</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
 
 // Composant Pagination
 const Pagination = ({ 
@@ -858,7 +640,7 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
               id="confidential"
               checked={formData.confidential}
               onChange={(e) => setFormData({ ...formData, confidential: e.target.checked })}
-              className="w-4 h-4 text-blue-600 bg-black/20 border-white/20 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-black bg-black/20 border-white/20 rounded focus:ring-black accent-black"
             />
             <label htmlFor="confidential" className="text-sm text-white/80">
               Accompagnement confidentiel
@@ -1172,8 +954,8 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         className="border-b border-white/10 py-8"
       >
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-0 md:px-8">
+          <div className="flex justify-between items-start">
             <div>
               <h1 className="font-display text-3xl font-light tracking-wide mb-2">
                 Dashboard
@@ -1182,22 +964,8 @@ export default function Dashboard() {
                 Gestion des contacts et propriétés
               </p>
             </div>
-            <div className="flex items-center space-x-6">
-              <div className="flex space-x-4">
-                <div className="text-center">
-                  <div className="text-2xl font-light">{contacts.length}</div>
-                  <div className="text-xs text-white/60">Total</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-light">{buyers.length}</div>
-                  <div className="text-xs text-white/60">Acheteurs</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-light">{sellers.length}</div>
-                  <div className="text-xs text-white/60">Vendeurs</div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 pt-1">
+              <div className="flex items-center space-x-2">
                 <div className="relative group">
                   <div className="flex items-center space-x-2 text-white/60">
                     <User className="w-4 h-4" />
@@ -1217,7 +985,7 @@ export default function Dashboard() {
                   className="flex items-center space-x-2 px-4 py-2 border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all duration-300 rounded-sm"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="text-sm">Déconnexion</span>
+                  <span className="text-sm hidden md:inline">Déconnexion</span>
                 </button>
               </div>
             </div>
@@ -1230,7 +998,7 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="max-w-7xl mx-auto px-4 md:px-8 py-8"
+        className="max-w-7xl mx-auto px-0 md:px-8 py-8"
       >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
           {/* Nouveaux contacts */}
@@ -1320,7 +1088,7 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="max-w-7xl mx-auto px-8 pb-8"
+        className="max-w-7xl mx-auto px-0 md:px-8 pb-8"
       >
         <div className="bg-white/5 border border-white/10 rounded-sm p-6">
           <div className="flex flex-col md:flex-row gap-4">
@@ -1337,11 +1105,11 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="flex gap-4">
+            <div className="flex gap-2 md:gap-4">
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as any)}
-                className="px-4 py-3 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none [&>option]:bg-black [&>option]:text-white"
+                className="flex-1 px-2 md:px-4 py-3 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none [&>option]:bg-black [&>option]:text-white text-sm"
               >
                 <option value="ALL">Tous les types</option>
                 <option value="BUYER">Acheteurs</option>
@@ -1351,7 +1119,7 @@ export default function Dashboard() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="px-4 py-3 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none [&>option]:bg-black [&>option]:text-white"
+                className="flex-1 px-2 md:px-4 py-3 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none [&>option]:bg-black [&>option]:text-white text-sm"
               >
                 <option value="ALL">Tous les statuts</option>
                 <option value="NEW">Nouveau</option>
@@ -1372,19 +1140,44 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="max-w-7xl mx-auto px-4 md:px-8 pb-16"
+        className="max-w-7xl mx-auto px-0 md:px-8 pb-16"
       >
         <div className="bg-white/5 border border-white/10 rounded-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/5 border-b border-white/10">
                 <tr>
-                  <th className="px-3 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">Contact</th>
-                  <th className="px-3 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">Type</th>
-                  <th className="px-3 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">Budget (MAD)</th>
-                  <th className="px-3 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">Statut</th>
+                  <th className="px-2 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4" />
+                      <span className="hidden md:inline">Contact</span>
+                    </div>
+                  </th>
+                  <th className="px-2 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">
+                    <div className="flex items-center gap-1">
+                      <Building2 className="w-4 h-4" />
+                      <span className="hidden md:inline">Type</span>
+                    </div>
+                  </th>
+                  <th className="px-2 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">
+                    <div className="flex items-center gap-1">
+                      <DollarSign className="w-4 h-4" />
+                      <span className="hidden md:inline">Budget (MAD)</span>
+                    </div>
+                  </th>
+                  <th className="hidden md:table-cell px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4" />
+                      <span>Statut</span>
+                    </div>
+                  </th>
                   <th className="hidden md:table-cell px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">Date</th>
-                  <th className="hidden md:table-cell px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">Actions</th>
+                  <th className="px-2 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">
+                    <div className="flex items-center gap-1">
+                      <MoreVertical className="w-4 h-4" />
+                      <span className="hidden md:inline">Actions</span>
+                    </div>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -1397,44 +1190,44 @@ export default function Dashboard() {
                     className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
                     onClick={() => setSelectedContact(contact)}
                   >
-                    <td className="px-3 md:px-6 py-4">
-                      <div className="font-light text-white flex items-center gap-2">
+                    <td className="px-2 md:px-6 py-4">
+                      <div className="font-light text-white flex items-center gap-1">
                         <FlagIcon countryCode={getCountryCode(contact.phone)} />
-                        <span className="truncate max-w-[120px] md:max-w-none">{contact.name}</span>
+                        <span className="truncate max-w-[60px] md:max-w-none text-xs md:text-sm">{contact.name.substring(0, 8)}</span>
                         {contact.personalNote && (
-                          <StickyNote className="w-3 h-3 text-blue-400" />
+                          <StickyNote className="w-3 h-3 text-blue-400 flex-shrink-0" />
                         )}
                         {contact.rating && (
-                          <ProportionalStar rating={contact.rating} size="md" />
+                          <ProportionalStar rating={contact.rating} size="sm" />
                         )}
                       </div>
                     </td>
                     
-                    <td className="px-3 md:px-6 py-4">
-                      <Badge config={typeConfig[contact.type] || typeConfig.BUYER} />
+                    <td className="px-2 md:px-6 py-4">
+                      <Badge config={typeConfig[contact.type] || typeConfig.BUYER} size="sm" />
                     </td>
                     
-                    <td className="px-3 md:px-6 py-4">
+                    <td className="px-2 md:px-6 py-4">
                       <div className="text-white/80">
                         {contact.budget && (
-                          <div className="flex items-center gap-2">
-                            <DollarSign className="w-4 h-4 text-green-400" />
-                            <span className="text-green-300 font-mono text-base md:text-lg font-semibold">{formatAmount(contact.budget)}</span>
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="w-3 h-3 text-green-400" />
+                            <span className="text-green-300 font-mono text-xs md:text-base font-semibold">{formatAmount(contact.budget)}</span>
                           </div>
                         )}
                         {contact.estimation && (
-                          <div className="flex items-center gap-2">
-                            <DollarSign className="w-4 h-4 text-blue-400" />
-                            <span className="text-blue-300 font-mono text-base md:text-lg font-semibold">{formatAmount(contact.estimation)}</span>
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="w-3 h-3 text-blue-400" />
+                            <span className="text-blue-300 font-mono text-xs md:text-base font-semibold">{formatAmount(contact.estimation)}</span>
                           </div>
                         )}
                         {!contact.budget && !contact.estimation && (
-                          <span className="text-white/40 text-sm">-</span>
+                          <span className="text-white/40 text-xs">-</span>
                         )}
                       </div>
                     </td>
                     
-                    <td className="px-3 md:px-6 py-4">
+                    <td className="hidden md:table-cell px-6 py-4">
                       <ClickableStatusBadge
                         contact={contact} 
                         onStatusChange={updateContactStatus} 
@@ -1448,16 +1241,16 @@ export default function Dashboard() {
                       </div>
                     </td>
                     
-                    <td className="hidden md:table-cell px-6 py-4">
+                    <td className="px-2 md:px-6 py-4">
                       <div className="relative">
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
                             setContextMenuContact(contextMenuContact?.id === contact.id ? null : contact);
                           }}
-                          className="p-2 hover:bg-white/10 rounded-sm transition-colors"
+                          className="p-1 md:p-2 hover:bg-white/10 rounded-sm transition-colors"
                         >
-                          <MoreVertical className="w-4 h-4 text-white/60" />
+                          <MoreVertical className="w-3 h-3 md:w-4 md:h-4 text-white/60" />
                         </button>
                         
                         {contextMenuContact?.id === contact.id && (
