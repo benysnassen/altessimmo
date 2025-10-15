@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 export default function Navbar() {
   return (
@@ -9,12 +10,12 @@ export default function Navbar() {
             Altessimmo
           </div>
           <div className="hidden md:flex space-x-12">
-            <a href="/" className="text-white/60 hover:text-white transition-colors duration-500 font-light tracking-widest text-sm uppercase">
-              Accueil
-            </a>
-            <a href="/contact" className="text-white/60 hover:text-white transition-colors duration-500 font-light tracking-widest text-sm uppercase">
+              <Link href="/" className="text-white/60 hover:text-white transition-colors duration-500 font-light tracking-widest text-sm uppercase">
+                Accueil
+              </Link>
+            <Link href="/contact" className="text-white/60 hover:text-white transition-colors duration-500 font-light tracking-widest text-sm uppercase">
               Contact
-            </a>
+            </Link>
           </div>
         </div>
       </div>

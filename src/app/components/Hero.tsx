@@ -101,7 +101,7 @@ export default function Hero() {
           >
             <Link 
               href="/contact"
-              className="group relative inline-flex items-center justify-center px-8 py-3 font-light tracking-widest text-sm uppercase text-white/80 hover:text-white transition-all duration-700"
+              className="ml-4 group relative inline-flex items-center justify-center px-8 py-3 font-light tracking-widest text-sm uppercase text-white/80 hover:text-white transition-all duration-700"
             >
               {/* Background Glow Effect */}
               <motion.div

@@ -85,7 +85,7 @@ export default function LoginPage() {
           setError(`Mot de passe incorrect. ${3 - newAttempts} tentative(s) restante(s).`);
         }
       }
-    } catch (error) {
+    } catch {
       setError('Erreur de connexion au serveur');
     } finally {
       setIsLoading(false);
@@ -149,7 +149,7 @@ export default function LoginPage() {
             >
               <label htmlFor="username" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
                 <Shield className="inline w-4 h-4 mr-2" />
-                Nom d'utilisateur
+                Nom d&apos;utilisateur
               </label>
               
               <input

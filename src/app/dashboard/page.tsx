@@ -1,5 +1,5 @@
 'use client';
-
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -7,37 +7,30 @@ import {
   Users, 
   Home, 
   Phone, 
-  Mail, 
   Calendar, 
   Shield, 
   MoreVertical,
   Edit3,
-  Filter,
+  Plus,
   Search,
   LogOut,
   User,
   ShoppingCart,
   Building2,
   Star,
-  Clock,
   CheckCircle,
-  XCircle,
   Archive,
   DollarSign,
-  MapPin,
-  MessageSquare,
   Trash2,
   Save,
   X,
   Eye,
   ChevronLeft,
   ChevronRight,
-  Key,
   StickyNote
 } from 'lucide-react';
 import ChangePasswordModal from '@/app/components/ChangePasswordModal';
 import ContactDetailCard from '@/app/components/ContactDetailCard';
-import StarRating from '@/app/components/StarRating';
 import ProportionalStar from '@/app/components/ProportionalStar';
 import { useDropdownPosition } from '../hooks/useDropdownPosition';
 
@@ -136,16 +129,7 @@ const formatAmount = (amount: string) => {
   }
 };
 
-// Fonction de formatage des dates (avec heure pour la carte de détail)
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
+
 
 // Fonction de formatage des dates (sans heure pour le tableau)
 const formatDateTable = (dateString: string) => {
@@ -451,7 +435,7 @@ const Pagination = ({
   const maxVisiblePages = 5;
   
   let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
   
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
@@ -785,7 +769,7 @@ export default function Dashboard() {
     try {
       await fetch('/api/auth/verify', { method: 'POST' });
       router.push('/login');
-    } catch (error) {
+    } catch {
       router.push('/login');
     }
   };
@@ -979,7 +963,7 @@ export default function Dashboard() {
           className="text-center"
         >
           <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/60 font-light">Vérification de l'authentification...</p>
+          <p className="text-white/60 font-light">Vérification de l&apos;authentification...</p>
         </motion.div>
       </div>
     );
@@ -1184,6 +1168,16 @@ export default function Dashboard() {
                 <option value="SOLD">Vendu</option>
                 <option value="ARCHIVED">Archivé</option>
               </select>
+              <Link
+  href="/contact"
+  className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 bg-white text-black rounded-full hover:bg-white/90 transition-colors shadow-lg self-center"
+  title="Nouveau contact"
+>
+  <Plus size={18} strokeWidth={3} className="md:w-7 md:h-7" />
+  <span className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+    Nouveau contact
+  </span>
+</Link>
             </div>
           </div>
         </div>

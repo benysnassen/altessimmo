@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 
 interface DropdownPosition {
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+  top?: number | string;
+  bottom?: number | string;
+  left?: number | string;
+  right?: number | string;
   transform?: string;
 }
 

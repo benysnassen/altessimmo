@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const status = searchParams.get('status');
 
-    let whereClause: any = {};
+    const whereClause: any = {};
     
     if (type === 'buyers') {
       if (status) {

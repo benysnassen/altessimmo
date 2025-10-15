@@ -55,7 +55,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
       } else {
         setError(result.error || 'Erreur lors du changement de mot de passe');
       }
-    } catch (error) {
+    } catch {
       setError('Erreur de connexion au serveur');
     } finally {
       setIsLoading(false);

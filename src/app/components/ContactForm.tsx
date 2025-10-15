@@ -13,7 +13,7 @@ export default function ContactForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [budgetValue, setBudgetValue] = useState(1500000); // 1.5M MAD par défaut
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, setValue, watch } = useForm({
+  const { register, handleSubmit, formState: { isSubmitting }, reset, setValue, watch } = useForm({
     defaultValues: {
       name: '',
       phone: '+212|MA|',
@@ -86,6 +86,9 @@ export default function ContactForm() {
       return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(2).replace(/\.?0+$/, '')}M`;
     } else if (value >= 1000) {
       const milliers = value / 1000;
+      if (milliers <= 500) {
+        return `500K-`;
+      }
       return `${milliers % 1 === 0 ? milliers.toFixed(0) : milliers.toFixed(2).replace(/\.?0+$/, '')}K`;
     }
     return `${value.toLocaleString()}`;

@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Déconnexion - supprimer le cookie
     const response = NextResponse.json(

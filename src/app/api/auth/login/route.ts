@@ -83,7 +83,11 @@ function resetAttempts(ip: string): void {
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown';
+    
     const { username, password } = await request.json();
 
     // Vérifier les tentatives de connexion

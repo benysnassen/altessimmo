@@ -48,7 +48,7 @@ export default function AdminSetupPage() {
       } else {
         setError(result.error || 'Erreur lors de la création');
       }
-    } catch (error) {
+    } catch {
       setError('Erreur de connexion au serveur');
     } finally {
       setIsLoading(false);
@@ -185,7 +185,7 @@ export default function AdminSetupPage() {
             >
               <label htmlFor="username" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
                 <Shield className="inline w-4 h-4 mr-2" />
-                Nom d'utilisateur
+                Nom d&apos;utilisateur
               </label>
               
               <input
