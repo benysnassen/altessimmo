@@ -45,7 +45,7 @@ export default function Hero() {
             ease: [0.25, 0.46, 0.45, 0.94],
             delay: 0.2
           }}
-          className="font-display text-5xl md:text-8xl font-thin mb-8 leading-none tracking-wider"
+          className="font-display text-6xl md:text-8xl font-thin mb-8 leading-none tracking-wider"
         >
           <motion.span
             initial={{ opacity: 0, y: 50 }}
