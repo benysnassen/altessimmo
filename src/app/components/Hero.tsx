@@ -75,13 +75,13 @@ export default function Hero() {
           transition={{ duration: 1, delay: 1.8 }}
         >
           <motion.p 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 2 }}
-            className="text-lg font-light mb-16 text-white/60 tracking-widest uppercase"
-          >
-            Tétouan • Martil • Cabo Negro
-          </motion.p>
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 2 }}
+              className="text-sm sm:text-base md:text-lg font-light mb-16 text-white/60 tracking-widest uppercase"
+            >
+              Tétouan • Martil • Cabo Negro
+            </motion.p>
         </motion.div>
         
         {/* Elegant Mysterious Button */}
