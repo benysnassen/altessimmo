@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Sauvegarde en base de données
+    // Sauvegarde en base de donnée
     const contact = await prisma.contact.create({
       data: {
         name,
