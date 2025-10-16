@@ -80,7 +80,7 @@ export default function Hero() {
             transition={{ duration: 1, delay: 2 }}
             className="text-lg font-light mb-16 text-white/60 tracking-widest uppercase"
           >
-            Tétouan • Martil • M'&apos;diq • Cabo Negro
+            Tétouan • Martil • Cabo Negro
           </motion.p>
         </motion.div>
         
