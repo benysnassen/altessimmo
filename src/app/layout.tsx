@@ -15,11 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body>
+      <head>
         {/* Script pour Google Analytics */}
         <Script
           strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX`} // Remplace par ton ID
+          src="https://www.googletagmanager.com/gtag/js?id=G-VDNN5GYFNP"
         />
         <Script
           id="google-analytics"
@@ -29,15 +29,17 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'G-VDNN5GYFNP'); 
+              gtag('config', 'G-VDNN5GYFNP', {
+                page_path: window.location.pathname,
+              });
             `,
           }}
         />
-
+      </head>
+      <body>
         <main>{children}</main>
         <Footer />
       </body>
     </html>
   );
 }
-
