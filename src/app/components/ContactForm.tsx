@@ -115,26 +115,26 @@ export default function ContactForm() {
       <div className="min-h-screen bg-black flex items-center justify-center py-16 relative overflow-hidden">
         {/* 🎉 Confettis sobres */}
         <Confetti
-            width={width / 2}
-            height={height}
-            numberOfPieces={450}
-            recycle={false}
-            colors={[
-              '#FFD700', // gold
-              '#E6BE8A', // pale gold
-              '#B8860B', // dark goldenrod
-              '#F5DEB3', // wheat
-              '#FFF8DC', // cornsilk
-              '#DAA520', // goldenrod
-            ]}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: width / 4, // 👈 décale de 25% vers la droite
-              pointerEvents: 'none', // optionnel, pour laisser passer les clics
-            
-            }}
-          />
+  width={width / 2}
+  height={height}
+  numberOfPieces={450}
+  recycle={false}
+  colors={[
+    '#FFD700', // gold
+    '#E6BE8A', // pale gold
+    '#B8860B', // dark goldenrod
+    '#F5DEB3', // wheat
+    '#FFF8DC', // cornsilk
+    '#DAA520', // goldenrod
+  ]}
+  style={{
+    position: 'fixed',
+    top: 0,
+    left: width / 4, // 👈 décale de 25% vers la droite
+    pointerEvents: 'none', // optionnel, pour laisser passer les clics
+  
+  }}
+/>
 
         {/* Message de succès */}
         <motion.div 
