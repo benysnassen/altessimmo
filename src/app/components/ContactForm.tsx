@@ -117,7 +117,7 @@ export default function ContactForm() {
         <Confetti
   width={width / 2}
   height={height}
-  numberOfPieces={450}
+  numberOfPieces={150}
   recycle={false}
   colors={[
     '#FFD700', // gold
