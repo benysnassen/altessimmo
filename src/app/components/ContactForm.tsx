@@ -123,7 +123,7 @@ export default function ContactForm() {
     '#FFD700', // gold
     '#E6BE8A', // pale gold
     '#B8860B', // dark goldenrod
-    '#F5DEB3', // wheat / champagne
+    '#F5DEB3', // wheat
     '#FFF8DC', // cornsilk (lumière)
     '#DAA520', // goldenrod
   ]}
