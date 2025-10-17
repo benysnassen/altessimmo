@@ -124,7 +124,7 @@ export default function ContactForm() {
     '#E6BE8A', // pale gold
     '#B8860B', // dark goldenrod
     '#F5DEB3', // wheat
-    '#FFF8DC', // cornsilk (lumière)
+    '#FFF8DC', // cornsilk
     '#DAA520', // goldenrod
   ]}
   style={{
