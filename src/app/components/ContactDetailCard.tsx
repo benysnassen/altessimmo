@@ -137,14 +137,82 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating }: C
     return phone;
   };
 
-  const getCountryCode = (phone: string) => {
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.startsWith('213')) return 'DZ';
-    if (cleaned.startsWith('212')) return 'MA';
-    if (cleaned.startsWith('33')) return 'FR';
-    if (cleaned.startsWith('1')) return 'US';
-    return 'DZ'; // Default
+
+  const getCountryCode = (phone: string): string => {
+    // Supporte le format : +1|US|123456789
+    if (phone.includes('|')) {
+      const parts = phone.split('|');
+      if (parts.length >= 2) return parts[1];
+    }
+  
+    const countryCodes: { [key: string]: string } = {
+      '+212': 'MA', '+213': 'DZ', '+33': 'FR', '+34': 'ES', '+39': 'IT',
+      '+49': 'DE', '+44': 'GB', '+1': 'US', '+971': 'AE', '+966': 'SA',
+      '+216': 'TN', '+20': 'EG', '+90': 'TR', '+7': 'RU', '+86': 'CN',
+      '+81': 'JP', '+82': 'KR', '+91': 'IN', '+55': 'BR', '+54': 'AR',
+      '+61': 'AU', '+27': 'ZA',
+    };
+  
+    // Cas spécial pour +1 (Canada ou US)
+    if (phone.startsWith('+1')) {
+      const canadianAreaCodes = ['514', '438', '416', '604', '819', '905', '450'];
+      const areaCode = phone.replace(/\D/g, '').slice(1, 4);
+      return canadianAreaCodes.includes(areaCode) ? 'CA' : 'US';
+    }
+  
+    for (const [prefix, code] of Object.entries(countryCodes)) {
+      if (phone.startsWith(prefix)) return code;
+    }
+  
+    return 'MA'; // par défaut
   };
+  
+  const splitPhoneParts = (phone: string): { code: string; number: string } => {
+    if (phone.includes('|')) {
+      const [code, , rawNumber] = phone.split('|');
+      const cleaned = rawNumber.replace(/\D/g, '');
+      return { code, number: cleaned };
+    }
+  
+    const match = phone.match(/^(\+\d+)\s*(.*)$/);
+    if (match) {
+      const code = match[1];
+      const number = match[2].replace(/\D/g, '');
+      return { code, number };
+    }
+  
+    return { code: '', number: phone.replace(/\D/g, '') };
+  };
+  
+
+  const formatPhoneNumber = (num: string): string => {
+    if (num.length <= 3) return num;
+    if (num.length <= 6) return `${num.slice(0, 3)}-${num.slice(3)}`;
+    if (num.length <= 9) return `${num.slice(0, 3)}-${num.slice(3, 6)}-${num.slice(6)}`;
+    return `${num.slice(0, 3)}-${num.slice(3, 6)}-${num.slice(6, 9)}-${num.slice(9)}`;
+  };
+
+  
+// Fonction pour formater le numéro de téléphone avec des traits d'union
+
+// Composant Drapeau
+const FlagIcon = ({ countryCode }: { countryCode: string }) => {
+  return (
+    <img
+      src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${countryCode}.svg`}
+      alt={`Drapeau ${countryCode}`}
+      className="w-6 h-4 rounded-sm object-cover border border-white/20"
+      onError={(e) => {
+        // Fallback si l'image ne charge pas
+        e.currentTarget.style.display = 'none';
+      }}
+    />
+  );
+};
+
+
+
+
 
   const contactTypeConfig = {
     BUYER: { label: 'Acheteur', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30', icon: '🛒' },
@@ -210,11 +278,23 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating }: C
         
         <div className="space-y-3 md:space-y-4">
           <div className="grid grid-cols-1 gap-2 md:gap-3">
-            <div className="flex items-center gap-2">
-              <Phone className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
-              <FlagIcon countryCode={getCountryCode(contact.phone)} />
-              <span className="text-white/80 font-mono tracking-wider text-xs md:text-sm break-all">{formatPhoneDisplay(contact.phone)}</span>
-            </div>
+          <div className="flex items-center gap-2">
+  <Phone className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
+  <FlagIcon countryCode={getCountryCode(contact.phone)} />
+
+  {/* Téléphone formaté proprement */}
+  {(() => {
+    const { code, number } = splitPhoneParts(contact.phone);
+    return (
+      <span className="flex gap-1 items-center text-white/80 font-mono tracking-wider text-xs md:text-sm">
+        <span>{code}</span>
+        <span className="opacity-50">|</span>
+        <span>{formatPhoneNumber(number)}</span>
+      </span>
+    );
+  })()}
+</div>
+
             {contact.email && (
               <div className="flex items-center gap-2">
                 <Mail className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />

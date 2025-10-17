@@ -21,7 +21,7 @@ export default function ContactForm() {
 
   const [budgetValue, setBudgetValue] = useState(1500000); // 1.5M MAD par défaut
 
-  const { register, handleSubmit, formState: { isSubmitting }, reset, setValue, watch } = useForm({
+  const { register, handleSubmit, formState: { isSubmitting, errors }, reset, setValue, watch } = useForm({
     defaultValues: {
       name: '',
       phone: '+212|MA|',
@@ -35,7 +35,15 @@ export default function ContactForm() {
   });
 
   const phoneValue = watch('phone');
-
+  register('phone', {
+    required: 'Le numéro est requis',
+    validate: (value) => {
+      const parts = value?.split('|');
+      const phoneNumber = parts?.[2] ?? '';
+      return phoneNumber.length >= 6 || 'Numéro invalide (minimum 6 chiffres)';
+    }
+  });
+  
   useEffect(() => {
     if (typeParam === 'sell') {
       reset({ type: 'seller' });
@@ -257,20 +265,28 @@ export default function ContactForm() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             {/* Name */}
             <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-            >
-              <label htmlFor="name" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
-                <User className="inline w-4 h-4 mr-2" />
-                Nom complet *
-              </label>
-              <input
-                {...register('name', { required: 'Nom requis' })}
-                className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm"
-                placeholder="Votre nom complet"
-              />
-            </motion.div>
+  initial={{ opacity: 0, x: -20 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.6, delay: 0.6 }}
+>
+  <label htmlFor="name" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
+    <User className="inline w-4 h-4 mr-2" />
+    Nom complet <span className="text-red-500">*</span>
+  </label>
+  
+  <input
+    {...register('name', { required: 'Nom requis' })}
+    className={`w-full px-3 md:px-4 py-3 border ${
+      errors.name ? 'border-red-500' : 'border-black/20'
+    } bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm`}
+    placeholder="Votre nom complet"
+  />
+
+  {errors.name && (
+    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+  )}
+</motion.div>
+
 
             {/* Phone with Custom Country Selector */}
             <motion.div 
@@ -280,7 +296,7 @@ export default function ContactForm() {
             >
               <label className="block text-sm text-black/60 font-light mb-3 tracking-wide">
                 <Phone className="inline w-4 h-4 mr-2" />
-                Téléphone / WhatsApp *
+                Téléphone / WhatsApp <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-3">
                 {/* Country Selector */}
@@ -330,6 +346,14 @@ export default function ContactForm() {
                 {/* Phone Number Input */}
                 <div className="relative flex-1">
                   <input
+                  {...register('phone', {
+                    required: 'Le numéro est requis',
+                    validate: (value) => {
+                      const parts = value?.split('|');
+                      const phoneNumber = parts?.[2] ?? '';
+                      return phoneNumber.length >= 6 || 'Numéro invalide (minimum 6 chiffres)';
+                    }
+                  })}                  
                     type="tel"
                     value={phoneValue?.includes('|') ? 
                       (phoneValue.split('|')[2] ? formatPhoneNumber(phoneValue.split('|')[2]) : '') : 
@@ -346,8 +370,13 @@ export default function ContactForm() {
                       }
                     }}
                     placeholder="689 905 632"
-                    className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12"
-                  />
+                    className={`w-full px-3 md:px-4 py-3 border ${
+                      errors.phone ? 'border-red-500' : 'border-black/20'
+                    } bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12`}
+                                      />
+                  {errors.phone && (
+  <p className="text-red-500 text-sm mt-2">{errors.phone.message}</p>
+)}
                 </div>
               </div>
             </motion.div>
