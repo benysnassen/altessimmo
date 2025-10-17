@@ -132,7 +132,7 @@ export default function ContactForm() {
     top: 0,
     left: width / 4, // 👈 décale de 25% vers la droite
     pointerEvents: 'none', // optionnel, pour laisser passer les clics
-    zIndex: 50 // assure que c’est visible au-dessus
+  
   }}
 />
 
