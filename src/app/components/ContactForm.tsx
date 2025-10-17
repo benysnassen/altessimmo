@@ -141,7 +141,7 @@ export default function ContactForm() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="max-w-md mx-auto px-4 md:px-8"
+          className="bg-black max-w-md mx-auto px-4 md:px-8"
         >
           <div className="bg-white rounded-sm shadow-lg p-6 md:p-12 text-center">
             <motion.div 
