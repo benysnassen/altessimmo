@@ -263,7 +263,7 @@ export default function ContactForm() {
             >
               <label htmlFor="name" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
                 <User className="inline w-4 h-4 mr-2" />
-                Nom complet *
+                Nom complet <span className="text-red-500">*</span>
               </label>
               <input
                 {...register('name', { required: 'Nom requis' })}
@@ -280,7 +280,7 @@ export default function ContactForm() {
             >
               <label className="block text-sm text-black/60 font-light mb-3 tracking-wide">
                 <Phone className="inline w-4 h-4 mr-2" />
-                Téléphone / WhatsApp *
+                Téléphone / WhatsApp <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-3">
                 {/* Country Selector */}
