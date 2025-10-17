@@ -1171,8 +1171,7 @@ export default function Dashboard() {
               <Link
   href="/contact"
   className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 bg-white text-black rounded-full hover:bg-white/90 transition-colors shadow-lg self-center"
-  title="Nouveau contact"
->
+  >
   <Plus size={18} strokeWidth={3} className="md:w-7 md:h-7" />
   <span className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
     Nouveau contact

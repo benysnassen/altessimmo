@@ -5,12 +5,20 @@ import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { Mail, Phone, User, MessageSquare, Shield, DollarSign, ArrowRight, Home, ShoppingCart } from 'lucide-react';
+import Confetti from 'react-confetti';
+import { useWindowSize } from 'react-use';
 
 export default function ContactForm() {
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
-  
+
+  // ✅ Appelé ici une seule fois, au top-level
+  const { width, height } = useWindowSize();
+
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(true);
+
+
   const [budgetValue, setBudgetValue] = useState(1500000); // 1.5M MAD par défaut
 
   const { register, handleSubmit, formState: { isSubmitting }, reset, setValue, watch } = useForm({
@@ -70,6 +78,8 @@ export default function ContactForm() {
 
       if (response.ok) {
         setIsSubmitted(true);
+        setShowConfetti(true); // On remet les confettis à true
+
         reset();
       }
     } catch (error) {
@@ -99,9 +109,34 @@ export default function ContactForm() {
     setValue('budget', value.toString());
   };
 
+ 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center py-16">
+      <div className="min-h-screen bg-black flex items-center justify-center py-16 relative overflow-hidden">
+        {/* 🎉 Confettis sobres */}
+        <Confetti
+  width={width / 2}
+  height={height}
+  numberOfPieces={120}
+  recycle={false}
+  colors={[
+    '#FFD700', // gold
+    '#E6BE8A', // pale gold
+    '#B8860B', // dark goldenrod
+    '#F5DEB3', // wheat / champagne
+    '#FFF8DC', // cornsilk (lumière)
+    '#DAA520', // goldenrod
+  ]}
+  style={{
+    position: 'fixed',
+    top: 0,
+    left: width / 4, // 👈 décale de 25% vers la droite
+    pointerEvents: 'none', // optionnel, pour laisser passer les clics
+    zIndex: 50 // assure que c’est visible au-dessus
+  }}
+/>
+
+        {/* Message de succès */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -114,7 +149,7 @@ export default function ContactForm() {
               animate={{ scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               className="w-16 h-px bg-black mx-auto mb-6"
-            ></motion.div>
+            />
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -137,6 +172,8 @@ export default function ContactForm() {
       </div>
     );
   }
+
+  
 
   const isBuyer = typeParam === 'buy';
   const isSeller = typeParam === 'sell';
