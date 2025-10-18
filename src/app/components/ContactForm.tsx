@@ -23,18 +23,31 @@ export default function ContactForm() {
 
   const [budgetValue, setBudgetValue] = useState(1500000); // 1.5M MAD par défaut
 
+  
+
   const { register, handleSubmit, control,  formState: { isSubmitting, errors }, reset, setValue, watch } = useForm({
     defaultValues: {
       name: '',
       phone: '+212|MA|',
       email: '',
-      budget: '1500000',
+      budget: '',
       estimation: '',
       message: '',
       confidential: false,
       type: typeParam === 'sell' ? 'seller' : 'buyer'
     }
   });
+
+
+  useEffect(() => {
+    if (typeParam === 'sell') {
+      setValue('estimation', budgetValue.toString());
+      setValue('budget', ''); // vide pour éviter double enregistrement
+    } else if (typeParam === 'buy') {
+      setValue('budget', budgetValue.toString());
+      setValue('estimation', ''); // vide pour éviter double enregistrement
+    }
+  }, [typeParam, setValue, budgetValue]);
 
   const phoneValue = watch('phone');
 
