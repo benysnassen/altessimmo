@@ -92,88 +92,85 @@ export async function GET(request: NextRequest) {
   }
 }
 
+
 export async function PUT(request: NextRequest) {
   try {
     const data = await request.json();
     const { id, status, name, phone, email, budget, estimation, message, personalNote, confidential } = data;
-    
+
     if (!id) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
     }
 
-    // Si c'est juste une mise à jour de statut
+    // --- Gestion mise à jour de statut uniquement ---
     if (status && !name) {
-      // Mapping des statuts du dashboard vers les enums Prisma
-      const mapDashboardStatusToBuyerStatus = (status: string) => {
-        switch (status) {
+      // Buyer
+      const buyerStatuses = ['NEW','CONTACTED','INTERESTED','VIEWING','OFFER_MADE','NEGOTIATING','PURCHASED','ARCHIVED'];
+      const mapDashboardToBuyer = (s: string) => {
+        switch (s) {
           case 'OFFER': return 'OFFER_MADE';
           case 'SOLD': return 'PURCHASED';
-          default: return status as any;
+          default: return s as any;
         }
       };
 
-      const mapDashboardStatusToSellerStatus = (status: string) => {
-        switch (status) {
+      if (buyerStatuses.includes(mapDashboardToBuyer(status))) {
+        const updatedBuyer = await prisma.buyer.updateMany({
+          where: { id },
+          data: { status: mapDashboardToBuyer(status) }
+        });
+        if (updatedBuyer.count > 0) return NextResponse.json({ success: true, type: 'buyer' });
+      }
+
+      // Seller
+      const sellerStatuses = ['NEW','CONTACTED','EVALUATED','LISTED','VIEWING','OFFER_RECEIVED','NEGOTIATING','SOLD','ARCHIVED'];
+      const mapDashboardToSeller = (s: string) => {
+        switch (s) {
           case 'OFFER': return 'OFFER_RECEIVED';
           case 'SOLD': return 'SOLD';
-          default: return status as any;
+          default: return s as any;
         }
       };
 
-      // Essayer de mettre à jour un buyer d'abord
-      const updatedBuyer = await prisma.buyer.updateMany({
-        where: { id },
-        data: { status: mapDashboardStatusToBuyerStatus(status) }
-      });
-
-      if (updatedBuyer.count > 0) {
-        return NextResponse.json({ success: true, type: 'buyer' });
+      if (sellerStatuses.includes(status)) {
+        const updatedSeller = await prisma.seller.updateMany({
+          where: { id },
+          data: { status: mapDashboardToSeller(status) }
+        });
+        if (updatedSeller.count > 0) return NextResponse.json({ success: true, type: 'seller' });
       }
 
-      // Si ce n'est pas un buyer, essayer un seller
-      const updatedSeller = await prisma.seller.updateMany({
-        where: { id },
-        data: { status: mapDashboardStatusToSellerStatus(status) }
-      });
-
-      if (updatedSeller.count > 0) {
-        return NextResponse.json({ success: true, type: 'seller' });
+      // Contact
+      const contactStatuses = ['NEW','CONTACTED','INTERESTED','VIEWING','OFFER','SOLD','ARCHIVED'];
+      if (contactStatuses.includes(status)) {
+        const updatedContact = await prisma.contact.updateMany({
+          where: { id },
+          data: { status: status as any }
+        });
+        if (updatedContact.count > 0) return NextResponse.json({ success: true, type: 'contact' });
       }
 
-      // Si aucun n'a été trouvé, essayer l'ancienne table Contact
-      const updatedContact = await prisma.contact.updateMany({
-        where: { id },
-        data: { status: status as any }
-      });
-
-      if (updatedContact.count > 0) {
-        return NextResponse.json({ success: true, type: 'contact' });
-      }
-
-      return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Contact not found or statut incompatible' }, { status: 404 });
     }
 
-    // Si c'est une mise à jour complète du contact
+    // --- Gestion mise à jour complète d'un contact ---
     if (name) {
-      // Essayer de mettre à jour un buyer d'abord
+      // Buyer
       const updatedBuyer = await prisma.buyer.updateMany({
         where: { id },
         data: {
           name,
           phone,
           email: email || null,
-          budget: budget || null, // Maintenant budget peut être null
+          budget: budget || null,
           message: message || null,
           personalNote: personalNote || null,
           confidential: confidential || false
         }
       });
+      if (updatedBuyer.count > 0) return NextResponse.json({ success: true, type: 'buyer' });
 
-      if (updatedBuyer.count > 0) {
-        return NextResponse.json({ success: true, type: 'buyer' });
-      }
-
-      // Si ce n'est pas un buyer, essayer un seller
+      // Seller
       const updatedSeller = await prisma.seller.updateMany({
         where: { id },
         data: {
@@ -186,12 +183,9 @@ export async function PUT(request: NextRequest) {
           confidential: confidential || false
         }
       });
+      if (updatedSeller.count > 0) return NextResponse.json({ success: true, type: 'seller' });
 
-      if (updatedSeller.count > 0) {
-        return NextResponse.json({ success: true, type: 'seller' });
-      }
-
-      // Si aucun n'a été trouvé, essayer l'ancienne table Contact
+      // Contact
       const updatedContact = await prisma.contact.updateMany({
         where: { id },
         data: {
@@ -205,20 +199,19 @@ export async function PUT(request: NextRequest) {
           confidential: confidential || false
         }
       });
-
-      if (updatedContact.count > 0) {
-        return NextResponse.json({ success: true, type: 'contact' });
-      }
+      if (updatedContact.count > 0) return NextResponse.json({ success: true, type: 'contact' });
 
       return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
     }
 
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+
   } catch (error) {
     console.error('Error updating contact:', error);
     return NextResponse.json({ error: 'Failed to update contact' }, { status: 500 });
   }
 }
+
 
 export async function DELETE(request: NextRequest) {
   try {
