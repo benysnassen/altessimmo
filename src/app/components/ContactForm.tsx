@@ -37,20 +37,6 @@ export default function ContactForm() {
       type: typeParam === 'sell' ? 'seller' : 'buyer'
     }
   });
-
-
-  useEffect(() => {
-    if (typeParam === 'sell') {
-      setValue('estimation', budgetValue.toString());
-      setValue('budget', ''); // vide pour éviter double enregistrement
-    } else if (typeParam === 'buy') {
-      setValue('budget', budgetValue.toString());
-      setValue('estimation', ''); // vide pour éviter double enregistrement
-    }
-  }, [typeParam, setValue, budgetValue]);
-
-  const phoneValue = watch('phone');
-
   useEffect(() => {
     if (typeParam === 'sell') {
       reset({ type: 'seller' });
@@ -58,6 +44,22 @@ export default function ContactForm() {
       reset({ type: 'buyer' });
     }
   }, [typeParam, reset]);
+
+  useEffect(() => {
+    if (typeParam === "sell") {
+      setValue("type", "seller");
+      setValue("estimation", budgetValue.toString());
+      setValue("budget", ""); // vide pour éviter double enregistrement
+    } else if (typeParam === "buy") {
+      setValue("type", "buyer");
+      setValue("budget", budgetValue.toString());
+      setValue("estimation", ""); // vide pour éviter double enregistrement
+    }
+  }, [typeParam, setValue, budgetValue]);
+  
+  const phoneValue = watch('phone');
+
+
 
   // Fonction pour formater le numéro de téléphone
   const formatPhoneNumber = (value: string) => {
