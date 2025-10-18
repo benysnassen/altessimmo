@@ -29,7 +29,7 @@ export default function ContactForm() {
       phone: '+212|MA|',
       email: '',
       budget: '1500000',
-      estimation: '1500000',
+      estimation: '',
       message: '',
       confidential: false,
       type: typeParam === 'sell' ? 'seller' : 'buyer'
