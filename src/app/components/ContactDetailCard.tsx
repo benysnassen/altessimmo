@@ -216,20 +216,16 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
 
 
 
-const typeConfig = {
-  BUYER: {
-    label: 'Acheteur',
-    icon: ShoppingCart,
-    className: 'bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-300 border border-green-500/30',
-    iconColor: 'text-green-400'
-  },
-  SELLER: {
-    label: 'Vendeur',
-    icon: Building2,
-    className: 'bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-300 border border-blue-500/30',
-    iconColor: 'text-blue-400'
-  }
-};
+  const contactTypeConfig = {
+    BUYER: { label: 'Acheteur',
+       color: 'bg-green-500/20 text-green-300 border-green-500/30',
+       icon: '🛒' },
+    SELLER: { label: 'Vendeur', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30', icon: '🏠' }
+  };
+
+
+
+
 
   const contactStatusConfig = {
     NEW: { label: 'Nouveau', color: 'bg-gray-500/20 text-gray-300 border-gray-500/30', icon: '⭐' },
