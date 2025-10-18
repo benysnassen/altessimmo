@@ -27,7 +27,7 @@ export default function ContactForm() {
       phone: '+212|MA|',
       email: '',
       budget: '1500000',
-      estimation: '',
+      estimation: '1500000',
       message: '',
       confidential: false,
       type: typeParam === 'sell' ? 'seller' : 'buyer'
@@ -272,6 +272,9 @@ export default function ContactForm() {
                 className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm"
                 placeholder="Votre nom complet"
               />
+              {errors.name && (
+    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+  )}
             </motion.div>
 
             {/* Phone with Custom Country Selector */}
