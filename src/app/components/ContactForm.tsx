@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { Mail, Phone, User, MessageSquare, Shield, DollarSign, ArrowRight, Home, ShoppingCart } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
@@ -21,7 +21,7 @@ export default function ContactForm() {
 
   const [budgetValue, setBudgetValue] = useState(1500000); // 1.5M MAD par défaut
 
-  const { register, handleSubmit, formState: { isSubmitting }, reset, setValue, watch } = useForm({
+  const { register, handleSubmit, control,  formState: { isSubmitting, errors }, reset, setValue, watch } = useForm({
     defaultValues: {
       name: '',
       phone: '+212|MA|',
@@ -63,11 +63,7 @@ export default function ContactForm() {
 
   const onSubmit = async (data: Record<string, unknown>) => {
     // Validation côté client
-    if (!data.name || !data.phone) {
-      return;
-    }
-
-    try {
+      try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -279,84 +275,106 @@ export default function ContactForm() {
             </motion.div>
 
             {/* Phone with Custom Country Selector */}
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
+          
+<motion.div 
+  initial={{ opacity: 0, x: -20 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.6, delay: 0.7 }}
+>
+  <label className="block text-sm text-black/60 font-light mb-3 tracking-wide">
+    <Phone className="inline w-4 h-4 mr-2" />
+    Téléphone / WhatsApp <span className="text-red-500">*</span>
+  </label>
+  
+  <Controller
+    name="phone"
+    control={control}
+    rules={{
+      required: 'Téléphone requis',
+      validate: (value) => {
+        const parts = value?.split('|') || [];
+        const phoneNumber = parts[2] || '';
+        return phoneNumber.length >= 8 || 'Le numéro doit contenir au moins 8 chiffres';
+      }
+    }}
+    render={({ field }) => (
+      <>
+        <div className="flex gap-3">
+          {/* Country Selector */}
+          <div className="relative flex-shrink-0">
+            <select
+              value={field.value?.includes('|') ? `${field.value.split('|')[0]}|${field.value.split('|')[1]}` : '+212|MA'}
+              onChange={(e) => {
+                const [countryCode, country] = e.target.value.split('|');
+                const currentNumber = field.value?.includes('|') ? field.value.split('|')[2] : '';
+                field.onChange(`${countryCode}|${country}|${currentNumber}`);
+              }}
+              className="w-28 md:w-32 px-2 md:px-3 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm appearance-none cursor-pointer text-sm h-12"
             >
-              <label className="block text-sm text-black/60 font-light mb-3 tracking-wide">
-                <Phone className="inline w-4 h-4 mr-2" />
-                Téléphone / WhatsApp <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-3">
-                {/* Country Selector */}
-                <div className="relative flex-shrink-0">
-                  <select
-                    value={phoneValue?.includes('|') ? `${phoneValue.split('|')[0]}|${phoneValue.split('|')[1]}` : phoneValue?.split(' ')[0] || '+212|MA'}
-                    onChange={(e) => {
-                      const [countryCode, country] = e.target.value.split('|');
-                      const currentNumber = phoneValue?.includes('|') ? phoneValue.split('|')[2] : phoneValue?.split(' ')[1] || '';
-                      setValue('phone', `${countryCode}|${country}|${currentNumber}`);
-                    }}
-                    className="w-28 md:w-32 px-2 md:px-3 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm appearance-none cursor-pointer text-sm h-12"
-                  >
-                    <option value="+212|MA">🇲🇦 +212</option>
-                    <option value="+33|FR">🇫🇷 +33</option>
-                    <option value="+34|ES">🇪🇸 +34</option>
-                    <option value="+32|BE">🇧🇪 +32</option>
-                    <option value="+31|NL">🇳🇱 +31</option>
-                    <option value="+39|IT">🇮🇹 +39</option>
-                    <option value="+1|CA">🇨🇦 +1</option>
-                    <option value="+49|DE">🇩🇪 +49</option>
-                    <option value="+44|GB">🇬🇧 +44</option>
-                    <option value="+1|US">🇺🇸 +1</option>
-                    <option value="+971|AE">🇦🇪 +971</option>
-                    <option value="+966|SA">🇸🇦 +966</option>
-                    <option value="+213|DZ">🇩🇿 +213</option>
-                    <option value="+216|TN">🇹🇳 +216</option>
-                    <option value="+20|EG">🇪🇬 +20</option>
-                    <option value="+90|TR">🇹🇷 +90</option>
-                    <option value="+7|RU">🇷🇺 +7</option>
-                    <option value="+86|CN">🇨🇳 +86</option>
-                    <option value="+81|JP">🇯🇵 +81</option>
-                    <option value="+82|KR">🇰🇷 +82</option>
-                    <option value="+91|IN">🇮🇳 +91</option>
-                    <option value="+55|BR">🇧🇷 +55</option>
-                    <option value="+54|AR">🇦🇷 +54</option>
-                    <option value="+61|AU">🇦🇺 +61</option>
-                    <option value="+27|ZA">🇿🇦 +27</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                    <svg className="w-3 h-3 text-black/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-                
-                {/* Phone Number Input */}
-                <div className="relative flex-1">
-                  <input
-                    type="tel"
-                    value={phoneValue?.includes('|') ? 
-                      (phoneValue.split('|')[2] ? formatPhoneNumber(phoneValue.split('|')[2]) : '') : 
-                      (phoneValue?.split(' ')[1] ? formatPhoneNumber(phoneValue.split(' ')[1]) : '')
-                    }
-                    onChange={(e) => {
-                      const rawNumber = e.target.value.replace(/\D/g, ''); // Garder seulement les chiffres
-                      if (phoneValue?.includes('|')) {
-                        const parts = phoneValue.split('|');
-                        setValue('phone', `${parts[0]}|${parts[1]}|${rawNumber}`);
-                      } else {
-                        const countryCode = phoneValue?.split(' ')[0] || '+212';
-                        setValue('phone', `${countryCode} ${rawNumber}`);
-                      }
-                    }}
-                    placeholder="689 905 632"
-                    className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12"
-                  />
-                </div>
-              </div>
-            </motion.div>
+              <option value="+212|MA">🇲🇦 +212</option>
+              <option value="+33|FR">🇫🇷 +33</option>
+              <option value="+34|ES">🇪🇸 +34</option>
+              <option value="+32|BE">🇧🇪 +32</option>
+              <option value="+31|NL">🇳🇱 +31</option>
+              <option value="+39|IT">🇮🇹 +39</option>
+              <option value="+1|CA">🇨🇦 +1</option>
+              <option value="+49|DE">🇩🇪 +49</option>
+              <option value="+44|GB">🇬🇧 +44</option>
+              <option value="+1|US">🇺🇸 +1</option>
+              <option value="+971|AE">🇦🇪 +971</option>
+              <option value="+966|SA">🇸🇦 +966</option>
+              <option value="+213|DZ">🇩🇿 +213</option>
+              <option value="+216|TN">🇹🇳 +216</option>
+              <option value="+20|EG">🇪🇬 +20</option>
+              <option value="+90|TR">🇹🇷 +90</option>
+              <option value="+7|RU">🇷🇺 +7</option>
+              <option value="+86|CN">🇨🇳 +86</option>
+              <option value="+81|JP">🇯🇵 +81</option>
+              <option value="+82|KR">🇰🇷 +82</option>
+              <option value="+91|IN">🇮🇳 +91</option>
+              <option value="+55|BR">🇧🇷 +55</option>
+              <option value="+54|AR">🇦🇷 +54</option>
+              <option value="+61|AU">🇦🇺 +61</option>
+              <option value="+27|ZA">🇿🇦 +27</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg className="w-3 h-3 text-black/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          
+          {/* Phone Number Input */}
+          <div className="relative flex-1">
+            <input
+              type="tel"
+              value={
+                field.value?.includes('|') 
+                  ? formatPhoneNumber(field.value.split('|')[2] || '')
+                  : ''
+              }
+              onChange={(e) => {
+                const rawNumber = e.target.value.replace(/\D/g, '').slice(0, 12);
+                const parts = field.value?.includes('|') 
+                  ? field.value.split('|') 
+                  : ['+212', 'MA', ''];
+                field.onChange(`${parts[0]}|${parts[1]}|${rawNumber}`);
+              }}
+              onBlur={field.onBlur}
+              placeholder="689 905 632"
+              className={`w-full px-3 md:px-4 py-3 border ${
+                errors.phone ? 'border-red-500' : 'border-black/20'
+              } bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12`}
+            />
+          </div>
+        </div>
+        {errors.phone && (
+          <p className="mt-2 text-sm text-red-500">{errors.phone.message}</p>
+        )}
+      </>
+    )}
+  />
+</motion.div>
 
             {/* Email */}
             <motion.div 
