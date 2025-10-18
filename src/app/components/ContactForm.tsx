@@ -104,9 +104,14 @@ export default function ContactForm() {
     return `${value.toLocaleString()}`;
   };
 
-  const handleBudgetChange = (value: number) => {
+    const handleBudgetChange = (value: number) => {
     setBudgetValue(value);
-    setValue('budget', value.toString());
+    // Si c'est un vendeur, on met à jour 'estimation', sinon 'budget'
+    if (isSeller) {
+      setValue('estimation', value.toString());
+    } else {
+      setValue('budget', value.toString());
+    }
   };
 
  
