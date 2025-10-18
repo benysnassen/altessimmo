@@ -9,6 +9,8 @@ import {
   Shield, 
   DollarSign, 
   MessageSquare, 
+  Building2,
+  ShoppingCart,
   Edit3, 
   XCircle,
   StickyNote
