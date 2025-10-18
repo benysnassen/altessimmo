@@ -47,7 +47,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-beige">
+    <div className="min-h-screen bg-black">
       <Suspense fallback={<div>Chargement du formulaire...</div>}>
         <ContactForm />
       </Suspense>
