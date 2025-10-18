@@ -408,10 +408,18 @@ export default function ContactForm() {
                 Email (optionnel)
               </label>
               <input
-                {...register('email')}
+                {...register('email', {
+                  validate: (value) => {
+                    if (!value) return true; // facultatif : pas d'erreur si vide
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return emailRegex.test(value) || "Email invalide";
+                  }
+                } )}
                 className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm"
                 placeholder="votre@email.com"
               />
+              {errors.email && (
+  <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>)}
             </motion.div>
 
             {/* Budget Slider for Buyers */}
