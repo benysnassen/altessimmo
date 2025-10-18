@@ -109,7 +109,8 @@ export default function ContactForm() {
     // Si c'est un vendeur, on met à jour 'estimation', sinon 'budget'
     if (isSeller) {
       setValue('estimation', value.toString());
-    } else {
+    }
+    else if (isBuyer) {
       setValue('budget', value.toString());
     }
   };
