@@ -1,10 +1,10 @@
 'use client';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useForm, Controller } from 'react-hook-form';
-import { Mail, Phone, User, MessageSquare, Shield, DollarSign, ArrowRight, Home, ShoppingCart } from 'lucide-react';
+import { Mail, Phone, User, MessageSquare, ChevronDown, Shield, DollarSign, ArrowRight, Home, ShoppingCart } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 
@@ -12,7 +12,9 @@ export default function ContactForm() {
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
 
-  // ✅ Appelé ici une seule fois, au top-level
+  const phoneInputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const { width, height } = useWindowSize();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -293,34 +295,40 @@ export default function ContactForm() {
 
                     
   <Controller
-  name="phone"
-  control={control}
-  rules={{
-    required: 'Téléphone requis',
-    validate: (value) => {
-      const parts = value?.split('|') || [];
-      const phoneNumber = parts[2] || '';
-      return phoneNumber.length >= 8 || 'Le numéro doit contenir au moins 8 chiffres';
-    },
-  }}
-  render={({ field, fieldState }) => {
-    const inputRef = React.useRef<HTMLInputElement | null>(null);
-
-    return (
-      <>
-        <div className="flex gap-3">
-          {/* Country Selector */}
-          <div className="relative flex-shrink-0">
-          <select
-    value={field.value?.includes('|') ? `${field.value.split('|')[0]}|${field.value.split('|')[1]}` : '+212|MA'}
-    onChange={(e) => {
-      const [countryCode, country] = e.target.value.split('|');
-      const currentNumber = field.value?.includes('|') ? field.value.split('|')[2] : '';
-      field.onChange(`${countryCode}|${country}|${currentNumber}`);
-    }}
-    className="w-28 md:w-32 px-2 md:px-3 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm appearance-none cursor-pointer text-sm h-12"
-  >
-                 <option value="+212|MA">🇲🇦 +212</option>
+      name="phone"
+      control={control}
+      rules={{
+        required: "Téléphone requis",
+        validate: (value) => {
+          const parts = value?.split("|") || [];
+          const phoneNumber = parts[2] || "";
+          return (
+            phoneNumber.length >= 8 ||
+            "Le numéro doit contenir au moins 8 chiffres"
+          );
+        },
+      }}
+      render={({ field }) => (
+        <>
+          <div className="flex gap-3">
+            {/* Country Selector */}
+            <div className="relative flex-shrink-0">
+              <select
+                value={
+                  field.value?.includes("|")
+                    ? `${field.value.split("|")[0]}|${field.value.split("|")[1]}`
+                    : "+212|MA"
+                }
+                onChange={(e) => {
+                  const [countryCode, country] = e.target.value.split("|");
+                  const currentNumber = field.value?.includes("|")
+                    ? field.value.split("|")[2]
+                    : "";
+                  field.onChange(`${countryCode}|${country}|${currentNumber}`);
+                }}
+                className="w-28 md:w-32 px-2 md:px-3 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm appearance-none cursor-pointer text-sm h-12"
+              >
+                <option value="+212|MA">🇲🇦 +212</option>
                     <option value="+33|FR">🇫🇷 +33</option>
                     <option value="+34|ES">🇪🇸 +34</option>
                     <option value="+32|BE">🇧🇪 +32</option>
@@ -345,55 +353,49 @@ export default function ContactForm() {
                     <option value="+54|AR">🇦🇷 +54</option>
                     <option value="+61|AU">🇦🇺 +61</option>
                     <option value="+27|ZA">🇿🇦 +27</option>
-            </select>
-            <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-4 h-4 text-black/40"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-    </svg>
-  </div>
+              </select>
+
+              {/* Chevron */}
+              <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                <ChevronDown className="w-4 h-4 text-black/40" />
+              </div>
+            </div>
+
+            {/* Phone Number Input */}
+            <div className="relative flex-1">
+            <input
+                  ref={(el) => {
+                    inputRef.current = el;
+                    field.ref(el);
+                  }}
+                  type="tel"
+                  inputMode="numeric"
+                  value={
+                    field.value?.includes("|")
+                      ? formatPhoneNumber(field.value.split("|")[2] || "")
+                      : ""
+                  }
+                  onChange={(e) => {
+                    const rawNumber = e.target.value.replace(/\D/g, "").slice(0, 12);
+                    const parts = field.value?.includes("|")
+                      ? field.value.split("|")
+                      : ["+212", "MA", ""];
+                    field.onChange(`${parts[0]}|${parts[1]}|${rawNumber}`);
+                  }}
+                  placeholder="688 905 632"
+                  className={`w-full px-3 md:px-4 py-3 border ${
+                    errors.phone ? "border-red-500" : "border-black/20"
+                  } bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12`}
+                />
+            </div>
           </div>
 
-          {/* Phone Number Input */}
-          <div className="relative flex-1">
-            <input
-              ref={(el) => {
-                inputRef.current = el;
-                field.ref(el); // 👈 Important pour RHF
-              }}
-              type="tel"
-              value={
-                field.value?.includes('|')
-                  ? formatPhoneNumber(field.value.split('|')[2] || '')
-                  : ''
-              }
-              onChange={(e) => {
-                const rawNumber = e.target.value.replace(/\D/g, '').slice(0, 12);
-                const parts = field.value?.includes('|')
-                  ? field.value.split('|')
-                  : ['+212', 'MA', ''];
-                field.onChange(`${parts[0]}|${parts[1]}|${rawNumber}`);
-              }}
-              onBlur={field.onBlur}
-              placeholder="689 905 632"
-              className={`w-full px-3 md:px-4 py-3 border ${
-                fieldState.error ? 'border-red-500' : 'border-black/20'
-              } bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12`}
-            />
-          </div>
-        </div>
-        {fieldState.error && (
-          <p className="mt-2 text-sm text-red-500">{fieldState.error.message}</p>
-        )}
-      </>
-    );
-  }}
-/>
+          {errors.phone && (
+            <p className="mt-2 text-sm text-red-500">{errors.phone.message}</p>
+          )}
+        </>
+      )}
+    />
 
 </motion.div>
 
