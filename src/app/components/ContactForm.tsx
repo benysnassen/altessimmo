@@ -1,9 +1,9 @@
 'use client';
-import React, { useRef } from 'react';
-import { useState, useEffect } from 'react';
+
+import React, { useRef, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { useForm, Controller } from 'react-hook-form';
+import { motion } from 'framer-motion';
 import { Mail, Phone, User, MessageSquare, ChevronDown, Shield, DollarSign, ArrowRight, Home, ShoppingCart } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
@@ -12,20 +12,25 @@ export default function ContactForm() {
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
 
-  const phoneInputRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-
   const { width, height } = useWindowSize();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(true);
+  const [budgetValue, setBudgetValue] = useState(1500000);
 
+  const isBuyer = !typeParam || typeParam === 'buy';
+  const isSeller = typeParam === 'sell';
 
-  const [budgetValue, setBudgetValue] = useState(1500000); // 1.5M MAD par défaut
-
-  
-
-  const { register, handleSubmit, control,  formState: { isSubmitting, errors }, reset, setValue, watch } = useForm({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { isSubmitting, errors },
+    reset,
+    setValue,
+    watch,
+  } = useForm({
     defaultValues: {
       name: '',
       phone: '+212|MA|',
@@ -34,29 +39,25 @@ export default function ContactForm() {
       estimation: '',
       message: '',
       confidential: false,
-      type: typeParam === 'sell' ? 'seller' : 'buyer'
-    }
+      type: isSeller ? 'seller' : 'buyer',
+      honeypot: '', // honeypot
+    },
   });
-  useEffect(() => {
-    if (typeParam === 'sell') {
-      reset({ type: 'seller' });
-    } else if (typeParam === 'buy') {
-      reset({ type: 'buyer' });
-    }
-  }, [typeParam, reset]);
 
+  // Synchronisation des valeurs avec le type
   useEffect(() => {
-    if (typeParam === "sell") {
-      setValue("type", "seller");
-      setValue("estimation", budgetValue.toString());
-      setValue("budget", ""); // vide pour éviter double enregistrement
-    } else if (typeParam === "buy") {
-      setValue("type", "buyer");
-      setValue("budget", budgetValue.toString());
-      setValue("estimation", ""); // vide pour éviter double enregistrement
+    setValue('type', isSeller ? 'seller' : 'buyer');
+
+    if (isSeller) {
+      setValue('estimation', budgetValue.toString());
+      setValue('budget', '');
+    } else {
+      setValue('budget', budgetValue.toString());
+      setValue('estimation', '');
     }
-  }, [typeParam, setValue, budgetValue]);
-  
+  }, [typeParam, isSeller, budgetValue, setValue]);
+
+
   const phoneValue = watch('phone');
 
 
@@ -193,10 +194,6 @@ export default function ContactForm() {
     );
   }
 
-  
-
-  const isBuyer = typeParam === 'buy';
-  const isSeller = typeParam === 'sell';
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center py-16">
