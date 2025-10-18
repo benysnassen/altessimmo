@@ -383,9 +383,7 @@ export default function ContactForm() {
                     field.onChange(`${parts[0]}|${parts[1]}|${rawNumber}`);
                   }}
                   placeholder="688 905 632"
-                  className={`w-full px-3 md:px-4 py-3 border ${
-                    errors.phone ? "border-red-500" : "border-black/20"
-                  } bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12`}
+                  className={`w-full px-3 md:px-4 py-3 border bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm tracking-wider h-12`}
                 />
             </div>
           </div>
