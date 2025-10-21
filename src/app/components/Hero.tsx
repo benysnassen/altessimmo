@@ -56,6 +56,25 @@ export default function Hero() {
           </motion.span>
         </motion.h1>
         
+        <motion.h2 
+          initial={{ opacity: 0, y: 100, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ 
+            duration: 1.5, 
+            ease: [0.25, 0.46, 0.45, 0.94],
+            delay: 0.9
+          }}
+          className="font-display text-4xl md:text-5xl font-thin mb-8 leading-none tracking-wider"
+        >
+          <motion.span
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.8 }}
+          >
+            Immobilier
+          </motion.span>
+        </motion.h2>
+        
         {/* Elegant Line Animation */}
         <motion.div 
           initial={{ width: 0, opacity: 0 }}
@@ -89,7 +108,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 2.5 }}
-          className="pt-4"
+          className="pt-2"
         >
           <motion.div
             whileHover={{ 
@@ -184,7 +203,7 @@ export default function Hero() {
           }}
           className="flex flex-col items-center space-y-2"
         >
-          <div className="w-px h-8 bg-white/30"></div>
+          <div className="w-px h-8 bg-white/60"></div>
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ 
