@@ -8,11 +8,11 @@ type LocaleMetadata = {
 const metadata: Record<string, LocaleMetadata> = {
   fr: {
     title: "Altessimmo Tétouan, Martil & Cabo Negro - Propriétés d'exception",
-    description: "Sélection discrète de biens immobiliers rares à Tétouan, Martil et Cabo Negro. Découvrez des propriétés haut de gamme, villas et appartements de prestige avec Altessimmo.",
+    description: "Sélection discrète de biens immobiliers de qualité à Tétouan, Martil et Cabo Negro. Découvrez des propriétés haut de gamme, villas et appartements avec Altessimmo.",
   },
   en: {
     title: "Altessimmo Tétouan, Martil & Cabo Negro - Exceptional Properties",
-    description: "Discreet selection of rare properties in Tétouan, Martil and Cabo Negro. Discover high-end properties, luxury villas and prestigious apartments with Altessimmo.",
+    description: "Discreet selection of rare properties in Tétouan, Martil and Cabo Negro. Discover high-end properties, villas and apartments with Altessimmo.",
   },
   es: {
     title: "Altessimmo Tétouan, Martil & Cabo Negro - Propiedades excepcionales",
@@ -49,7 +49,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
       siteName: 'Altessimmo',
       images: [
         {
-          url: '/images/og-image.jpg',
+          url: 'https://tetouan.altessimmo.com/images/og-image.jpg',
           width: 1200,
           height: 630,
           alt: title,
@@ -62,7 +62,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/images/og-image.jpg'],
+      images: ['https://tetouan.altessimmo.com/images/og-image.jpg'],
     },
   };
 }
