@@ -14,16 +14,17 @@ export default function Footer() {
           © {new Date().getFullYear()} Altessimmo Tetouan
         </p>
 
-        {/* Icône WhatsApp */}
+        {/* Icône WhatsApp - FLOTTANTE */}
         <Link
-          href="https://wa.me/message/L5HIFLLJI7MBE1" // Remplace par ton numéro
+          href="https://wa.me/message/L5HIFLLJI7MBE1"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Contactez-nous sur WhatsApp"
           className="
-            absolute 
+            fixed 
             right-4 bottom-6      /* mobile */
             md:right-8 md:bottom-8 /* desktop */
+            z-50
             group text-white/60 hover:text-white transition
           "
         >
