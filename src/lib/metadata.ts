@@ -50,7 +50,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
       siteName: 'Altessimmo',
       images: [
         {
-          url: '/images/og-image.jpg', // ← Peut redevenir relatif avec metadataBase
+          url: 'https://tetouan.altessimmo.com/images/og-image.jpg', // ← Peut redevenir relatif avec metadataBase
           width: 1200,
           height: 630,
           alt: title,
@@ -63,7 +63,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/images/og-image.jpg'],
+      images: ['https://tetouan.altessimmo.com/images/og-image.jpg'],
     },
   };
 }
