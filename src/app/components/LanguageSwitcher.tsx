@@ -56,7 +56,7 @@ export default function LanguageSwitcher() {
   const orderedLocales = [locale, ...routing.locales.filter(loc => loc !== locale)];
 
   return (
-    <div ref={containerRef} className="fixed top-6 right-6 z-50">
+    <div ref={containerRef} className="fixed top-6 right-6 z-50" dir="ltr">
       <div className="flex items-center gap-3 transition-all duration-500">
         {/* Flags inline (apparaissent à gauche) */}
         <div
