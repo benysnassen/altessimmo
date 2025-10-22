@@ -10,7 +10,7 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 
 type Props = {
   children: React.ReactNode;
-  params: { locale: string } | Promise<{ locale: string }>;
+  params: Promise<{ locale: string }>;
 };
 
 export function generateStaticParams() {
@@ -19,8 +19,7 @@ export function generateStaticParams() {
 
 // Métadonnées internationalisées
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const resolvedParams = await params;
-  const locale = resolvedParams.locale;
+  const { locale } = await params;
 
   const titles = {
     fr: "Altessimmo Tétouan, Martil & Cabo Negro - Propriétés d'exception",
@@ -109,8 +108,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function LocaleLayout({ children, params }: Props) {
-  const resolvedParams = await params;
-  const locale = resolvedParams.locale;
+  const { locale } = await params;
 
   // Valider la locale
   if (!routing.locales.includes(locale as any)) {
