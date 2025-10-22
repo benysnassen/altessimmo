@@ -12,7 +12,7 @@ export const routing = defineRouting({
   localePrefix: 'always',
   
   // Détection automatique de la locale
-  localeDetection: true
+  localeDetection: false
 });
 
 // Navigation helpers typés
