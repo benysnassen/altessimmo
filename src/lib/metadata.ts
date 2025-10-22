@@ -42,5 +42,27 @@ export function getLocalizedMetadata(locale: string): Metadata {
         'ar': '/ar',
       }
     },
+    openGraph: {
+      title,
+      description,
+      url: `https://tetouan.altessimmo.com/${locale}`,
+      siteName: 'Altessimmo',
+      images: [
+        {
+          url: '/images/og-image.jpg',
+          width: 1200,
+          height: 630,
+          alt: title,
+        }
+      ],
+      locale: locale,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/images/og-image.jpg'],
+    },
   };
 }
