@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Mail, Phone, User, MessageSquare, ChevronDown, Shield, DollarSign, ArrowRight, Home, ShoppingCart } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
+import { Link } from '@/i18n/routing';
 
 export default function ContactForm() {
   const t = useTranslations('contact');
@@ -246,7 +247,7 @@ export default function ContactForm() {
               whileTap={{ scale: 0.98 }}
               className="inline-block"
             >
-              <a
+              <Link
                 href={isSeller ? '/contact?type=buy' : '/contact?type=sell'}
                 className="group inline-flex items-center gap-3 px-6 py-3 border border-black/20 text-black/60 hover:border-black/40 hover:text-black transition-all duration-300 rounded-sm bg-white/50 hover:bg-white/80"
               >
@@ -267,7 +268,7 @@ export default function ContactForm() {
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </>
                 )}
-              </a>
+              </Link>
             </motion.div>
           </motion.div>
 
