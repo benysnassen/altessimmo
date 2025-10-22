@@ -7,9 +7,10 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+
 type Props = {
   children: React.ReactNode;
-  params: { locale: string };
+  params: { locale: string } | Promise<{ locale: string }>;
 };
 
 export function generateStaticParams() {
@@ -17,7 +18,10 @@ export function generateStaticParams() {
 }
 
 // Métadonnées internationalisées
-export async function generateMetadata({ params: { locale } }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale;
+
   const titles = {
     fr: "Altessimmo Tétouan, Martil & Cabo Negro - Propriétés d'exception",
     en: "Altessimmo Tétouan, Martil & Cabo Negro - Exceptional Properties",
@@ -104,7 +108,10 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
   };
 }
 
-export default async function LocaleLayout({ children, params: { locale } }: Props) {
+export default async function LocaleLayout({ children, params }: Props) {
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale;
+
   // Valider la locale
   if (!routing.locales.includes(locale as any)) {
     notFound();
@@ -136,12 +143,12 @@ export default async function LocaleLayout({ children, params: { locale } }: Pro
         />
       </head>
 
-      <body>        
+      <body>
         <NextIntlClientProvider messages={messages}>
-        <LanguageSwitcher />
+          <LanguageSwitcher />
 
           <main>{children}</main>
-          
+
           <Footer />
         </NextIntlClientProvider>
       </body>
