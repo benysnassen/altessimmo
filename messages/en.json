@@ -26,6 +26,8 @@
             "sending":"Sending...",
             "required_name": "Name is required",
             "invalid_phone": "The number must contain at least 8 digits",
-            "invalid_email": "Invalid email address"
-          }
+            "invalid_email": "Invalid email address",
+            "message_sent": "Message sent",
+            "success_message": "Thank you for your trust. We will contact you as soon as possible to discuss your project with complete discretion."
+        }
 }

@@ -7,11 +7,11 @@ import { routing } from '@/i18n/routing';
 import { Globe } from 'lucide-react';
 import Flag from 'react-world-flags';
 
-const languages: Record<string, { code: string }> = {
-  fr: { code: 'FR' },
-  en: { code: 'US' },
-  es: { code: 'ES' },
-  ar: { code: 'MA' },
+const languages: Record<string, { code: string; name: string }> = {
+  fr: { code: 'FR', name: 'Français' },
+  en: { code: 'US', name: 'English' },
+  es: { code: 'ES', name: 'Español' },
+  ar: { code: 'MA', name: 'العربية' },
 };
 
 export default function LanguageSwitcher() {
@@ -19,9 +19,9 @@ export default function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [pendingLocale, setPendingLocale] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Fermer au clic extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -32,66 +32,100 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Fermer au scroll (optionnel, améliore l'UX)
   useEffect(() => {
-    if (pendingLocale !== null && !open) {
-      const timeout = setTimeout(() => {
-        router.replace(pathname, { locale: pendingLocale });
-        setPendingLocale(null);
-      }, 300);
-
-      return () => clearTimeout(timeout);
+    const handleScroll = () => setOpen(false);
+    if (open) {
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
     }
-  }, [open, pendingLocale, pathname, router]);
+  }, [open]);
 
   const handleChange = (newLocale: string) => {
+    if (newLocale === locale) {
+      setOpen(false);
+      return;
+    }
+    
     setOpen(false);
-    setPendingLocale(newLocale);
+    // Changement immédiat sans délai
+    router.replace(pathname, { locale: newLocale });
   };
 
-  // Réorganiser les locales : langue actuelle en premier
+  // Langue actuelle en premier
   const orderedLocales = [locale, ...routing.locales.filter(loc => loc !== locale)];
 
   return (
     <div ref={containerRef} className="fixed top-6 right-6 z-50">
-      <div className="flex items-center transition-all duration-500">
-        {/* Globe Button */}
-        <button
-          onClick={() => setOpen(!open)}
-          aria-haspopup="true"
-          aria-expanded={open}
-          aria-label="Changer de langue"
-          className={`bg-white/5 border border-white/10 p-2 ml-5 rounded-xl backdrop-blur hover:bg-white/10 transition-transform duration-500 ${
-            open ? '-translate-x-4' : 'translate-x-0'
-          }`}
-        >
-          <Globe size={22} strokeWidth={1.5} className="text-white" />
-        </button>
-
-        {/* Flags inline */}
+      <div className="flex items-center gap-3 transition-all duration-500">
+        {/* Flags inline (apparaissent à gauche) */}
         <div
           className={`
             flex items-center gap-2
-            transition-all duration-900
-            ${open ? 'opacity-100 scale-100 max-w-[300px]' : 'opacity-0 scale-95 max-w-0 overflow-hidden'}
+            transition-all duration-500 ease-out
+            ${open ? 'opacity-100 scale-100 translate-x-0' : 'opacity-0 scale-95 translate-x-4 pointer-events-none'}
           `}
         >
           {orderedLocales.map((loc) => (
             <button
               key={loc}
               onClick={() => handleChange(loc)}
-              className={`transition-transform hover:scale-110 border-2 rounded-md ${
-                locale === loc ? 'border-white' : 'border-transparent'
-              }`}
-              aria-label={loc}
+              disabled={locale === loc}
+              className={`
+                relative group
+                transition-all duration-300
+                hover:scale-110 
+                disabled:cursor-default
+                ${locale === loc ? 'scale-110' : 'hover:scale-125'}
+              `}
+              aria-label={languages[loc].name}
+              title={languages[loc].name}
             >
+              {/* Border effect */}
+              <div className={`
+                absolute inset-0 rounded-md border-2 transition-all duration-300
+                ${locale === loc 
+                  ? 'border-white scale-110' 
+                  : 'border-transparent group-hover:border-white/50'}
+              `} />
+              
+              {/* Flag */}
               <Flag
                 code={languages[loc].code}
-                style={{ width: 21, height: 15, display: 'block' }}
-                alt={`${loc} flag`}
+                style={{ 
+                  width: 24, 
+                  height: 16, 
+                  display: 'block',
+                  borderRadius: '2px'
+                }}
+                alt={`${languages[loc].name}`}
               />
             </button>
           ))}
         </div>
+
+        {/* Globe Button */}
+        <button
+          onClick={() => setOpen(!open)}
+          aria-haspopup="true"
+          aria-expanded={open}
+          aria-label="Changer de langue"
+          className={`
+            bg-white/5 border border-white/10 
+            p-2 rounded-xl backdrop-blur-sm
+            hover:bg-white/10 hover:border-white/20
+            transition-all duration-300
+            ${open ? 'bg-white/10 border-white/20 scale-105' : ''}
+          `}
+        >
+          <Globe 
+            size={22} 
+            strokeWidth={1.5} 
+            className={`text-white transition-transform duration-500 ${
+              open ? 'rotate-180' : 'rotate-0'
+            }`}
+          />
+        </button>
       </div>
     </div>
   );

@@ -179,7 +179,7 @@ export default function ContactForm() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="font-display text-2xl font-light text-black mb-4 tracking-wide"
             >
-              Message envoyé
+              {t('message_sent')}
             </motion.h2>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -187,8 +187,7 @@ export default function ContactForm() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-black/60 font-light leading-relaxed"
             >
-              Merci pour votre confiance. Nous vous contacterons dans les plus brefs délais 
-              pour échanger sur votre projet en toute discrétion.
+              {t('success_message')}
             </motion.p>
           </div>
         </motion.div>

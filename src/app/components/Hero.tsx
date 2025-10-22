@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/routing'; // ✅ CORRECT
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 

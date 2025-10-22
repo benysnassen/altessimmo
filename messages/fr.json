@@ -26,8 +26,9 @@
           "sending":"Envoi en cours...",
           "required_name": "Nom requis",
         "invalid_phone": "Le numéro doit contenir au moins 8 chiffres",
-        "invalid_email": "Email invalide"
+        "invalid_email": "Email invalide",
+        "message_sent": "Message envoyé", 
+        "success_message": "Merci pour votre confiance. Nous vous contacterons dans les plus brefs délais pour échanger sur votre projet en toute discrétion."
         }
-}
-      
+} 
 

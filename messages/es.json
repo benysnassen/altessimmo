@@ -30,8 +30,10 @@
           "sending": "Enviando...",
           "required_name": "Nombre requerido",
           "invalid_phone": "El número debe tener al menos 8 dígitos",
-          "invalid_email": "Correo electrónico inválido"
-        }
+          "invalid_email": "Correo electrónico inválido",
+          "message_sent": "Mensaje enviado",
+          "success_message": "Gracias por su confianza. Nos pondremos en contacto con usted lo antes posible para hablar de su proyecto con total discreción."
+    }
       
       
 }
