@@ -8,18 +8,15 @@ export default function Footer() {
   const [isRotating, setIsRotating] = useState(false);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Sur mobile uniquement
-    if (window.innerWidth < 768) {
-      e.preventDefault();
-      setIsRotating(true);
-      
-      // Attendre la fin de l'animation (500ms) puis ouvrir WhatsApp
-      setTimeout(() => {
-        setIsRotating(false);
-        window.open("https://wa.me/message/L5HIFLLJI7MBE1", "_blank");
-      }, 500);
-    }
-    // Sur desktop, comportement normal (hover + click direct)
+    e.preventDefault(); // Empêcher le comportement par défaut
+    setIsRotating(true);
+    
+    // Attendre la fin de l'animation (500ms) puis ouvrir WhatsApp
+    setTimeout(() => {
+      setIsRotating(false);
+      // Utiliser window.location.href au lieu de window.open pour éviter le flash blanc
+      window.location.href = "https://wa.me/message/L5HIFLLJI7MBE1";
+    }, 500);
   };
 
   return (
