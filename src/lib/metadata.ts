@@ -33,6 +33,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
       template: "%s | Altessimmo",
     },
     description,
+    metadataBase: new URL('https://tetouan.altessimmo.com'), // ← AJOUTE CETTE LIGNE
     alternates: {
       canonical: `https://tetouan.altessimmo.com/${locale}`,
       languages: {
@@ -49,7 +50,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
       siteName: 'Altessimmo',
       images: [
         {
-          url: 'https://tetouan.altessimmo.com/images/og-image.jpg',
+          url: '/images/og-image.jpg', // ← Peut redevenir relatif avec metadataBase
           width: 1200,
           height: 630,
           alt: title,
@@ -62,7 +63,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
       card: 'summary_large_image',
       title,
       description,
-      images: ['https://tetouan.altessimmo.com/images/og-image.jpg'],
+      images: ['/images/og-image.jpg'],
     },
   };
 }
