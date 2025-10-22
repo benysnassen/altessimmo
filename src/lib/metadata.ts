@@ -7,7 +7,7 @@ type LocaleMetadata = {
 
 const metadata: Record<string, LocaleMetadata> = {
   fr: {
-    title: "Altessimmo Tétouan, Martil & Cabo Negro - Propriétés d'exception",
+    title: "Altessimmo Tétouan, Martil & Cabo Negro - Propriétés de qualité",
     description: "Sélection discrète de biens immobiliers de qualité à Tétouan, Martil et Cabo Negro. Découvrez des propriétés haut de gamme, villas et appartements avec Altessimmo.",
   },
   en: {
