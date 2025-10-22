@@ -19,6 +19,7 @@ export default function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [pendingLocale, setPendingLocale] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,9 +32,21 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Dès que le menu est fermé ET qu'on a une locale en attente, on fait la navigation
+  useEffect(() => {
+    if (pendingLocale !== null && !open) {
+      const timeout = setTimeout(() => {
+        router.replace(pathname, { locale: pendingLocale });
+        setPendingLocale(null);
+      }, 300); // Correspond à la durée de l'animation de fermeture
+
+      return () => clearTimeout(timeout);
+    }
+  }, [open, pendingLocale, pathname, router]);
+
   const handleChange = (newLocale: string) => {
-    setOpen(false);
-    router.replace(pathname, { locale: newLocale });
+    setOpen(false);           // lance l'animation de fermeture du menu
+    setPendingLocale(newLocale); // stocke la locale en attente de navigation
   };
 
   return (
