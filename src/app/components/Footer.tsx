@@ -11,7 +11,7 @@ export default function Footer() {
 
         {/* Texte centré */}
         <p className="text-xs text-white/40 tracking-widest uppercase text-center">
-          © {new Date().getFullYear()} Altessimmo Tétouan
+          © {new Date().getFullYear()} Altessimmo Tetouan
         </p>
 
         {/* Icône WhatsApp */}

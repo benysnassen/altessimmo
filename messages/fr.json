@@ -1,0 +1,33 @@
+{
+    "home":
+    {
+        "real_estate":"Immobilier",
+        "discover": "découvrir"
+    },    
+        "contact": {
+          "find_your_property": "Trouvez votre bien",
+          "help_find_dream": "Nous vous aidons à trouver la propriété de vos rêves à Tétouan et ses alentours.",
+          "want_to_sell": "Vous souhaitez plutôt vendre ?",
+          "full_name": "Nom complet",
+          "full_name_placeholder": "Votre nom complet",
+          "phone_whatsapp": "Téléphone / WhatsApp",
+          "email_optional": "Email (optionnel)",
+          "email_placeholder": "votre@email.com",
+          "estimated_budget": "Budget estimé (MAD)",
+          "free_message": "Message libre",
+          "message_placeholder": "Décrivez vos critères, vos préférences, vos besoins...",
+          "confidential_support": "Je souhaite un accompagnement confidentiel et discret",
+          "entrust_property": "Confiez votre bien",
+          "we_support_sale": "Nous vous accompagnons dans la vente de votre propriété d'exception en toute confidentialité.",
+          "looking_to_buy": "Vous cherchez plutôt à acheter ?",
+          "describe_property": "Décrivez votre propriété, sa localisation, ses caractéristiques...",
+          "property_valuation":"Estimation du bien (MAD)",
+          "send_discreetly": "Envoyer Discrètement",
+          "sending":"Envoi en cours...",
+          "required_name": "Nom requis",
+        "invalid_phone": "Le numéro doit contenir au moins 8 chiffres",
+        "invalid_email": "Email invalide"
+        }
+}
+      
+

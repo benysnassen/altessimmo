@@ -1,0 +1,31 @@
+{
+    "home":{
+        "real_estate":"Real Estate",
+        "discover":"discover"
+        },
+    
+        "contact": {
+            "find_your_property": "Find your property",
+            "help_find_dream": "We help you find the property of your dreams in Tetouan and its surroundings.",
+            "want_to_sell": "Would you rather sell?",
+            "full_name": "Full name",
+            "full_name_placeholder": "Your full name",
+            "phone_whatsapp": "Phone / WhatsApp",
+            "email_optional": "Email (optional)",
+            "email_placeholder": "your@email.com",
+            "estimated_budget": "Estimated budget (MAD)",
+            "free_message": "Free message",
+            "message_placeholder": "Describe your criteria, preferences, needs...",
+            "confidential_support": "I want confidential and discreet support",
+            "entrust_property": "Entrust your property",
+            "we_support_sale": "We assist you in selling your exceptional property with complete confidentiality.",
+            "looking_to_buy": "Looking to buy instead?",
+            "describe_property": "Describe your property, its location, its features...",
+            "property_valuation":"Property valuation (MAD)",
+            "send_discreetly":"Send Discreetly",
+            "sending":"Sending...",
+            "required_name": "Name is required",
+            "invalid_phone": "The number must contain at least 8 digits",
+            "invalid_email": "Invalid email address"
+          }
+}

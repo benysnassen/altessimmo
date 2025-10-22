@@ -1,0 +1,37 @@
+{
+    "home":
+    {
+        "real_estate":"Inmobiliaria",
+        "discover": "descubrir"
+    },
+    
+        "contact": 
+    {
+          "real_estate": "Bienes raíces",
+          "discover": "Descubrir",
+          "find_your_property": "Encuentra tu propiedad",
+          "help_find_dream": "Te ayudamos a encontrar la propiedad de tus sueños en Tetuán y alrededores.",
+          "want_to_sell": "¿Prefieres vender?",
+          "full_name": "Nombre completo",
+          "full_name_placeholder": "Tu nombre completo",
+          "phone_whatsapp": "Teléfono / WhatsApp",
+          "email_optional": "Correo electrónico (opcional)",
+          "email_placeholder": "tu@email.com",
+          "estimated_budget": "Presupuesto estimado (MAD)",
+          "free_message": "Mensaje libre",
+          "message_placeholder": "Describe tus criterios, preferencias, necesidades...",
+          "confidential_support": "Deseo un acompañamiento confidencial y discreto",
+          "entrust_property": "Confía tu propiedad",
+          "we_support_sale": "Te acompañamos en la venta de tu propiedad de lujo con total confidencialidad.",
+          "looking_to_buy": "¿Buscas comprar en su lugar?",
+          "describe_property": "Describe tu propiedad, su ubicación, sus características...",
+          "property_valuation":"Valoración del bien (MAD)",
+          "send_discreetly": "Enviar de forma discreta",
+          "sending": "Enviando...",
+          "required_name": "Nombre requerido",
+          "invalid_phone": "El número debe tener al menos 8 dígitos",
+          "invalid_email": "Correo electrónico inválido"
+        }
+      
+      
+}

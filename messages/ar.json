@@ -1,0 +1,36 @@
+{
+    "home":{
+    "real_estate":"العقارات",
+    "discover":"اِسْتَكْشِفْ"
+},
+
+    "contact": {
+      "real_estate": "العقارات",
+      "discover": "اكتشف",
+      "find_your_property": "ابحث عن عقارك",
+      "help_find_dream": "نساعدك في العثور على عقار أحلامك في تطوان والمناطق المجاورة.",
+      "want_to_sell": "هل ترغب في البيع بدلاً من ذلك؟",
+      "full_name": "الاسم الكامل",
+      "full_name_placeholder": "اسمك الكامل",
+      "phone_whatsapp": "الهاتف / واتساب",
+      "email_optional": "البريد الإلكتروني (اختياري)",
+      "email_placeholder": "your@email.com",
+      "estimated_budget": "الميزانية المتوقعة (درهم)",
+      "free_message": "رسالة حرة",
+      "message_placeholder": "صف معاييرك، تفضيلاتك، واحتياجاتك...",
+      "confidential_support": "أرغب في مرافقة سرية وخاصة",
+      "entrust_property": "فوّض عقارك",
+      "we_support_sale": "نرافقك في بيع عقارك الفاخر بسرية تامة.",
+      "looking_to_buy": "هل تبحث عن شراء بدلاً من ذلك؟",
+      "describe_property": "صف عقارك، موقعه، وخصائصه...",
+      "property_valuation":"(MAD) تقدير قيمة العقار",
+      "send_discreetly": "إرسال بشكل سري",
+      "sending": "جاري الإرسال...",
+      "required_name": "الاسم مطلوب",
+      "invalid_phone": "يجب أن يحتوي الرقم على 8 أرقام على الأقل",
+      "invalid_email": "البريد الإلكتروني غير صالح"
+    }
+  }
+  
+
+

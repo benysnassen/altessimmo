@@ -1,5 +1,5 @@
 'use client';
-
+import { useTranslations } from 'next-intl';
 import React, { useRef, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
@@ -9,6 +9,8 @@ import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 
 export default function ContactForm() {
+  const t = useTranslations('contact');
+
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
 
@@ -212,7 +214,7 @@ export default function ContactForm() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="font-display text-3xl font-light text-black mb-4 tracking-wide"
             >
-              {isSeller ? 'Confiez votre bien' : 'Trouvez votre bien'}
+              {isSeller ? t('entrust_property') : t('find_your_property')}
             </motion.h2>
             <motion.div 
               initial={{ width: 0 }}
@@ -227,8 +229,8 @@ export default function ContactForm() {
               className="text-black/60 font-light text-sm leading-relaxed"
             >
               {isSeller 
-                ? 'Nous vous accompagnons dans la vente de votre propriété d\'exception en toute confidentialité.'
-                : 'Nous vous aidons à trouver la propriété de vos rêves à Tétouan et ses alentours.'
+                ? t('we_support_sale')
+                : t('help_find_dream')
               }
             </motion.p>
           </div>
@@ -253,7 +255,7 @@ export default function ContactForm() {
                   <>
                     <ShoppingCart className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
                     <span className="text-sm font-light tracking-wide">
-                      Vous cherchez plutôt à acheter ?
+                      {t('looking_to_buy')}
                     </span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </>
@@ -261,7 +263,7 @@ export default function ContactForm() {
                   <>
                     <Home className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
                     <span className="text-sm font-light tracking-wide">
-                      Vous souhaitez plutôt vendre ?
+                    {t('want_to_sell')}
                     </span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </>
@@ -280,12 +282,12 @@ export default function ContactForm() {
             >
               <label htmlFor="name" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
                 <User className="inline w-4 h-4 mr-2" />
-                Nom complet <span className="text-red-500">*</span>
+                {t('full_name')} <span className="text-red-500">*</span>
               </label>
               <input
-                {...register('name', { required: 'Nom requis' })}
+                {...register('name', { required: t('required_name') })}
                 className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm"
-                placeholder="Votre nom complet"
+                placeholder={t('full_name_placeholder')}
               />
               {errors.name && (
     <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
@@ -301,7 +303,7 @@ export default function ContactForm() {
 >
   <label className="block text-sm text-black/60 font-light mb-3 tracking-wide">
     <Phone className="inline w-4 h-4 mr-2" />
-    Téléphone / WhatsApp <span className="text-red-500">*</span>
+    {t('phone_whatsapp')} <span className="text-red-500">*</span>
   </label>
   
 
@@ -316,7 +318,7 @@ export default function ContactForm() {
           const phoneNumber = parts[2] || "";
           return (
             phoneNumber.length >= 8 ||
-            "Le numéro doit contenir au moins 8 chiffres"
+            t('invalid_phone')
           );
         },
       }}
@@ -417,18 +419,18 @@ export default function ContactForm() {
             >
               <label htmlFor="email" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
                 <Mail className="inline w-4 h-4 mr-2" />
-                Email (optionnel)
+                {t('email_optional')}
               </label>
               <input
                 {...register('email', {
                   validate: (value) => {
                     if (!value) return true; // facultatif : pas d'erreur si vide
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    return emailRegex.test(value) || "Email invalide";
+                    return emailRegex.test(value) || t('invalid_email');
                   }
                 } )}
                 className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm"
-                placeholder="votre@email.com"
+                placeholder={t('email_placeholder')}
               />
               {errors.email && (
   <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>)}
@@ -444,7 +446,7 @@ export default function ContactForm() {
               >
                 <label className="block text-lg text-black/80 font-medium mb-4 tracking-wide">
                   <DollarSign className="inline w-5 h-5 mr-2" />
-                  Budget estimé (MAD)
+                  {t('estimated_budget')}
                 </label>
                 <div className="space-y-6">
                   <div className="relative">
@@ -479,7 +481,7 @@ export default function ContactForm() {
               >
                 <label className="block text-lg text-black/80 font-medium mb-4 tracking-wide">
                   <DollarSign className="inline w-5 h-5 mr-2" />
-                  Estimation du bien (MAD)
+                  {t('property_valuation')}
                 </label>
                 <div className="space-y-6">
                   <div className="relative">
@@ -512,15 +514,15 @@ export default function ContactForm() {
             >
               <label htmlFor="message" className="block text-sm text-black/60 font-light mb-3 tracking-wide">
                 <MessageSquare className="inline w-4 h-4 mr-2" />
-                Message libre
+                {t('free_message')}
               </label>
               <textarea
                 {...register('message')}
                 rows={5}
                 className="w-full px-3 md:px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 resize-none rounded-sm"
                 placeholder={isSeller 
-                  ? "Décrivez votre propriété, sa localisation, ses caractéristiques..."
-                  : "Décrivez vos critères, vos préférences, vos besoins..."
+                  ? t('describe_property')
+                  : t('message_placeholder')
                 }
               />
             </motion.div>
@@ -539,7 +541,7 @@ export default function ContactForm() {
               />
               <label className="text-sm text-black/60 font-light leading-relaxed flex items-center">
                 <Shield className="w-4 h-4 mr-2" />
-                Je souhaite un accompagnement confidentiel et discret
+                {t('confidential_support')}
               </label>
             </motion.div>
 
@@ -555,7 +557,7 @@ export default function ContactForm() {
                 disabled={isSubmitting}
                 className="bg-black text-white px-10 py-4 rounded-sm font-light tracking-wide text-lg hover:bg-black/90 transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                {isSubmitting ? 'Envoi en cours...' : 'Envoyer en toute discrétion'}
+                {isSubmitting ? t('sending') : t('send_discreetly')}
               </button>
             </motion.div>
           </form>

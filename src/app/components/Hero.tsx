@@ -3,7 +3,13 @@
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-export default function Hero() {
+
+interface HeroProps {
+  real_estate: string,
+  discover: string
+}
+
+export default function Hero({ real_estate, discover }: HeroProps) {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 300], [0, -50]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
@@ -71,7 +77,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
           >
-            Immobilier
+            {real_estate}
           </motion.span>
         </motion.h2>
         
@@ -99,7 +105,7 @@ export default function Hero() {
               transition={{ duration: 1, delay: 2 }}
               className="text-sm sm:text-base md:text-lg font-light mb-16 text-white/60 tracking-widest uppercase"
             >
-              Tétouan • Martil • Cabo Negro
+              Tetouan • Martil • Cabo Negro
             </motion.p>
         </motion.div>
         
@@ -137,36 +143,35 @@ export default function Hero() {
                   <motion.div
                     className="relative z-10 font-light tracking-widest text-sm uppercase flex"
                   >
-                    {['D', 'É', 'C', 'O', 'U', 'V', 'R', 'I', 'R'].map((letter, index) => (
+                    
                       <motion.span
-                        key={index}
+                        
                         animate={{
                           x: [0, Math.random() * 1 - 0.5, 0],
                           y: [0, Math.random() * 1 - 0.5, 0]
                         }}
                         transition={{
                           duration: 0.1,
-                          delay: index * 0.02,
+                          delay: 0.02,
                           repeat: Infinity,
                           repeatDelay: 3 + Math.random() * 2
                         }}
                         className="inline-block"
-                      >
-                        {letter}
+                      >{discover}
                       </motion.span>
-                    ))}
+                    
                   </motion.div>
                   
                   {/* Glitch Duplicate Layer */}
                   <motion.div
                     initial={{ opacity: 0.15, x: 0.5, y: 0.5 }}
-                    className="absolute inset-0 flex items-center justify-center font-light tracking-widest text-sm uppercase text-white/25"
+                    className="absolute inset-0 flex items-center justify-center font-light tracking-widest text-sm uppercase text-white/100"
                     style={{ 
                       textShadow: '0.5px 0.5px 0px rgba(255,255,255,0.05)',
                       filter: 'blur(0.3px)'
                     }}
                   >
-                    DÉCOUVRIR
+                    {discover}
                   </motion.div>
                 </div>
               </div>

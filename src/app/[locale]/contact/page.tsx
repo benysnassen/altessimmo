@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import ContactForm from '../components/ContactForm';
+import ContactForm from '../../components/ContactForm';
 import { Metadata } from 'next';
 
 
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     title: "Contact - Altessimmo Tétouan, Martil & Cabo Negro",
     description:
       "Achetez ou vendez un bien d’exception à Tétouan, Martil ou Cabo Negro avec Altessimmo. Estimation et accompagnement discret pour acheteurs et vendeurs.",
-    url: "https://altessimmo.com/contact",
+    url: "https://tetouan.altessimmo.com/contact",
     siteName: "Altessimmo",
     images: [
       {

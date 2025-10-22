@@ -1,32 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
+import {NextRequest, NextResponse} from 'next/server';
+import {routing} from './i18n/routing';
+
+const intlMiddleware = createMiddleware(routing);
+
+const PROTECTED_ROUTES = ['/dashboard'];
+const ADMIN_ROUTES = ['/login', '/dashboard']; // Routes admin non traduites
 
 export async function middleware(request: NextRequest) {
-  // Routes protégées
-  const protectedRoutes = ['/dashboard'];
-  const { pathname } = request.nextUrl;
-
-  // Vérifier si la route est protégée
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-
-  if (!isProtectedRoute) {
+  const {pathname} = request.nextUrl;
+  
+  // 1. Si c'est une route admin, ne pas appliquer i18n
+  const isAdminRoute = ADMIN_ROUTES.some(route => pathname.startsWith(route));
+  
+  if (isAdminRoute) {
+    // Vérifier l'authentification pour les routes protégées
+    const isProtected = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+    
+    if (isProtected) {
+      const token = request.cookies.get('admin-token')?.value;
+      
+      if (!token) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+    }
+    
     return NextResponse.next();
   }
-
-  // Vérifier simplement la présence du cookie admin-token
-  const token = request.cookies.get('admin-token')?.value;
-
-  if (!token) {
-    // Rediriger vers la page de login
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  // La validation complète du token se fait côté serveur dans les API routes
-  return NextResponse.next();
+  
+  // 2. Pour les autres routes, appliquer i18n
+  return intlMiddleware(request);
 }
 
 export const config = {
   matcher: [
+    '/',
+    '/(fr|en|es|ar)/:path*',
+    '/login',
+    '/contact',
     '/dashboard/:path*',
-    '/api/admin/:path*'
+    '/((?!api|_next|_vercel|.*\\..*).*)'
   ]
 };
