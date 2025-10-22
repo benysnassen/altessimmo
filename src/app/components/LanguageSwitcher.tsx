@@ -32,22 +32,24 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Dès que le menu est fermé ET qu'on a une locale en attente, on fait la navigation
   useEffect(() => {
     if (pendingLocale !== null && !open) {
       const timeout = setTimeout(() => {
         router.replace(pathname, { locale: pendingLocale });
         setPendingLocale(null);
-      }, 300); // Correspond à la durée de l'animation de fermeture
+      }, 300);
 
       return () => clearTimeout(timeout);
     }
   }, [open, pendingLocale, pathname, router]);
 
   const handleChange = (newLocale: string) => {
-    setOpen(false);           // lance l'animation de fermeture du menu
-    setPendingLocale(newLocale); // stocke la locale en attente de navigation
+    setOpen(false);
+    setPendingLocale(newLocale);
   };
+
+  // Réorganiser les locales : langue actuelle en premier
+  const orderedLocales = [locale, ...routing.locales.filter(loc => loc !== locale)];
 
   return (
     <div ref={containerRef} className="fixed top-6 right-6 z-50">
@@ -73,7 +75,7 @@ export default function LanguageSwitcher() {
             ${open ? 'opacity-100 scale-100 max-w-[300px]' : 'opacity-0 scale-95 max-w-0 overflow-hidden'}
           `}
         >
-          {routing.locales.map((loc) => (
+          {orderedLocales.map((loc) => (
             <button
               key={loc}
               onClick={() => handleChange(loc)}
