@@ -26,44 +26,48 @@ const metadata: Record<string, LocaleMetadata> = {
 
 export function getLocalizedMetadata(locale: string): Metadata {
   const { title, description } = metadata[locale] || metadata.fr;
-  
+
+  const baseUrl = 'https://tetouan.altessimmo.com';
+  const imageUrl = `${baseUrl}/images/og-image.png`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title: {
       default: title,
       template: "%s | Altessimmo",
     },
     description,
-    metadataBase: new URL('https://tetouan.altessimmo.com'), // ← AJOUTE CETTE LIGNE
     alternates: {
-      canonical: `https://tetouan.altessimmo.com/${locale}`,
+      canonical: `${baseUrl}/${locale}`,
       languages: {
-        'fr': '/fr',
-        'en': '/en',
-        'es': '/es',
-        'ar': '/ar',
-      }
+        fr: '/fr',
+        en: '/en',
+        es: '/es',
+        ar: '/ar',
+      },
     },
     openGraph: {
       title,
       description,
-      url: `https://tetouan.altessimmo.com/${locale}`,
+      url: `${baseUrl}/${locale}`,
       siteName: 'Altessimmo',
       images: [
         {
-          url: 'https://tetouan.altessimmo.com/images/og-image.png', // ← Peut redevenir relatif avec metadataBase
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: title,
-        }
+          type: 'image/png', // 👈 AJOUTE CETTE LIGNE
+        },
       ],
-      locale: locale,
+      locale,
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: ['https://tetouan.altessimmo.com/images/og-image.png'],
+      images: [imageUrl],
     },
   };
 }
