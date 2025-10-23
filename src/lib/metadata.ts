@@ -28,7 +28,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
   const { title, description } = metadata[locale] || metadata.fr;
 
   const baseUrl = 'https://tetouan.altessimmo.com';
-  const imageUrl = `${baseUrl}/og-image.png`;
+  const imageUrl = `${baseUrl}/og-image-altessimmo.png`;
 
   return {
     metadataBase: new URL(baseUrl),
