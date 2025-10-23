@@ -598,6 +598,80 @@ export default function ContactForm() {
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
       `}</style>
+      <style jsx global>{`
+  /* SLIDER PREMIUM */
+  .slider-custom {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #000 0%, #000 100%);
+    outline: none;
+    transition: background 0.4s ease;
+  }
+
+  /* Curseur (Webkit - Chrome, Safari, etc.) */
+  .slider-custom::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #111, #000);
+    border: 2px solid #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .slider-custom::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35),
+                0 0 8px rgba(255, 215, 0, 0.3);
+  }
+
+  .slider-custom::-webkit-slider-thumb:active {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  }
+
+  /* Curseur (Firefox) */
+  .slider-custom::-moz-range-thumb {
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #111, #000);
+    border: 2px solid #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .slider-custom::-moz-range-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35),
+                0 0 8px rgba(255, 215, 0, 0.3);
+  }
+
+  .slider-custom::-moz-range-thumb:active {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  }
+
+  /* Track (Firefox) */
+  .slider-custom::-moz-range-track {
+    height: 6px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #000 0%, #000 100%);
+  }
+
+  /* Focus glow (accessibilité + élégance) */
+  .slider-custom:focus::-webkit-slider-thumb {
+    outline: none;
+    box-shadow: 0 0 0 5px rgba(255, 215, 0, 0.2);
+  }
+`}</style>
+
     </div>
   );
 }
