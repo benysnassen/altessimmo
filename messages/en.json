@@ -6,7 +6,8 @@
     
         "contact": {
             "find_your_property": "Find your property",
-            "help_find_dream": "We help you find your property in Tetouan and its surroundings.",
+            "we_support_sale": "We support you in selling your property with discretion and professionalism.",
+            "help_find_dream": "Find your ideal property in Tetouan and its surroundings, with personalized support.",
             "want_to_sell": "Would you rather sell?",
             "full_name": "Full name",
             "full_name_placeholder": "Your full name",
@@ -18,7 +19,6 @@
             "message_placeholder": "Describe your criteria, preferences, needs...",
             "confidential_support": "I want confidential and discreet support",
             "entrust_property": "Entrust your property",
-            "we_support_sale": "We support you in selling your property with complete transparency.",
             "looking_to_buy": "Looking to buy instead?",
             "describe_property": "Describe your property, its location, its features...",
             "property_valuation":"Property valuation (MAD)",
