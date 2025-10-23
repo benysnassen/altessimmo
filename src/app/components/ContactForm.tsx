@@ -324,7 +324,7 @@ export default function ContactForm() {
       }}
       render={({ field }) => (
         <>
-          <div className="flex gap-3">
+          <div dir="ltr" className="flex gap-3">
             {/* Country Selector */}
             <div className="relative flex-shrink-0">
               <select
@@ -448,7 +448,7 @@ export default function ContactForm() {
                   <DollarSign className="inline w-5 h-5 mr-2" />
                   {t('estimated_budget')}
                 </label>
-                <div className="space-y-6">
+                <div dir="ltr" className="space-y-6">
                   <div className="relative">
                     <input
                       type="range"
@@ -483,7 +483,7 @@ export default function ContactForm() {
                   <DollarSign className="inline w-5 h-5 mr-2" />
                   {t('property_valuation')}
                 </label>
-                <div className="space-y-6">
+                <div dir="ltr" className="space-y-6">
                   <div className="relative">
                     <input
                       type="range"
