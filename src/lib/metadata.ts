@@ -7,20 +7,20 @@ type LocaleMetadata = {
 
 const metadata: Record<string, LocaleMetadata> = {
   fr: {
-    title: "Altessimmo Tétouan, Martil & Cabo Negro - Propriétés de qualité",
-    description: "Sélection discrète de biens immobiliers de qualité à Tétouan, Martil et Cabo Negro. Découvrez des propriétés haut de gamme, villas et appartements avec Altessimmo.",
+    title: "Altessimmo Tétouan, Martil & Cabo Negro - Immobilier de confiance et de qualité",
+    description: "Sélection rigoureuse de propriétés de qualité à Tétouan, Martil et Cabo Negro. Villas, appartements et terrains. Confiance, transparence et accompagnement complet.",
   },
   en: {
-    title: "Altessimmo Tétouan, Martil & Cabo Negro - Exceptional Properties",
-    description: "Discreet selection of rare properties in Tétouan, Martil and Cabo Negro. Discover high-end properties, villas and apartments with Altessimmo.",
+    title: "Altessimmo Tétouan, Martil & Cabo Negro - Trusted Quality Real Estate",
+    description: "Carefully selected quality properties in Tétouan, Martil and Cabo Negro. Villas, apartments and land. Trust, transparency and full guidance.",
   },
   es: {
-    title: "Altessimmo Tétouan, Martil & Cabo Negro - Propiedades excepcionales",
-    description: "Selección discreta de propiedades exclusivas en Tétouan, Martil y Cabo Negro. Descubra propiedades de alta gama, villas de lujo y apartamentos de prestigio con Altessimmo.",
+    title: "Altessimmo Tétouan, Martil & Cabo Negro - Inmobiliaria de confianza y calidad",
+    description: "Propiedades de calidad cuidadosamente seleccionadas en Tétouan, Martil y Cabo Negro. Villas, apartamentos y terrenos. Confianza, transparencia y acompañamiento completo.",
   },
   ar: {
-    title: "Altessimmo تطوان، مارتيل و كابو نيغرو - عقارات استثنائية",
-    description: "تشكيلة حصرية من العقارات النادرة في تطوان ومارتيل وكابو نيغرو. اكتشف عقارات راقية وفيلات فاخرة وشقق مرموقة مع Altessimmo.",
+    title: "Altessimmo تطوان، مارتيل و كابو نيغرو - عقارات ثقة وجودة",
+    description: "عقارات ذات جودة مختارة بعناية في تطوان ومارتيل وكابو نيغرو. فيلات وشقق وأراضي. ثقة، شفافية ومرافقة كاملة.",
   },
 };
 
@@ -28,7 +28,7 @@ export function getLocalizedMetadata(locale: string): Metadata {
   const { title, description } = metadata[locale] || metadata.fr;
 
   const baseUrl = 'https://tetouan.altessimmo.com';
-  const imageUrl = `${baseUrl}/images/og-image.png`;
+  const imageUrl = `${baseUrl}/og-image.png`;
 
   return {
     metadataBase: new URL(baseUrl),
