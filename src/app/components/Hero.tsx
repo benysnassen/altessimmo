@@ -110,115 +110,36 @@ export default function Hero({ real_estate, discover }: HeroProps) {
         </motion.div>
         
         {/* Elegant Mysterious Button */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 2.5 }}
-          className="pt-2"
-        >
-          <motion.div
-            whileHover={{ 
-              scale: 1.02,
-              transition: { duration: 0.4, ease: "easeOut" }
-            }}
-            whileTap={{ scale: 0.98 }}
-            className="relative flex justify-center"
-          >
-            <Link 
-              href="/contact"
-              className="ml-4 group relative inline-flex items-center justify-center px-8 py-3 font-light tracking-widest text-sm uppercase text-white/80 hover:text-white transition-all duration-700"
-            >
-              {/* Background Glow Effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                initial={{ scale: 0.8 }}
-                whileHover={{ scale: 1.1 }}
-              />
-              
-              {/* Main Button Background */}
-              <div className="relative z-10 px-8 py-3 border border-white/20 rounded-sm bg-black/20 backdrop-blur-sm group-hover:border-white/40 group-hover:bg-white/5 transition-all duration-500">
-                {/* Glitch Effect Text */}
-                <div className="relative">
-                  {/* Main Text */}
-                  <motion.div
-                    className="relative z-10 font-light tracking-widest text-sm uppercase flex"
-                  >
-                    
-                      <motion.span
-                        
-                        animate={{
-                          x: [0, Math.random() * 1 - 0.5, 0],
-                          y: [0, Math.random() * 1 - 0.5, 0]
-                        }}
-                        transition={{
-                          duration: 0.1,
-                          delay: 0.02,
-                          repeat: Infinity,
-                          repeatDelay: 3 + Math.random() * 2
-                        }}
-                        className="inline-block"
-                      >{discover}
-                      </motion.span>
-                    
-                  </motion.div>
-                  
-                  {/* Glitch Duplicate Layer */}
-                  <motion.div
-                    initial={{ opacity: 0.15, x: 0.5, y: 0.5 }}
-                    className="absolute inset-0 flex items-center justify-center font-light tracking-widest text-sm uppercase text-white/100"
-                    style={{ 
-                      textShadow: '0.5px 0.5px 0px rgba(255,255,255,0.05)',
-                      filter: 'blur(0.3px)'
-                    }}
-                  >
-                    {discover}
-                  </motion.div>
-                </div>
-              </div>
-              
-              {/* Subtle Arrow Indicator */}
-              <motion.div
-                className="ml-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <div className="w-1 h-6 bg-gradient-to-b from-transparent via-white/60 to-transparent"></div>
-              </motion.div>
-            </Link>
-          </motion.div>
-        </motion.div>
-      </motion.div>
-      
-      {/* Elegant Scroll Indicator */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 3 }}
-        className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-10"
-      >
-        <motion.div
-          animate={{ 
-            y: [0, 8, 0],
-            opacity: [0.2, 0.8, 0.2]
-          }}
-          transition={{ 
-            duration: 3, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
-          className="flex flex-col items-center space-y-2"
-        >
-          <div className="w-px h-8 bg-white/60"></div>
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-            className="w-1 h-1 bg-white/40 rounded-full"
-          />
-        </motion.div>
+      {/* Elegant Mysterious Button */}
+<motion.div 
+  initial={{ opacity: 0, y: 50 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 1, delay: 2.5 }}
+  className="pt-2"
+>
+  <motion.div
+    whileHover={{ 
+      scale: 1.02,
+      transition: { duration: 0.4, ease: "easeOut" }
+    }}
+    whileTap={{ scale: 0.98 }}
+    className="relative flex justify-center"
+  >
+    <Link 
+      href="/contact"
+      className="group relative inline-flex items-center justify-center px-10 py-4 border border-white/20 bg-black/20 backdrop-blur-sm text-sm uppercase tracking-widest text-white/70 hover:text-white rounded-sm transition-all duration-700"
+    >
+      {/* Glow */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        initial={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+      />
+      <span className="relative z-10">
+      {discover}      </span>
+    </Link>
+  </motion.div>
+</motion.div>
       </motion.div>
 
       {/* Subtle Floating Elements */}
