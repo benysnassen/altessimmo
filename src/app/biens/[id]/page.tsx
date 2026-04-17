@@ -1,15 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import type { Bien } from '@/types/bien';
 import StatusBadge from '@/components/biens/StatusBadge';
 import TypeBadge from '@/components/biens/TypeBadge';
 import ScoreBar from '@/components/biens/ScoreBar';
+import { getSupabaseServerClient } from '../supabaseServer';
 
 export default async function BienDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = await getSupabaseServerClient();
   const { data } = await supabase.from('biens').select('*').eq('id', id).single();
 
   if (!data) notFound();

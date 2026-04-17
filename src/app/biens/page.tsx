@@ -1,10 +1,9 @@
-import { cookies } from 'next/headers';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import PropertyGrid from '@/components/biens/PropertyGrid';
 import type { Bien } from '@/types/bien';
+import { getSupabaseServerClient } from './supabaseServer';
 
 export default async function BiensPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = await getSupabaseServerClient();
   const { data: biens } = await supabase.from('biens').select('*').order('score', { ascending: false });
 
   return (
