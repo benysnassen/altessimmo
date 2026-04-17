@@ -26,6 +26,45 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Admin light theme override (dashboard/login/back-office) */
+.admin-light {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.admin-light [class*="bg-black"] {
+  background-color: #ffffff !important;
+}
+
+.admin-light [class*="bg-white/"] {
+  background-color: #ffffff !important;
+}
+
+.admin-light [class*="text-white"] {
+  color: #0f172a !important;
+}
+
+.admin-light [class*="border-white"] {
+  border-color: #e2e8f0 !important;
+}
+
+.admin-light [class*="placeholder-white"]::placeholder {
+  color: #64748b !important;
+}
+
+.admin-light select,
+.admin-light input,
+.admin-light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #d1d5db !important;
+}
+
+.admin-light option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
 /* Custom utility classes for real estate theme */
 @utility text-anthracite {
   color: var(--color-anthracite);
@@ -198,3 +237,163 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* ---------- Market Ticker (Noir premium + glossy) ---------- */
+
+.market-ticker {
+  position: relative;
+  width: 90%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+  border-top: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 10px 0;
+  box-sizing: border-box;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* glossy highlight */
+.ticker-gloss {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent);
+  mix-blend-mode: overlay;
+}
+
+/* marquee wrapper: two tracks side-by-side (for continuous scroll) */
+.ticker-marquee {
+  display: flex;
+  width: max-content;
+  align-items: center;
+}
+
+/* each track scrolls — by translating left by 50% we create continuous loop (tracks are same width) */
+.ticker-track {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  white-space: nowrap;
+  /* animation */
+  animation: ticker-scroll 28s linear infinite;
+}
+
+/* keyframes */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* each item */
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px;
+  color: rgba(255,255,255,0.92);
+  min-height: 48px;
+}
+
+/* KPI variant (prix m²) emphasized */
+.ticker-item-kpi {
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6), 0 0 10px rgba(255,255,255,0.02) inset;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* label small uppercase */
+.label {
+  font-size: 18px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+  min-width: 110px;
+}
+
+/* value row: value + optional arrow */
+.value-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* numeric value */
+.value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* up / down colors */
+.value-up {
+  color: #29c67b; /* vert */
+  text-shadow: 0 0 6px rgba(41,198,123,0.18);
+}
+
+.value-down {
+  color: #ff6b6b; /* rouge */
+  text-shadow: 0 0 6px rgba(255,107,107,0.12);
+}
+
+/* separator between items */
+.sep {
+  width: 2px;
+  height: 36px;
+  background: rgba(255,255,255,0.04);
+  margin-left: 10px;
+}
+
+/* timestamp small */
+.ticker-item-time .label { min-width: auto; }
+.ticker-item-time .value {
+  font-size: 16px;
+  color: rgba(255,255,255,0.6);
+  font-weight: 600;
+}
+
+/* arrow SVG wrapper */
+.arrow-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* arrow base */
+.arrow {
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  opacity: 0.95;
+}
+
+/* up / down color via CSS classes */
+.arrow-up { color: #29c67b; transform-origin: center; animation: arrow-bob 1.2s ease-in-out infinite; }
+.arrow-down { color: #ff6b6b; transform-origin: center; animation: arrow-bob 1.2s ease-in-out infinite reverse; }
+
+/* small bobbing for arrows */
+@keyframes arrow-bob {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.02); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* hover pause: when hovering marquee, pause animation for readability */
+.market-ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+/* responsive adjustments */
+@media (max-width: 768px) {
+  .label { display: none; } /* conserve de la place sur mobile */
+  .value { font-size: 14px; }
+  .ticker-item-kpi { padding: 10px 12px; min-width: 160px; }
+  .ticker-track { gap: 16px; animation-duration: 36s; }
+}
+
+/* accessibility: reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+  .arrow { animation: none; transform: none; }
+}

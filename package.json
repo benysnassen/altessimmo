@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:webpack": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "dev:clean": "./start-dev.sh",
     "dev:clean:win": "start-dev.bat",
     "build": "next build",

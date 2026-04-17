@@ -1,6 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+async function ensureSellersMaterializedFromContacts() {
+  const sellerContacts = await prisma.contact.findMany({
+    where: { type: 'SELLER' },
+    select: {
+      name: true,
+      phone: true,
+      email: true,
+      message: true,
+      estimation: true,
+      confidential: true,
+    },
+  });
+
+  if (sellerContacts.length === 0) return;
+
+  const existingPhones = new Set(
+    (
+      await prisma.seller.findMany({
+        select: { phone: true },
+      })
+    ).map((seller) => seller.phone)
+  );
+
+  const missing = sellerContacts.filter((contact) => !existingPhones.has(contact.phone));
+  if (missing.length === 0) return;
+
+  await prisma.$transaction(
+    missing.map((contact) =>
+      prisma.seller.create({
+        data: {
+          name: contact.name,
+          phone: contact.phone,
+          email: contact.email,
+          message: contact.message,
+          confidential: contact.confidential,
+          price: contact.estimation,
+        },
+      })
+    )
+  );
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -24,6 +66,8 @@ export async function GET(request: NextRequest) {
       });
       return NextResponse.json(buyers);
     } else if (type === 'sellers') {
+      await ensureSellersMaterializedFromContacts();
+
       if (status) {
         whereClause.status = status;
       }
@@ -38,6 +82,8 @@ export async function GET(request: NextRequest) {
       });
       return NextResponse.json(sellers);
     } else {
+      await ensureSellersMaterializedFromContacts();
+
       // Retourner les deux types
       const [buyers, sellers] = await Promise.all([
         prisma.buyer.findMany({

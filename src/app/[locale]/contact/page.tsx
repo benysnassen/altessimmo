@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import ContactForm from '../../components/ContactForm';
 import { Metadata } from 'next';
 
-
 export const metadata: Metadata = {
   title: "Contact - Altessimmo Tétouan, Martil & Cabo Negro | Achetez ou vendez un bien d’exception",
   description:
@@ -48,6 +47,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-black">
+
       <Suspense fallback={<div>Chargement du formulaire...</div>}>
         <ContactForm />
       </Suspense>

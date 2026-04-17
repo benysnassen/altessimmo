@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "../globals.css";
 import Footer from "../components/Footer";
 import Script from "next/script";
@@ -7,7 +7,6 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -15,6 +14,12 @@ type Props = {
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+export function generateViewport(): Viewport {
+  return {
+    themeColor: "#ffffff",
+  };
 }
 
 // Métadonnées internationalisées
@@ -73,7 +78,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: descriptions[locale as keyof typeof descriptions] || descriptions.fr,
       images: [
         {
-          url: "/og-image.jpg",
+          url: "/window.svg",
           width: 1200,
           height: 630,
           alt: "Altessimmo Tétouan, Martil & Cabo Negro - Immobilier de prestige",
@@ -85,25 +90,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: titles[locale as keyof typeof titles] || titles.fr,
       description: descriptions[locale as keyof typeof descriptions] || descriptions.fr,
       creator: "@altessimmo",
-      images: ["/og-image.jpg"],
+      images: ["/window.svg"],
     },
     icons: {
-      icon: [
-        { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-        { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-        { url: "/favicon.svg", type: "image/svg+xml" },
-        { url: "/favicon.ico" },
-      ],
-      apple: [
-        { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-      ],
+      icon: [{ url: "/file.svg", type: "image/svg+xml" }],
+      apple: [{ url: "/file.svg", sizes: "180x180", type: "image/svg+xml" }],
       other: [
         { rel: "manifest", url: "/site.webmanifest" },
-        { rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#5bbad5" },
+        { rel: "mask-icon", url: "/file.svg", color: "#5bbad5" },
       ],
     },
-    themeColor: "#ffffff",
   };
 }
 

@@ -2,6 +2,7 @@
 
 import { Link } from '@/i18n/routing'; // ✅ CORRECT
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 
 interface HeroProps {
@@ -9,10 +10,43 @@ interface HeroProps {
   discover: string
 }
 
+type Particle = {
+  id: string;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  duration: number;
+};
+
 export default function Hero({ real_estate, discover }: HeroProps) {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 300], [0, -50]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const [particles, setParticles] = useState<Particle[]>([]);
+
+  useEffect(() => {
+    const width = window.innerWidth || 1920;
+    const height = window.innerHeight || 1080;
+
+    const nextParticles: Particle[] = Array.from({ length: 6 }).map((_, index) => {
+      const fromX = Math.random() * width;
+      const fromY = Math.random() * height;
+      const toX = Math.random() * width;
+      const toY = Math.random() * height;
+
+      return {
+        id: `particle-${index}`,
+        fromX,
+        fromY,
+        toX,
+        toY,
+        duration: 20 + Math.random() * 10,
+      };
+    });
+
+    setParticles(nextParticles);
+  }, []);
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
@@ -149,23 +183,23 @@ export default function Hero({ real_estate, discover }: HeroProps) {
         transition={{ duration: 2, delay: 1 }}
         className="absolute inset-0 pointer-events-none"
       >
-        {typeof window !== 'undefined' && [...Array(6)].map((_, i) => (
+        {particles.map((particle) => (
           <motion.div
-            key={i}
-            initial={{ 
-              x: Math.random() * (window?.innerWidth || 1920),
-              y: Math.random() * (window?.innerHeight || 1080),
-              opacity: 0
+            key={particle.id}
+            initial={{
+              x: particle.fromX,
+              y: particle.fromY,
+              opacity: 0,
             }}
-            animate={{ 
-              x: Math.random() * (window?.innerWidth || 1920),
-              y: Math.random() * (window?.innerHeight || 1080),
-              opacity: [0, 0.1, 0]
+            animate={{
+              x: [particle.fromX, particle.toX, particle.fromX],
+              y: [particle.fromY, particle.toY, particle.fromY],
+              opacity: [0, 0.1, 0],
             }}
-            transition={{ 
-              duration: 20 + Math.random() * 10,
+            transition={{
+              duration: particle.duration,
               repeat: Infinity,
-              ease: "linear"
+              ease: 'linear',
             }}
             className="absolute w-1 h-1 bg-white rounded-full"
           />

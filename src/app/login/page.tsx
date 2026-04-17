@@ -94,7 +94,7 @@ export default function LoginPage() {
 
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center py-16 px-4">
+    <div className="admin-light min-h-screen bg-black flex items-center justify-center py-16 px-4">
       <motion.div 
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}

@@ -956,7 +956,7 @@ export default function Dashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="admin-light min-h-screen bg-black flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -971,7 +971,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="admin-light min-h-screen bg-black flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -985,7 +985,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="admin-light min-h-screen bg-black text-white">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -1003,6 +1003,13 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center space-x-4 pt-1">
+              <Link
+                href="/dashboard/properties"
+                className="hidden md:inline-flex items-center space-x-2 px-4 py-2 border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all duration-300 rounded-sm"
+              >
+                <Building2 className="w-4 h-4" />
+                <span className="text-sm">Biens</span>
+              </Link>
               <div className="flex items-center space-x-2">
                 <div className="relative group">
                   <div className="flex items-center space-x-2 text-white/60">
@@ -1175,6 +1182,15 @@ export default function Dashboard() {
   <Plus size={18} strokeWidth={3} className="md:w-7 md:h-7" />
   <span className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
     Nouveau contact
+  </span>
+</Link>
+              <Link
+  href="/dashboard/properties"
+  className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 border border-white/20 text-white rounded-full hover:bg-white/10 transition-colors shadow-lg self-center"
+  >
+  <Building2 size={18} strokeWidth={2.5} className="md:w-6 md:h-6" />
+  <span className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+    Gerer les biens
   </span>
 </Link>
             </div>

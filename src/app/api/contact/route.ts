@@ -15,19 +15,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Sauvegarde en base de donnée
-    const contact = await prisma.contact.create({
-      data: {
-        name,
-        phone,
-        email: email || null,
-        type: type === 'seller' ? 'SELLER' : 'BUYER',
-        budget: budget || null,
-        estimation: estimation || null,
-        message: message || null,
-        confidential: confidential || false,
-        status: 'NEW'
+    const contactType = type === 'seller' ? 'SELLER' : 'BUYER';
+
+    const contact = await prisma.$transaction(async (tx) => {
+      const createdContact = await tx.contact.create({
+        data: {
+          name,
+          phone,
+          email: email || null,
+          type: contactType,
+          budget: budget || null,
+          estimation: estimation || null,
+          message: message || null,
+          confidential: confidential || false,
+          status: 'NEW',
+        },
+      });
+
+      if (contactType === 'SELLER') {
+        await tx.seller.create({
+          data: {
+            name,
+            phone,
+            email: email || null,
+            message: message || null,
+            confidential: confidential || false,
+            price: estimation || null,
+          },
+        });
+      } else {
+        await tx.buyer.create({
+          data: {
+            name,
+            phone,
+            email: email || null,
+            budget: budget || null,
+            message: message || null,
+            confidential: confidential || false,
+          },
+        });
       }
+
+      return createdContact;
     });
 
     console.log('Nouveau contact sauvegardé:', contact);

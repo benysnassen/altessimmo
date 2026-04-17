@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Contact {
@@ -56,6 +57,7 @@ model Buyer {
   visits       Visit[]
   offers       Offer[]
   notes        Note[]
+  propertyMatches PropertyMatch[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -89,6 +91,7 @@ model Seller {
   visits       Visit[]
   offers       Offer[]
   notes        Note[]
+  properties   Property[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -153,6 +156,66 @@ model Admin {
   @@map("admins")
 }
 
+model Property {
+  id             String          @id @default(cuid())
+  sellerId       String
+  seller         Seller          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  title          String
+  propertyType   PropertyType
+  status         PropertyStatus  @default(DRAFT)
+  listingType    ListingType     @default(SALE)
+  location       String
+  neighborhood   String?
+  address        String?
+  price          String
+  surface        Int?
+  landSurface    Int?
+  rooms          Int?
+  bathrooms      Int?
+  garages        Int?
+  floor          Int?
+  yearBuilt      Int?
+  description    String?
+  hasGarden      Boolean         @default(false)
+  hasPool        Boolean         @default(false)
+  hasSeaView     Boolean         @default(false)
+  isFeatured     Boolean         @default(false)
+  images         PropertyImage[]
+  matches        PropertyMatch[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("properties")
+}
+
+model PropertyImage {
+  id         String    @id @default(cuid())
+  propertyId String
+  property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  url        String
+  alt        String?
+  isPrimary  Boolean   @default(false)
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+
+  @@map("property_images")
+}
+
+model PropertyMatch {
+  id          String    @id @default(cuid())
+  propertyId  String
+  buyerId     String
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  buyer       Buyer     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  score       Int
+  reasons     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([propertyId, buyerId])
+  @@map("property_matches")
+}
+
 enum ContactType {
   BUYER
   SELLER
@@ -215,4 +278,30 @@ enum NoteType {
   OFFER
   NEGOTIATION
   IMPORTANT
+}
+
+enum PropertyType {
+  APARTMENT
+  VILLA
+  HOUSE
+  RIAD
+  LAND
+  COMMERCIAL
+  OFFICE
+  PENTHOUSE
+  DUPLEX
+  OTHER
+}
+
+enum PropertyStatus {
+  DRAFT
+  AVAILABLE
+  RESERVED
+  SOLD
+  ARCHIVED
+}
+
+enum ListingType {
+  SALE
+  RENT
 }

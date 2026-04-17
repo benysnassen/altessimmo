@@ -85,7 +85,7 @@ export default function ContactForm() {
   const onSubmit = async (data: Record<string, unknown>) => {
     // Validation côté client
       try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/contact/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -253,7 +253,7 @@ export default function ContactForm() {
               >
                 {isSeller ? (
                   <>
-                    <ShoppingCart className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                    <ShoppingCart className="w-4 h-4 group-hover:rotate-350 transition-transform duration-300" />
                     <span className="text-sm font-light tracking-wide">
                       {t('looking_to_buy')}
                     </span>
@@ -261,7 +261,7 @@ export default function ContactForm() {
                   </>
                 ) : (
                   <>
-                    <Home className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                    <Home className="w-4 h-4 group-hover:rotate-350 transition-transform duration-300" />
                     <span className="text-sm font-light tracking-wide">
                     {t('want_to_sell')}
                     </span>
