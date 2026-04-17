@@ -140,7 +140,7 @@ export default function PropertyCard({
           <button
             type="button"
             onClick={() => onDelete(bien)}
-            className="rounded-xl border border-danger-mid p-2 text-danger transition-all duration-100 hover:bg-danger-light active:scale-95"
+            className="rounded-xl border border-transparent bg-transparent p-2 text-[#EC4134] transition-all duration-100 hover:border-cream-border hover:bg-transparent active:scale-95"
             aria-label="Supprimer"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
