@@ -579,8 +579,8 @@ export default function PropertiesDashboardPage() {
             <button
               type="button"
               onClick={() => setActiveView('list')}
-              className={`px-4 py-2 rounded-full text-sm transition-colors ${
-                activeView === 'list' ? 'bg-white text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm ${
+                activeView === 'list' ? 'bg-white text-black border border-white' : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
               }`}
             >
               Listing des biens
@@ -588,8 +588,8 @@ export default function PropertiesDashboardPage() {
             <button
               type="button"
               onClick={() => setActiveView('form')}
-              className={`px-4 py-2 rounded-full text-sm transition-colors ${
-                activeView === 'form' ? 'bg-white text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm ${
+                activeView === 'form' ? 'bg-white text-black border border-white' : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
               }`}
             >
               {form.id ? 'Modifier le bien' : 'Ajouter un bien'}
@@ -836,137 +836,78 @@ export default function PropertiesDashboardPage() {
             </div>
           </div>
 
-          {filteredProperties.map((property, index) => {
-            const primaryImage = property.images.find((image) => image.isPrimary) || property.images[0];
-
-            return (
-              <motion.div
-                key={property.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.03 }}
-                className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden"
-              >
-                <div className="grid md:grid-cols-[280px,1fr]">
-                  <div className="bg-white/5 border-b md:border-b-0 md:border-r border-white/10">
-                    {primaryImage?.url ? (
-                      <img src={primaryImage.url} alt={primaryImage.alt || property.title} className="w-full h-full min-h-[220px] object-cover" />
-                    ) : (
-                      <div className="min-h-[220px] flex items-center justify-center text-white/35">
-                        <ImageIcon className="w-10 h-10" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-6">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
-                          <span className="px-3 py-1 rounded-full text-xs border border-white/15 text-white/70">{LABELS[property.propertyType]}</span>
-                          <span className="px-3 py-1 rounded-full text-xs border border-white/15 text-white/70">{LABELS[property.status]}</span>
-                          <span className="px-3 py-1 rounded-full text-xs border border-white/15 text-white/70">{LABELS[property.listingType]}</span>
+          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[980px]">
+                <thead className="bg-white/10 border-b border-white/10">
+                  <tr className="text-left text-xs uppercase tracking-wide text-white/60">
+                    <th className="px-4 py-3">Bien</th>
+                    <th className="px-4 py-3">Type / Statut</th>
+                    <th className="px-4 py-3">Prix</th>
+                    <th className="px-4 py-3">Zone</th>
+                    <th className="px-4 py-3">Proprietaire</th>
+                    <th className="px-4 py-3">Images</th>
+                    <th className="px-4 py-3">Matches</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProperties.map((property) => (
+                    <tr key={property.id} className="border-b border-white/5 hover:bg-white/5">
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-white">{property.title}</p>
+                        <p className="text-xs text-white/50">{property.surface ? `${property.surface} m2` : 'surface n/a'} - {property.rooms ? `${property.rooms}p` : 'pieces n/a'}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-2 py-1 rounded-full text-xs border border-white/20 text-white/80">{LABELS[property.propertyType]}</span>
+                          <span className="px-2 py-1 rounded-full text-xs border border-white/20 text-white/80">{LABELS[property.status]}</span>
                           {property.isFeatured && (
-                            <span className="px-3 py-1 rounded-full text-xs border border-amber-400/30 bg-amber-400/10 text-amber-200 inline-flex items-center gap-1">
+                            <span className="px-2 py-1 rounded-full text-xs border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 inline-flex items-center gap-1">
                               <Sparkles className="w-3 h-3" />
                               Mise en avant
                             </span>
                           )}
                         </div>
-                        <h2 className="font-display text-2xl font-light mb-2">{property.title}</h2>
-                        <div className="text-white/55 text-sm inline-flex items-center gap-2 mb-2">
-                          <MapPin className="w-4 h-4" />
-                          {property.location}{property.neighborhood ? `, ${property.neighborhood}` : ''}
+                      </td>
+                      <td className="px-4 py-3 text-white font-semibold">{property.price}</td>
+                      <td className="px-4 py-3 text-sm text-white/70">
+                        {property.location}
+                        {property.neighborhood ? <span className="block text-white/50">{property.neighborhood}</span> : null}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-white/75">{property.seller.name}</td>
+                      <td className="px-4 py-3 text-sm text-white/75">{property.images.length}/5</td>
+                      <td className="px-4 py-3 text-sm text-white/75">{property.matches.length}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            href={`/dashboard/properties/${property.id}`}
+                            className="px-3 py-1.5 rounded-full bg-white text-black text-xs font-medium hover:bg-white/85"
+                          >
+                            Voir
+                          </Link>
+                          <button
+                            onClick={() => populateForm(property)}
+                            className="px-3 py-1.5 rounded-full border border-white/30 text-white text-xs hover:bg-white/10 inline-flex items-center gap-1"
+                          >
+                            <Pencil className="w-3 h-3" />
+                            Modifier
+                          </button>
+                          <button
+                            onClick={() => deleteProperty(property.id)}
+                            className="px-3 py-1.5 rounded-full bg-red-800 text-white text-xs hover:bg-red-700 inline-flex items-center gap-1"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            Supprimer
+                          </button>
                         </div>
-                        <p className="text-white text-xl font-semibold">{property.price}</p>
-                        <p className="text-white/50 text-sm mt-2">
-                          Proprietaire associe : <span className="text-white/80">{property.seller.name}</span>
-                        </p>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <button onClick={() => populateForm(property)} className="px-4 py-2 border border-white/15 rounded-full text-sm text-white/80 hover:bg-white/10 inline-flex items-center gap-2">
-                          <Pencil className="w-4 h-4" />
-                          Modifier
-                        </button>
-                        <button onClick={() => deleteProperty(property.id)} className="px-4 py-2 border border-red-400/20 rounded-full text-sm text-red-200 hover:bg-red-400/10 inline-flex items-center gap-2">
-                          <Trash2 className="w-4 h-4" />
-                          Supprimer
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
-                      <div className="bg-black/20 border border-white/10 rounded-xl px-4 py-3 inline-flex items-center gap-3">
-                        <Building2 className="w-4 h-4 text-white/55" />
-                        <span className="text-sm text-white/80">{property.surface ? `${property.surface} m2` : 'Surface n/a'}</span>
-                      </div>
-                      <div className="bg-black/20 border border-white/10 rounded-xl px-4 py-3 inline-flex items-center gap-3">
-                        <BedDouble className="w-4 h-4 text-white/55" />
-                        <span className="text-sm text-white/80">{property.rooms ? `${property.rooms} pieces` : 'Pieces n/a'}</span>
-                      </div>
-                      <div className="bg-black/20 border border-white/10 rounded-xl px-4 py-3 inline-flex items-center gap-3">
-                        <Bath className="w-4 h-4 text-white/55" />
-                        <span className="text-sm text-white/80">{property.bathrooms ? `${property.bathrooms} sdb` : 'Sdb n/a'}</span>
-                      </div>
-                      <div className="bg-black/20 border border-white/10 rounded-xl px-4 py-3 inline-flex items-center gap-3">
-                        <Car className="w-4 h-4 text-white/55" />
-                        <span className="text-sm text-white/80">{property.garages ? `${property.garages} garage(s)` : 'Garage n/a'}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mb-5">
-                      {property.hasGarden && <span className="px-3 py-1 rounded-full text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 inline-flex items-center gap-1"><Trees className="w-3 h-3" />Jardin</span>}
-                      {property.hasPool && <span className="px-3 py-1 rounded-full text-xs bg-cyan-500/10 border border-cyan-500/20 text-cyan-200 inline-flex items-center gap-1"><Waves className="w-3 h-3" />Piscine</span>}
-                      {property.hasSeaView && <span className="px-3 py-1 rounded-full text-xs bg-sky-500/10 border border-sky-500/20 text-sky-200 inline-flex items-center gap-1"><Eye className="w-3 h-3" />Vue mer</span>}
-                    </div>
-
-                    {property.description && <p className="text-white/70 leading-relaxed mb-6">{property.description}</p>}
-
-                    {property.images.length > 1 && (
-                      <div className="flex gap-3 overflow-x-auto pb-2 mb-6">
-                        {property.images.map((image) => (
-                          <img key={image.id || image.url} src={image.url} alt={image.alt || property.title} className={`w-24 h-20 rounded-xl object-cover border ${image.isPrimary ? 'border-white/60' : 'border-white/10'}`} />
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="border-t border-white/10 pt-5">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-display text-xl font-light">Acheteurs correspondants</h3>
-                        <span className="text-sm text-white/45">{property.matches.length} match(es)</span>
-                      </div>
-
-                      {property.matches.length === 0 ? (
-                        <div className="border border-dashed border-white/10 rounded-xl p-4 text-white/45 text-sm">
-                          Aucun acheteur ne matche encore assez bien avec ce bien.
-                        </div>
-                      ) : (
-                        <div className="grid xl:grid-cols-2 gap-3">
-                          {property.matches.map((match) => (
-                            <div key={match.id} className="border border-white/10 bg-black/20 rounded-xl p-4">
-                              <div className="flex items-start justify-between gap-3 mb-2">
-                                <div>
-                                  <p className="text-white font-medium">{match.buyer.name}</p>
-                                  <p className="text-white/50 text-sm">{match.buyer.phone}</p>
-                                </div>
-                                <span className="px-3 py-1 rounded-full text-xs bg-white text-black inline-flex items-center gap-1">
-                                  <Check className="w-3 h-3" />
-                                  {match.score}%
-                                </span>
-                              </div>
-                              <p className="text-white/55 text-sm mb-1">Budget : {match.buyer.budget || 'non renseigne'}</p>
-                              <p className="text-white/55 text-sm mb-2">Zone : {match.buyer.location || 'non renseignee'}</p>
-                              <p className="text-white/75 text-sm">{match.reasons || 'Compatibilite globale sur les criteres principaux.'}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
           {filteredProperties.length === 0 && (
             <div className="border border-dashed border-white/15 rounded-2xl p-8 text-center text-white/50">
               Aucun bien ne correspond aux filtres actifs.
