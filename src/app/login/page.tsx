@@ -94,21 +94,21 @@ export default function LoginPage() {
 
 
   return (
-    <div className="admin-light min-h-screen bg-black flex items-center justify-center py-16 px-4">
+    <div className="admin-light min-h-screen bg-sand flex items-center justify-center py-16 px-4">
       <motion.div 
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="max-w-md mx-auto w-full"
       >
-        <div className="bg-white rounded-sm shadow-lg p-12">
+        <div className="bg-cream border border-cream-border rounded-2xl p-12">
           {/* Header */}
           <div className="text-center mb-12">
             <motion.div 
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-6"
+              className="w-16 h-16 bg-sage rounded-full flex items-center justify-center mx-auto mb-6"
             >
               <Shield className="w-8 h-8 text-white" />
             </motion.div>
@@ -126,7 +126,7 @@ export default function LoginPage() {
               initial={{ width: 0 }}
               animate={{ width: "4rem" }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="h-px bg-black mx-auto mb-6"
+              className="h-px bg-sage mx-auto mb-6"
             ></motion.div>
             
             <motion.p 
@@ -159,7 +159,7 @@ export default function LoginPage() {
                   minLength: { value: 3, message: 'Minimum 3 caractères' }
                 })}
                 disabled={isLocked}
-                className="w-full px-4 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 border border-cream-border bg-cream text-sand-dark font-light focus:border-sage-mid focus:outline-none transition-colors duration-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="Entrez votre nom d'utilisateur"
               />
               
@@ -190,7 +190,7 @@ export default function LoginPage() {
                   })}
                   type={showPassword ? 'text' : 'password'}
                   disabled={isLocked}
-                  className="w-full px-4 py-3 pr-12 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3 pr-12 border border-cream-border bg-cream text-sand-dark font-light focus:border-sage-mid focus:outline-none transition-colors duration-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="Entrez votre mot de passe"
                 />
                 
@@ -248,7 +248,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading || isLocked}
-                className="bg-black text-white px-10 py-4 rounded-sm font-light tracking-wide text-lg hover:bg-black/90 transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none w-full"
+                className="bg-sage text-white px-10 py-4 rounded-xl font-light tracking-wide text-lg hover:bg-sage/90 transition-all duration-300 hover:transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none w-full"
               >
                 {isLoading ? 'Connexion...' : 'Se connecter'}
               </button>

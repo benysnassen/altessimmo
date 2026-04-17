@@ -119,23 +119,26 @@ export default function PropertyGrid({ initialBiens }: PropertyGridProps) {
 
   return (
     <div className="space-y-4">
-      <header className="flex flex-wrap items-start justify-between gap-3">
+      <header className="flex flex-wrap items-start justify-between gap-3 pr-20 sm:pr-24">
         <div>
-          <h1 className="text-xl font-semibold text-sand-dark">Mes biens</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-semibold text-sand-dark">Mes biens</h1>
+            <button
+              type="button"
+              onClick={() => router.push('/biens/nouveau')}
+              aria-label="Ajouter un bien"
+              title="Ajouter un bien"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-sage-mid bg-sage text-white transition-all duration-150 hover:bg-sage/90 hover:scale-[1.03] active:scale-95"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-4 w-4">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </button>
+          </div>
           <p className="text-sm text-sand-dark/80">
             {biens.length} biens · {updatedTodayCount} mise à jour aujourd&apos;hui
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => router.push('/biens/nouveau')}
-          className="inline-flex items-center gap-2 rounded-xl bg-sage px-4 py-2 text-sm text-white transition-colors duration-150 hover:bg-sage/90"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-          Ajouter un bien
-        </button>
       </header>
 
       <StatsBar biens={filteredBiens} />

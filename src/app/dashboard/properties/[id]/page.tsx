@@ -37,6 +37,23 @@ type PropertyDetail = {
   }>;
 };
 
+const formatCompactPrice = (value: string) => {
+  const numeric = Number(value.replace(/[^\d.-]/g, ''));
+  if (!Number.isFinite(numeric) || numeric <= 0) return value;
+
+  if (numeric >= 1_000_000) {
+    const millions = numeric / 1_000_000;
+    return `${millions.toFixed(2).replace(/\.?0+$/, '')}M`;
+  }
+
+  if (numeric >= 1_000) {
+    const thousands = numeric / 1_000;
+    return `${thousands.toFixed(0)}K`;
+  }
+
+  return `${Math.round(numeric)}`;
+};
+
 export default function PropertyDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -103,15 +120,18 @@ export default function PropertyDetailPage() {
                 <span className="px-3 py-1 rounded-full border border-white/20 text-sm">{property.status}</span>
                 <span className="px-3 py-1 rounded-full border border-white/20 text-sm">{property.listingType}</span>
                 {property.isFeatured && (
-                  <span className="px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-sm inline-flex items-center gap-1">
+                  <span
+                    className="px-2 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-sm inline-flex items-center justify-center"
+                    title="Mise en avant"
+                    aria-label="Mise en avant"
+                  >
                     <Sparkles className="w-3 h-3" />
-                    Mise en avant
                   </span>
                 )}
               </div>
 
               <h1 className="font-display text-3xl mb-2">{property.title}</h1>
-              <p className="text-2xl font-semibold mb-4">{property.price}</p>
+              <p className="text-2xl font-semibold mb-4">{formatCompactPrice(property.price)}</p>
 
               <div className="grid md:grid-cols-2 gap-3 text-sm text-white/75 mb-5">
                 <p className="inline-flex items-center gap-2"><MapPin className="w-4 h-4" /> {property.location} {property.neighborhood ? `- ${property.neighborhood}` : ''}</p>

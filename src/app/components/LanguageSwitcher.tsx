@@ -111,17 +111,17 @@ export default function LanguageSwitcher() {
           aria-expanded={open}
           aria-label="Changer de langue"
           className={`
-            bg-white/5 border border-white/10 
+            bg-sage border border-sage-mid 
             p-2 rounded-xl backdrop-blur-sm
-            hover:bg-white/10 hover:border-white/20
+            hover:bg-sage/90 hover:border-sage-mid
             transition-all duration-300
-            ${open ? 'bg-white/10 border-white/20 scale-105' : ''}
+            ${open ? 'bg-sage/90 border-sage-mid scale-105' : ''}
           `}
         >
           <Globe 
             size={22} 
             strokeWidth={1.5} 
-            className={`text-white transition-transform duration-500 ${
+            className={`text-cream transition-transform duration-500 ${
               open ? 'rotate-180' : 'rotate-0'
             }`}
           />

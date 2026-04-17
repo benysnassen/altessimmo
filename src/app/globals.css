@@ -53,41 +53,60 @@ body {
 
 /* Admin light theme override (dashboard/login/back-office) */
 .admin-light {
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--color-sand);
+  color: var(--color-sand-dark);
 }
 
 .admin-light [class*="bg-black"] {
-  background-color: #ffffff !important;
+  background-color: var(--color-cream) !important;
 }
 
 .admin-light [class*="bg-white/"] {
-  background-color: #ffffff !important;
+  background-color: var(--color-cream) !important;
 }
 
 .admin-light [class*="text-white"] {
-  color: #0f172a !important;
+  color: var(--color-sand-dark) !important;
 }
 
 .admin-light [class*="border-white"] {
-  border-color: #e2e8f0 !important;
+  border-color: var(--color-cream-border) !important;
 }
 
 .admin-light [class*="placeholder-white"]::placeholder {
-  color: #64748b !important;
+  color: var(--color-sand-mid) !important;
 }
 
 .admin-light select,
 .admin-light input,
 .admin-light textarea {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #d1d5db !important;
+  background-color: var(--color-cream) !important;
+  color: var(--color-sand-dark) !important;
+  border-color: var(--color-cream-border) !important;
 }
 
 .admin-light option {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
+  background-color: var(--color-cream) !important;
+  color: var(--color-sand-dark) !important;
+}
+
+/* Preserve modal/overlay dimming */
+.admin-light .fixed.inset-0.bg-black\/50,
+.admin-light .fixed.inset-0.bg-black\/60 {
+  background-color: rgba(17, 24, 39, 0.35) !important;
+}
+
+/* Admin semantic surfaces */
+.admin-light .admin-card {
+  background-color: var(--color-cream) !important;
+  border: 1px solid var(--color-cream-border) !important;
+  border-radius: 1rem;
+}
+
+.admin-light .admin-pill {
+  background-color: var(--color-sage-light) !important;
+  border: 1px solid var(--color-sage-mid) !important;
+  color: var(--color-sage) !important;
 }
 
 /* Custom utility classes for real estate theme */

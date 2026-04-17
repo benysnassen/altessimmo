@@ -4,7 +4,9 @@ import { getSupabaseServerClient } from './supabaseServer';
 
 export default async function BiensPage() {
   const supabase = await getSupabaseServerClient();
-  const { data: biens } = await supabase.from('biens').select('*').order('score', { ascending: false });
+  const { data: biens } = supabase
+    ? await supabase.from('biens').select('*').order('score', { ascending: false })
+    : { data: [] };
 
   return (
     <main className="min-h-screen bg-sand px-4 py-8 sm:px-8">

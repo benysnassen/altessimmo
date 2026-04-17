@@ -110,12 +110,12 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-white rounded-sm shadow-xl max-w-md w-full p-8"
+        className="bg-cream border border-cream-border rounded-2xl max-w-md w-full p-8"
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-sage rounded-full flex items-center justify-center">
               <Lock className="w-5 h-5 text-white" />
             </div>
             <h2 className="text-xl font-light text-black">Changer le mot de passe</h2>
@@ -140,7 +140,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
               <input
                 {...register('currentPassword', { required: 'Mot de passe actuel requis' })}
                 type={showCurrentPassword ? 'text' : 'password'}
-                className="w-full px-4 py-3 pr-12 border border-black/20 bg-transparent text-black font-light focus:border-blue-600 focus:outline-none transition-colors duration-300 rounded-sm"
+                className="w-full px-4 py-3 pr-12 border border-cream-border bg-cream text-sand-dark font-light focus:border-sage-mid focus:outline-none transition-colors duration-300 rounded-xl"
                 placeholder="Entrez votre mot de passe actuel"
               />
               
@@ -174,7 +174,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
                   required: 'Nouveau mot de passe requis'
                 })}
                 type={showNewPassword ? 'text' : 'password'}
-                className="w-full px-4 py-3 pr-12 border border-black/20 bg-transparent text-black font-light focus:border-blue-600 focus:outline-none transition-colors duration-300 rounded-sm"
+                className="w-full px-4 py-3 pr-12 border border-cream-border bg-cream text-sand-dark font-light focus:border-sage-mid focus:outline-none transition-colors duration-300 rounded-xl"
                 placeholder="Entrez un nouveau mot de passe fort"
               />
               
@@ -226,7 +226,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
                   required: 'Confirmation requise'
                 })}
                 type={showConfirmPassword ? 'text' : 'password'}
-                className="w-full px-4 py-3 pr-12 border border-black/20 bg-transparent text-black font-light focus:border-blue-600 focus:outline-none transition-colors duration-300 rounded-sm"
+                className="w-full px-4 py-3 pr-12 border border-cream-border bg-cream text-sand-dark font-light focus:border-sage-mid focus:outline-none transition-colors duration-300 rounded-xl"
                 placeholder="Confirmez le nouveau mot de passe"
               />
               
@@ -269,14 +269,14 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
               type="button"
               onClick={onClose}
               disabled={isLoading}
-              className="flex-1 px-6 py-3 border border-black/20 text-black font-light rounded-sm hover:bg-black/5 transition-colors disabled:opacity-50"
+              className="flex-1 px-6 py-3 border border-cream-border text-sand-dark font-light rounded-xl hover:bg-sand/60 transition-colors disabled:opacity-50"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-6 py-3 bg-blue-600 text-white font-light rounded-sm hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex-1 px-6 py-3 bg-sage text-white font-light rounded-xl hover:bg-sage/90 transition-colors disabled:opacity-50"
             >
               {isLoading ? 'Modification...' : 'Modifier'}
             </button>

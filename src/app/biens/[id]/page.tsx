@@ -9,6 +9,7 @@ import { getSupabaseServerClient } from '../supabaseServer';
 export default async function BienDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await getSupabaseServerClient();
+  if (!supabase) notFound();
   const { data } = await supabase.from('biens').select('*').eq('id', id).single();
 
   if (!data) notFound();
