@@ -21,6 +21,9 @@ import {
   Trash2,
   Trees,
   Waves,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 
 type SellerOption = {
@@ -196,6 +199,8 @@ export default function PropertiesDashboardPage() {
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [matchesOnly, setMatchesOnly] = useState(false);
   const [activeView, setActiveView] = useState<'list' | 'form'>('list');
+  const [sortBy, setSortBy] = useState<'none' | 'price' | 'status' | 'matches'>('none');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     const verify = async () => {
@@ -514,7 +519,7 @@ export default function PropertiesDashboardPage() {
   };
 
   const filteredProperties = useMemo(() => {
-    return properties.filter((property) => {
+    const filtered = properties.filter((property) => {
       if (statusFilter !== 'ALL' && property.status !== statusFilter) return false;
       if (typeFilter !== 'ALL' && property.propertyType !== typeFilter) return false;
       if (matchesOnly && property.matches.length === 0) return false;
@@ -528,7 +533,49 @@ export default function PropertiesDashboardPage() {
         property.seller.name.toLowerCase().includes(query)
       );
     });
-  }, [properties, matchesOnly, searchTerm, statusFilter, typeFilter]);
+
+    if (sortBy === 'none') return filtered;
+
+    const statusOrder = ['DRAFT', 'AVAILABLE', 'RESERVED', 'SOLD', 'ARCHIVED'];
+    const toNumber = (value: string) => {
+      const parsed = Number(value.replace(/[^\d]/g, ''));
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    const sorted = [...filtered].sort((a, b) => {
+      let compare = 0;
+      if (sortBy === 'price') {
+        compare = toNumber(a.price) - toNumber(b.price);
+      } else if (sortBy === 'status') {
+        compare = statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+      } else if (sortBy === 'matches') {
+        compare = a.matches.length - b.matches.length;
+      }
+      return sortDirection === 'asc' ? compare : -compare;
+    });
+
+    return sorted;
+  }, [properties, matchesOnly, searchTerm, statusFilter, typeFilter, sortBy, sortDirection]);
+
+  const toggleSort = (column: 'price' | 'status' | 'matches') => {
+    if (sortBy !== column) {
+      setSortBy(column);
+      setSortDirection(column === 'price' ? 'desc' : 'asc');
+      return;
+    }
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
+  const SortIcon = ({ column }: { column: 'price' | 'status' | 'matches' }) => {
+    if (sortBy !== column) {
+      return <ArrowUpDown className="w-3.5 h-3.5 text-white/45" />;
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="w-3.5 h-3.5 text-white" />
+    ) : (
+      <ArrowDown className="w-3.5 h-3.5 text-white" />
+    );
+  };
 
   if (checkingAuth || loading) {
     return (
@@ -837,18 +884,57 @@ export default function PropertiesDashboardPage() {
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto max-h-[72vh]">
               <table className="w-full min-w-[980px] table-fixed">
-                <thead className="bg-white/10 border-b border-white/10">
+                <thead className="bg-white/10 border-b border-white/10 sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-white/15">
                   <tr className="text-left text-xs uppercase tracking-wide text-white/60">
                     <th className="px-4 py-3 w-[18%]">Bien</th>
                     <th className="px-4 py-3 w-[20%]">Type / Statut</th>
-                    <th className="px-4 py-3 w-[12%]">Prix</th>
+                    <th className="px-4 py-3 w-[12%]">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort('price')}
+                        className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+                      >
+                        Prix
+                        <SortIcon column="price" />
+                      </button>
+                    </th>
                     <th className="px-4 py-3 w-[14%]">Zone</th>
                     <th className="px-4 py-3 w-[12%]">Proprietaire</th>
                     <th className="px-4 py-3 w-[8%]">Images</th>
-                    <th className="px-4 py-3 w-[8%]">Matches</th>
+                    <th className="px-4 py-3 w-[8%]">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort('matches')}
+                        className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+                      >
+                        Matches
+                        <SortIcon column="matches" />
+                      </button>
+                    </th>
                     <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                  <tr className="text-left text-[10px] uppercase tracking-wide text-white/35 border-t border-white/5">
+                    <th className="px-4 pb-2"></th>
+                    <th className="px-4 pb-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort('status')}
+                        className="inline-flex items-center gap-1.5 hover:text-white/70 transition-colors"
+                      >
+                        Trier statut
+                        <SortIcon column="status" />
+                      </button>
+                    </th>
+                    <th className="px-4 pb-2"></th>
+                    <th className="px-4 pb-2"></th>
+                    <th className="px-4 pb-2"></th>
+                    <th className="px-4 pb-2"></th>
+                    <th className="px-4 pb-2"></th>
+                    <th className="px-4 pb-2 text-right text-white/45">
+                      {sortBy === 'none' ? 'Tri: aucun' : `Tri: ${sortBy} (${sortDirection})`}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
