@@ -977,17 +977,17 @@ export default function PropertiesDashboardPage() {
                             onClick={() => populateForm(property)}
                             className="group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-sky-400/40 bg-sky-500/10 text-sky-100 text-xs font-semibold hover:bg-sky-500/20 hover:border-sky-300/70 active:scale-[0.98] transition-all"
                             title="Modifier ce bien"
+                            aria-label="Modifier ce bien"
                           >
                             <Pencil className="w-3.5 h-3.5 transition-transform group-hover:-rotate-6" />
-                            Modifier
                           </button>
                           <button
                             onClick={() => deleteProperty(property.id)}
                             className="group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-red-900/80 bg-red-950 text-red-100 text-xs font-semibold hover:bg-red-900 hover:border-red-700 active:scale-[0.98] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
                             title="Supprimer ce bien"
+                            aria-label="Supprimer ce bien"
                           >
                             <Trash2 className="w-3.5 h-3.5 transition-transform group-hover:rotate-[-8deg]" />
-                            Supprimer
                           </button>
                         </div>
                       </td>

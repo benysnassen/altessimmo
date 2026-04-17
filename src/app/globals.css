@@ -13,6 +13,30 @@
   --color-light-gray: #E5E5E5;
   --font-display: 'Playfair Display', serif;
   --font-sans: 'Inter', sans-serif;
+  --color-cream: #FDFCF9;
+  --color-cream-border: #E8E6E0;
+  --color-sand: #F7F4EE;
+  --color-sand-mid: #D3D1C7;
+  --color-sand-dark: #444441;
+  --color-sage: #4A6741;
+  --color-sage-light: #E8EFE6;
+  --color-sage-mid: #C5D9BF;
+  --color-lavender: #3C3489;
+  --color-lavender-light: #EEEDFE;
+  --color-lavender-mid: #CECBF6;
+  --color-peach: #712B13;
+  --color-peach-light: #FAECE7;
+  --color-peach-mid: #F5C4B3;
+  --color-rose: #72243E;
+  --color-rose-light: #FBEAF0;
+  --color-rose-mid: #F4C0D1;
+  --color-danger: #E24B4A;
+  --color-danger-light: #FCEBEB;
+  --color-danger-mid: #F7C1C1;
+  --color-success: #27500A;
+  --color-success-light: #EAF3DE;
+  --color-warning: #633806;
+  --color-warning-light: #FAEEDA;
 }
 
 body {
