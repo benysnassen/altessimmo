@@ -837,13 +837,13 @@ const CreateClientForm = ({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-gradient-to-b from-black to-zinc-950 border border-white/20 rounded-2xl p-6 max-w-3xl w-full shadow-2xl"
+        className="bg-white border border-black/10 rounded-2xl p-6 max-w-3xl w-full shadow-2xl text-black"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-light text-white">Nouveau client/proprietaire</h3>
-          <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-sm transition-colors">
-            <X className="w-5 h-5 text-white/60" />
+          <h3 className="text-xl font-medium text-black">Nouveau client/proprietaire</h3>
+          <button onClick={onCancel} className="p-2 hover:bg-black/5 rounded-sm transition-colors">
+            <X className="w-5 h-5 text-black/60" />
           </button>
         </div>
 
@@ -852,7 +852,7 @@ const CreateClientForm = ({
             <select
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value as 'buyer' | 'seller' })}
-              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
             >
               <option value="buyer">Acheteur</option>
               <option value="seller">Proprietaire</option>
@@ -861,7 +861,7 @@ const CreateClientForm = ({
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
               placeholder="Nom complet"
               required
             />
@@ -874,7 +874,7 @@ const CreateClientForm = ({
                     const [dialCode, country] = e.target.value.split('|');
                     setPhoneParts((prev) => ({ ...prev, dialCode, country }));
                   }}
-                  className="w-40 px-2 py-2.5 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                  className="w-40 px-2 py-2.5 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
                 >
                   {COUNTRY_OPTIONS.map((country) => (
                     <option key={`${country.code}-${country.dialCode}`} value={`${country.dialCode}|${country.code}`}>
@@ -883,7 +883,7 @@ const CreateClientForm = ({
                   ))}
                 </select>
                 <div className="relative flex-1">
-                  <FaWhatsapp className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400 text-sm" />
+                  <FaWhatsapp className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 text-sm" />
                   <input
                     type="tel"
                     inputMode="numeric"
@@ -893,19 +893,19 @@ const CreateClientForm = ({
                       const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
                       setPhoneParts((prev) => ({ ...prev, digits }));
                     }}
-                    className="w-full pl-9 pr-3 py-2.5 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2.5 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
                     placeholder="688 905 632"
                     required
                   />
                 </div>
               </div>
-              <p className="text-xs text-white/45 mt-1">Format automatique + controle regex chiffres.</p>
+              <p className="text-xs text-black/55 mt-1">Format automatique + controle regex chiffres.</p>
             </div>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
               placeholder="Email"
             />
             {formData.type === 'buyer' ? (
@@ -913,7 +913,7 @@ const CreateClientForm = ({
                 type="text"
                 value={formData.budget}
                 onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
                 placeholder="Budget"
               />
             ) : (
@@ -921,7 +921,7 @@ const CreateClientForm = ({
                 type="text"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
                 placeholder="Prix attendu"
               />
             )}
@@ -929,14 +929,14 @@ const CreateClientForm = ({
               type="text"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
               placeholder="Zone"
             />
             <input
               type="text"
               value={formData.propertyType}
               onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
-              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
               placeholder="Type de bien recherche/propose"
             />
           </div>
@@ -944,24 +944,24 @@ const CreateClientForm = ({
             value={formData.message}
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             rows={3}
-            className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none resize-none"
+            className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none resize-none"
             placeholder="Notes utiles"
           />
 
-          {error && <p className="text-red-300 text-sm">{error}</p>}
+          {error && <p className="text-red-600 text-sm">{error}</p>}
 
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 border border-white/20 text-white/60 hover:border-white/40 hover:text-white/80 transition-colors rounded-sm"
+              className="px-4 py-2 border border-black/20 text-black/60 hover:border-black/40 hover:text-black/80 transition-colors rounded-sm"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-white/10 border border-white/30 text-white hover:bg-white/20 transition-colors rounded-sm flex items-center gap-2 disabled:opacity-60"
+              className="px-4 py-2 bg-black text-white hover:bg-black/85 transition-colors rounded-sm flex items-center gap-2 disabled:opacity-60"
             >
               <Save className="w-4 h-4" />
               {submitting ? 'Enregistrement...' : 'Creer'}

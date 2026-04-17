@@ -51,6 +51,7 @@ type PropertyImage = {
   alt?: string | null;
   isPrimary: boolean;
   sortOrder: number;
+  localFile?: File | null;
 };
 
 type PropertyRecord = {
@@ -165,7 +166,13 @@ const emptyForm = (): PropertyForm => ({
   hasPool: false,
   hasSeaView: false,
   isFeatured: false,
-  images: [{ url: '', alt: '', isPrimary: true, sortOrder: 0 }],
+  images: Array.from({ length: 5 }, (_, index) => ({
+    url: '',
+    alt: '',
+    isPrimary: index === 0,
+    sortOrder: index,
+    localFile: null,
+  })),
 });
 
 const toNumberOrNull = (value: string) => {
@@ -266,14 +273,24 @@ export default function PropertiesDashboardPage() {
       hasSeaView: property.hasSeaView,
       isFeatured: property.isFeatured,
       images: property.images.length
-        ? property.images.map((image, index) => ({
-            id: image.id,
-            url: image.url,
-            alt: image.alt || '',
-            isPrimary: image.isPrimary,
-            sortOrder: index,
-          }))
-        : [{ url: '', alt: '', isPrimary: true, sortOrder: 0 }],
+        ? [
+            ...property.images.map((image, index) => ({
+              id: image.id,
+              url: image.url,
+              alt: image.alt || '',
+              isPrimary: image.isPrimary,
+              sortOrder: index,
+              localFile: null,
+            })),
+            ...Array.from({ length: Math.max(0, 5 - property.images.length) }, (_, offset) => ({
+              url: '',
+              alt: '',
+              isPrimary: false,
+              sortOrder: property.images.length + offset,
+              localFile: null,
+            })),
+          ].slice(0, 5)
+        : emptyForm().images,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -298,17 +315,7 @@ export default function PropertiesDashboardPage() {
     });
   };
 
-  const addImageField = () => {
-    setForm((current) => ({
-      ...current,
-      images: [
-        ...current.images,
-        { url: '', alt: '', isPrimary: current.images.length === 0, sortOrder: current.images.length },
-      ],
-    }));
-  };
-
-  const compressImage = (file: File): Promise<string> =>
+  const compressImage = (file: File): Promise<File> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
@@ -325,7 +332,18 @@ export default function PropertiesDashboardPage() {
             return;
           }
           ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/webp', 0.75));
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('compression-failed'));
+                return;
+              }
+              const filename = file.name.replace(/\.[^.]+$/, '') || 'image';
+              resolve(new File([blob], `${filename}.webp`, { type: 'image/webp' }));
+            },
+            'image/webp',
+            0.75
+          );
         };
         image.onerror = reject;
         image.src = String(reader.result);
@@ -338,27 +356,24 @@ export default function PropertiesDashboardPage() {
     if (!file) return;
     setError('');
     try {
-      const compressedDataUrl = await compressImage(file);
-      handleImageChange(index, 'url', compressedDataUrl);
-      if (!form.images[index]?.alt) {
-        handleImageChange(index, 'alt', file.name.replace(/\.[^.]+$/, ''));
-      }
+      const compressed = await compressImage(file);
+      const previewUrl = URL.createObjectURL(compressed);
+      setForm((current) => {
+        const images = current.images.map((image, imageIndex) =>
+          imageIndex === index
+            ? {
+                ...image,
+                url: previewUrl,
+                localFile: compressed,
+                alt: image.alt || compressed.name.replace(/\.[^.]+$/, ''),
+              }
+            : image
+        );
+        return { ...current, images };
+      });
     } catch {
       setError("Impossible de compresser cette image. Essaie un autre fichier.");
     }
-  };
-
-  const removeImageField = (index: number) => {
-    setForm((current) => {
-      const images = current.images.filter((_, imageIndex) => imageIndex !== index);
-      if (images.length > 0 && !images.some((image) => image.isPrimary)) {
-        images[0].isPrimary = true;
-      }
-      return {
-        ...current,
-        images: images.length ? images : [{ url: '', alt: '', isPrimary: true, sortOrder: 0 }],
-      };
-    });
   };
 
   const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -368,7 +383,7 @@ export default function PropertiesDashboardPage() {
     setMessage('');
 
     try {
-      const payload = {
+      const basePayload = {
         id: form.id,
         sellerId: form.sellerId,
         title: form.title,
@@ -391,18 +406,73 @@ export default function PropertiesDashboardPage() {
         hasPool: form.hasPool,
         hasSeaView: form.hasSeaView,
         isFeatured: form.isFeatured,
-        images: form.images.map((image, index) => ({
-          url: image.url,
-          alt: image.alt,
-          isPrimary: image.isPrimary,
-          sortOrder: index,
-        })),
       };
 
+      const imageSlots = form.images.slice(0, 5);
+      const nonEmptyImages = imageSlots.filter((image) => image.url || image.localFile);
+      if (nonEmptyImages.length === 0) {
+        throw new Error('at-least-one-image');
+      }
+      if (!nonEmptyImages.some((image) => image.isPrimary)) {
+        throw new Error('primary-required');
+      }
+
+      let propertyId = form.id;
+      if (!propertyId) {
+        const createResponse = await fetch('/api/properties/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...basePayload, images: [] }),
+        });
+        if (!createResponse.ok) throw new Error('create-failed');
+        const created = await createResponse.json();
+        propertyId = created.id as string;
+      }
+
+      const uploadedImages = await Promise.all(
+        imageSlots.map(async (image, index) => {
+          if (image.localFile && propertyId) {
+            const formData = new FormData();
+            formData.append('file', image.localFile);
+            formData.append('propertyId', propertyId);
+            const uploadResponse = await fetch('/api/properties/images/', {
+              method: 'POST',
+              body: formData,
+            });
+            if (!uploadResponse.ok) throw new Error('upload-failed');
+            const uploaded = await uploadResponse.json();
+            return {
+              url: uploaded.url as string,
+              alt: image.alt,
+              isPrimary: image.isPrimary,
+              sortOrder: index,
+            };
+          }
+
+          if (image.url) {
+            return {
+              url: image.url,
+              alt: image.alt,
+              isPrimary: image.isPrimary,
+              sortOrder: index,
+            };
+          }
+
+          return null;
+        })
+      );
+
+      const finalImages = uploadedImages.filter(Boolean);
+      if (finalImages.length === 0) throw new Error('images-empty');
+
       const response = await fetch('/api/properties/', {
-        method: form.id ? 'PUT' : 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...basePayload,
+          id: propertyId,
+          images: finalImages,
+        }),
       });
 
       if (!response.ok) {
@@ -623,13 +693,12 @@ export default function PropertiesDashboardPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ImageIcon className="w-4 h-4 text-white/60" />
-                  <span className="text-sm text-white/80">Images du bien</span>
+                  <span className="text-sm text-white/80">Images du bien (max 5)</span>
                 </div>
-                <button type="button" onClick={addImageField} className="text-xs text-white/70 hover:text-white inline-flex items-center gap-1">
-                  <Plus className="w-3 h-3" />
-                  Ajouter
-                </button>
               </div>
+              <p className="text-xs text-white/50">
+                Les images sont uploades dans `public/uploads/properties/&lt;id-du-bien&gt;/` avec 1 image principale obligatoire.
+              </p>
 
               {form.images.map((image, index) => (
                 <div key={`${image.id || 'new'}-${index}`} className="space-y-2 border border-white/10 rounded-lg p-3 bg-black/20">
@@ -646,7 +715,7 @@ export default function PropertiesDashboardPage() {
                     value={image.url}
                     onChange={(event) => handleImageChange(index, 'url', event.target.value)}
                     className="w-full px-3 py-2 bg-black/30 border border-white/10 rounded-sm text-white text-sm"
-                    placeholder="URL image"
+                    placeholder={`URL image ${index + 1}`}
                   />
                   <input
                     value={image.alt || ''}
@@ -665,11 +734,7 @@ export default function PropertiesDashboardPage() {
                       />
                       Image principale
                     </label>
-                    {form.images.length > 1 && (
-                      <button type="button" onClick={() => removeImageField(index)} className="text-xs text-red-300 hover:text-red-200">
-                        Retirer
-                      </button>
-                    )}
+                    <span className="text-xs text-white/45">Image {index + 1}/5</span>
                   </div>
                 </div>
               ))}
@@ -690,6 +755,10 @@ export default function PropertiesDashboardPage() {
         </motion.form>
 
         <div className="space-y-5">
+          <div className="bg-white/10 border border-white/20 rounded-2xl p-4 md:p-5">
+            <h2 className="font-display text-xl md:text-2xl text-white mb-1">Listing des biens</h2>
+            <p className="text-sm text-white/60">Filtre, parcours, matches et edition complete des biens.</p>
+          </div>
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5">
             <div className="grid md:grid-cols-4 gap-3">
               <input
