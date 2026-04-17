@@ -184,6 +184,10 @@ export default function PropertiesDashboardPage() {
   const [form, setForm] = useState<PropertyForm>(emptyForm());
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [typeFilter, setTypeFilter] = useState('ALL');
+  const [matchesOnly, setMatchesOnly] = useState(false);
 
   useEffect(() => {
     const verify = async () => {
@@ -304,6 +308,46 @@ export default function PropertiesDashboardPage() {
     }));
   };
 
+  const compressImage = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const image = new window.Image();
+        image.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxWidth = 1600;
+          const ratio = image.width > maxWidth ? maxWidth / image.width : 1;
+          canvas.width = Math.round(image.width * ratio);
+          canvas.height = Math.round(image.height * ratio);
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('ctx-unavailable'));
+            return;
+          }
+          ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/webp', 0.75));
+        };
+        image.onerror = reject;
+        image.src = String(reader.result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const handleFileUpload = async (index: number, file?: File) => {
+    if (!file) return;
+    setError('');
+    try {
+      const compressedDataUrl = await compressImage(file);
+      handleImageChange(index, 'url', compressedDataUrl);
+      if (!form.images[index]?.alt) {
+        handleImageChange(index, 'alt', file.name.replace(/\.[^.]+$/, ''));
+      }
+    } catch {
+      setError("Impossible de compresser cette image. Essaie un autre fichier.");
+    }
+  };
+
   const removeImageField = (index: number) => {
     setForm((current) => {
       const images = current.images.filter((_, imageIndex) => imageIndex !== index);
@@ -394,6 +438,23 @@ export default function PropertiesDashboardPage() {
       setError('Suppression impossible pour le moment.');
     }
   };
+
+  const filteredProperties = useMemo(() => {
+    return properties.filter((property) => {
+      if (statusFilter !== 'ALL' && property.status !== statusFilter) return false;
+      if (typeFilter !== 'ALL' && property.propertyType !== typeFilter) return false;
+      if (matchesOnly && property.matches.length === 0) return false;
+      if (!searchTerm.trim()) return true;
+
+      const query = searchTerm.toLowerCase();
+      return (
+        property.title.toLowerCase().includes(query) ||
+        property.location.toLowerCase().includes(query) ||
+        (property.neighborhood || '').toLowerCase().includes(query) ||
+        property.seller.name.toLowerCase().includes(query)
+      );
+    });
+  }, [properties, matchesOnly, searchTerm, statusFilter, typeFilter]);
 
   if (checkingAuth || loading) {
     return (
@@ -572,6 +633,15 @@ export default function PropertiesDashboardPage() {
 
               {form.images.map((image, index) => (
                 <div key={`${image.id || 'new'}-${index}`} className="space-y-2 border border-white/10 rounded-lg p-3 bg-black/20">
+                  <label className="block">
+                    <span className="text-xs text-white/60">Upload local (optimise en WebP)</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => handleFileUpload(index, event.target.files?.[0])}
+                      className="mt-1 block w-full text-xs text-white/70 file:mr-3 file:px-3 file:py-1.5 file:rounded-sm file:border-0 file:bg-white/15 file:text-white hover:file:bg-white/25"
+                    />
+                  </label>
                   <input
                     value={image.url}
                     onChange={(event) => handleImageChange(index, 'url', event.target.value)}
@@ -620,7 +690,51 @@ export default function PropertiesDashboardPage() {
         </motion.form>
 
         <div className="space-y-5">
-          {properties.map((property, index) => {
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5">
+            <div className="grid md:grid-cols-4 gap-3">
+              <input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Recherche titre, zone, proprietaire..."
+                className="px-4 py-2.5 bg-black/30 border border-white/15 rounded-sm text-white"
+              />
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+                className="px-4 py-2.5 bg-black/30 border border-white/15 rounded-sm text-white"
+              >
+                <option value="ALL">Tous les statuts</option>
+                {PROPERTY_STATUSES.map((status) => (
+                  <option key={status} value={status} className="bg-black">
+                    {LABELS[status]}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={typeFilter}
+                onChange={(event) => setTypeFilter(event.target.value)}
+                className="px-4 py-2.5 bg-black/30 border border-white/15 rounded-sm text-white"
+              >
+                <option value="ALL">Tous les types</option>
+                {PROPERTY_TYPES.map((type) => (
+                  <option key={type} value={type} className="bg-black">
+                    {LABELS[type]}
+                  </option>
+                ))}
+              </select>
+              <label className="inline-flex items-center gap-3 px-4 py-2.5 bg-black/30 border border-white/15 rounded-sm text-sm text-white/80">
+                <input
+                  type="checkbox"
+                  checked={matchesOnly}
+                  onChange={(event) => setMatchesOnly(event.target.checked)}
+                  className="accent-white"
+                />
+                Avec matches seulement
+              </label>
+            </div>
+          </div>
+
+          {filteredProperties.map((property, index) => {
             const primaryImage = property.images.find((image) => image.isPrimary) || property.images[0];
 
             return (
@@ -751,6 +865,11 @@ export default function PropertiesDashboardPage() {
               </motion.div>
             );
           })}
+          {filteredProperties.length === 0 && (
+            <div className="border border-dashed border-white/15 rounded-2xl p-8 text-center text-white/50">
+              Aucun bien ne correspond aux filtres actifs.
+            </div>
+          )}
         </div>
       </div>
     </div>

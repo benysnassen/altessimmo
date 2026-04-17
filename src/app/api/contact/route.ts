@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendTelegramNotification } from '@/lib/telegram';
 
+const normalizePhone = (value?: string) => {
+  const raw = (value || '').trim();
+  if (!raw) return '';
+
+  if (raw.includes('|')) {
+    const [dialCode, _country, digits = ''] = raw.split('|');
+    const onlyDigits = digits.replace(/\D/g, '');
+    const cleanDialCode = (dialCode || '').replace(/\D/g, '');
+    return `${cleanDialCode}${onlyDigits}`;
+  }
+
+  return raw.replace(/\D/g, '');
+};
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -17,47 +31,43 @@ export async function POST(request: NextRequest) {
 
     const contactType = type === 'seller' ? 'SELLER' : 'BUYER';
 
-    const contact = await prisma.$transaction(async (tx) => {
-      const createdContact = await tx.contact.create({
-        data: {
-          name,
-          phone,
-          email: email || null,
-          type: contactType,
-          budget: budget || null,
-          estimation: estimation || null,
-          message: message || null,
-          confidential: confidential || false,
-          status: 'NEW',
-        },
-      });
+    const normalizedPhone = normalizePhone(phone);
+    const existingContact = await prisma.contact.findFirst({
+      where: {
+        type: contactType,
+        OR: [{ phoneNormalized: normalizedPhone }, { phone: phone.trim() }],
+      },
+    });
 
-      if (contactType === 'SELLER') {
-        await tx.seller.create({
+    const contact = existingContact
+      ? await prisma.contact.update({
+          where: { id: existingContact.id },
           data: {
             name,
-            phone,
-            email: email || null,
-            message: message || null,
-            confidential: confidential || false,
-            price: estimation || null,
-          },
-        });
-      } else {
-        await tx.buyer.create({
-          data: {
-            name,
-            phone,
+            phone: phone.trim(),
+            phoneNormalized: normalizedPhone,
             email: email || null,
             budget: budget || null,
+            estimation: estimation || null,
             message: message || null,
             confidential: confidential || false,
+            status: 'NEW',
+          },
+        })
+      : await prisma.contact.create({
+          data: {
+            name,
+            phone: phone.trim(),
+            phoneNormalized: normalizedPhone,
+            email: email || null,
+            type: contactType,
+            budget: budget || null,
+            estimation: estimation || null,
+            message: message || null,
+            confidential: confidential || false,
+            status: 'NEW',
           },
         });
-      }
-
-      return createdContact;
-    });
 
     console.log('Nouveau contact sauvegardé:', contact);
 

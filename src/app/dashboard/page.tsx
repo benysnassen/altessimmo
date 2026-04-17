@@ -33,6 +33,7 @@ import ChangePasswordModal from '@/app/components/ChangePasswordModal';
 import ContactDetailCard from '@/app/components/ContactDetailCard';
 import ProportionalStar from '@/app/components/ProportionalStar';
 import { useDropdownPosition } from '../hooks/useDropdownPosition';
+import { FaWhatsapp } from 'react-icons/fa';
 
 interface Contact {
   id: string;
@@ -139,6 +140,45 @@ const formatDateTable = (dateString: string) => {
     year: 'numeric'
   });
 };
+
+const COUNTRY_OPTIONS = [
+  { code: 'MA', dialCode: '+212', flag: '🇲🇦', label: 'Maroc' },
+  { code: 'FR', dialCode: '+33', flag: '🇫🇷', label: 'France' },
+  { code: 'ES', dialCode: '+34', flag: '🇪🇸', label: 'Espagne' },
+  { code: 'BE', dialCode: '+32', flag: '🇧🇪', label: 'Belgique' },
+  { code: 'NL', dialCode: '+31', flag: '🇳🇱', label: 'Pays-Bas' },
+  { code: 'IT', dialCode: '+39', flag: '🇮🇹', label: 'Italie' },
+  { code: 'DE', dialCode: '+49', flag: '🇩🇪', label: 'Allemagne' },
+  { code: 'GB', dialCode: '+44', flag: '🇬🇧', label: 'Royaume-Uni' },
+  { code: 'CA', dialCode: '+1', flag: '🇨🇦', label: 'Canada' },
+  { code: 'US', dialCode: '+1', flag: '🇺🇸', label: 'Etats-Unis' },
+];
+
+const defaultCountry = COUNTRY_OPTIONS[0];
+
+const extractPhoneParts = (value?: string) => {
+  const raw = (value || '').trim();
+  if (!raw) {
+    return { dialCode: defaultCountry.dialCode, country: defaultCountry.code, digits: '' };
+  }
+
+  if (raw.includes('|')) {
+    const [dialCode = defaultCountry.dialCode, country = defaultCountry.code, digits = ''] = raw.split('|');
+    return { dialCode, country, digits: digits.replace(/\D/g, '') };
+  }
+
+  const digits = raw.replace(/\D/g, '');
+  return { dialCode: defaultCountry.dialCode, country: defaultCountry.code, digits };
+};
+
+const formatPhoneNumber = (value: string) => {
+  const cleaned = value.replace(/\D/g, '').slice(0, 12);
+  const groups = cleaned.match(/.{1,3}/g);
+  return groups ? groups.join(' ') : '';
+};
+
+const toPhoneStorage = (dialCode: string, country: string, digits: string) =>
+  `${dialCode}|${country}|${digits.replace(/\D/g, '').slice(0, 12)}`;
 
 // Fonction pour extraire le code pays du numéro de téléphone
 const getCountryCode = (phone: string): string => {
@@ -543,6 +583,7 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
     personalNote: contact.personalNote || '',
     confidential: contact.confidential
   });
+  const [phoneParts, setPhoneParts] = useState(() => extractPhoneParts(contact.phone));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -598,14 +639,47 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
             </div>
             
             <div>
-              <label className="block text-sm font-light text-white/60 mb-2">Téléphone</label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
-                required
-              />
+              <label className="block text-sm font-light text-white/60 mb-2">Telephone / WhatsApp</label>
+              <div className="flex items-center gap-2">
+                <select
+                  value={`${phoneParts.dialCode}|${phoneParts.country}`}
+                  onChange={(e) => {
+                    const [dialCode, country] = e.target.value.split('|');
+                    setPhoneParts((prev) => ({ ...prev, dialCode, country }));
+                    setFormData({
+                      ...formData,
+                      phone: toPhoneStorage(dialCode, country, phoneParts.digits),
+                    });
+                  }}
+                  className="w-36 px-2 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                >
+                  {COUNTRY_OPTIONS.map((country) => (
+                    <option key={`${country.code}-${country.dialCode}`} value={`${country.dialCode}|${country.code}`}>
+                      {country.flag} {country.dialCode}
+                    </option>
+                  ))}
+                </select>
+                <div className="relative flex-1">
+                  <FaWhatsapp className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400 text-sm" />
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9 ]{8,16}"
+                    value={formatPhoneNumber(phoneParts.digits)}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
+                      setPhoneParts((prev) => ({ ...prev, digits }));
+                      setFormData({
+                        ...formData,
+                        phone: toPhoneStorage(phoneParts.dialCode, phoneParts.country, digits),
+                      });
+                    }}
+                    className="w-full pl-9 pr-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                    placeholder="688 905 632"
+                    required
+                  />
+                </div>
+              </div>
             </div>
             
             <div>
@@ -699,6 +773,206 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
   );
 };
 
+const CreateClientForm = ({
+  onCreate,
+  onCancel,
+}: {
+  onCreate: (payload: {
+    type: 'buyer' | 'seller';
+    name: string;
+    phone: string;
+    email?: string;
+    budget?: string;
+    price?: string;
+    location?: string;
+    propertyType?: string;
+    message?: string;
+  }) => Promise<void>;
+  onCancel: () => void;
+}) => {
+  const [formData, setFormData] = useState({
+    type: 'buyer' as 'buyer' | 'seller',
+    name: '',
+    phone: '',
+    email: '',
+    budget: '',
+    price: '',
+    location: '',
+    propertyType: '',
+    message: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [phoneParts, setPhoneParts] = useState(() => extractPhoneParts(''));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSubmitting(true);
+    try {
+      if (phoneParts.digits.length < 8) {
+        throw new Error('phone-too-short');
+      }
+
+      await onCreate({
+        ...formData,
+        phone: toPhoneStorage(phoneParts.dialCode, phoneParts.country, phoneParts.digits),
+      });
+    } catch {
+      setError("Impossible d'enregistrer ce profil pour le moment.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+      onClick={onCancel}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="bg-gradient-to-b from-black to-zinc-950 border border-white/20 rounded-2xl p-6 max-w-3xl w-full shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-light text-white">Nouveau client/proprietaire</h3>
+          <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-sm transition-colors">
+            <X className="w-5 h-5 text-white/60" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <select
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value as 'buyer' | 'seller' })}
+              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+            >
+              <option value="buyer">Acheteur</option>
+              <option value="seller">Proprietaire</option>
+            </select>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              placeholder="Nom complet"
+              required
+            />
+            <div className="md:col-span-2">
+              <label className="block text-sm font-light text-white/60 mb-2">Telephone / WhatsApp</label>
+              <div className="flex items-center gap-2">
+                <select
+                  value={`${phoneParts.dialCode}|${phoneParts.country}`}
+                  onChange={(e) => {
+                    const [dialCode, country] = e.target.value.split('|');
+                    setPhoneParts((prev) => ({ ...prev, dialCode, country }));
+                  }}
+                  className="w-40 px-2 py-2.5 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                >
+                  {COUNTRY_OPTIONS.map((country) => (
+                    <option key={`${country.code}-${country.dialCode}`} value={`${country.dialCode}|${country.code}`}>
+                      {country.flag} {country.dialCode}
+                    </option>
+                  ))}
+                </select>
+                <div className="relative flex-1">
+                  <FaWhatsapp className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400 text-sm" />
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9 ]{8,16}"
+                    value={formatPhoneNumber(phoneParts.digits)}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
+                      setPhoneParts((prev) => ({ ...prev, digits }));
+                    }}
+                    className="w-full pl-9 pr-3 py-2.5 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                    placeholder="688 905 632"
+                    required
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-white/45 mt-1">Format automatique + controle regex chiffres.</p>
+            </div>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              placeholder="Email"
+            />
+            {formData.type === 'buyer' ? (
+              <input
+                type="text"
+                value={formData.budget}
+                onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                placeholder="Budget"
+              />
+            ) : (
+              <input
+                type="text"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+                placeholder="Prix attendu"
+              />
+            )}
+            <input
+              type="text"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              placeholder="Zone"
+            />
+            <input
+              type="text"
+              value={formData.propertyType}
+              onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
+              className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
+              placeholder="Type de bien recherche/propose"
+            />
+          </div>
+          <textarea
+            value={formData.message}
+            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            rows={3}
+            className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none resize-none"
+            placeholder="Notes utiles"
+          />
+
+          {error && <p className="text-red-300 text-sm">{error}</p>}
+
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-4 py-2 border border-white/20 text-white/60 hover:border-white/40 hover:text-white/80 transition-colors rounded-sm"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-4 py-2 bg-white/10 border border-white/30 text-white hover:bg-white/20 transition-colors rounded-sm flex items-center gap-2 disabled:opacity-60"
+            >
+              <Save className="w-4 h-4" />
+              {submitting ? 'Enregistrement...' : 'Creer'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export default function Dashboard() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
@@ -714,6 +988,7 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showCreateClientModal, setShowCreateClientModal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -933,6 +1208,31 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error deleting contact:', error);
     }
+  };
+
+  const handleCreateClient = async (payload: {
+    type: 'buyer' | 'seller';
+    name: string;
+    phone: string;
+    email?: string;
+    budget?: string;
+    price?: string;
+    location?: string;
+    propertyType?: string;
+    message?: string;
+  }) => {
+    const response = await fetch('/api/clients/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error('create-failed');
+    }
+
+    await fetchContacts();
+    setShowCreateClientModal(false);
   };
 
   const buyers = contacts.filter(c => c.type === 'BUYER');
@@ -1175,15 +1475,15 @@ export default function Dashboard() {
                 <option value="SOLD">Vendu</option>
                 <option value="ARCHIVED">Archivé</option>
               </select>
-              <Link
-  href="/contact"
-  className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 bg-white text-black rounded-full hover:bg-white/90 transition-colors shadow-lg self-center"
-  >
-  <Plus size={18} strokeWidth={3} className="md:w-7 md:h-7" />
-  <span className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-    Nouveau contact
-  </span>
-</Link>
+              <button
+                onClick={() => setShowCreateClientModal(true)}
+                className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 bg-white text-black rounded-full hover:bg-white/90 transition-colors shadow-lg self-center"
+              >
+                <Plus size={18} strokeWidth={3} className="md:w-7 md:h-7" />
+                <span className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  Nouveau client/proprietaire
+                </span>
+              </button>
               <Link
   href="/dashboard/properties"
   className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 border border-white/20 text-white rounded-full hover:bg-white/10 transition-colors shadow-lg self-center"
@@ -1368,6 +1668,13 @@ export default function Dashboard() {
           contact={editingContact}
           onSave={handleEditContact}
           onCancel={() => setEditingContact(null)}
+        />
+      )}
+
+      {showCreateClientModal && (
+        <CreateClientForm
+          onCreate={handleCreateClient}
+          onCancel={() => setShowCreateClientModal(false)}
         />
       )}
 

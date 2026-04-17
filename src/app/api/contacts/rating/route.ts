@@ -13,19 +13,34 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'L\'évaluation doit être entre 1 et 5' }, { status: 400 });
     }
 
-    // Mettre à jour l'évaluation
-    const updatedContact = await prisma.contact.update({
+    const updatedBuyer = await prisma.buyer.updateMany({
       where: { id: contactId },
       data: { rating },
     });
 
-    return NextResponse.json(
-      { 
-        message: 'Évaluation mise à jour avec succès',
-        contact: updatedContact 
-      },
-      { status: 200 }
-    );
+    if (updatedBuyer.count > 0) {
+      return NextResponse.json({ message: 'Evaluation mise a jour', type: 'buyer' }, { status: 200 });
+    }
+
+    const updatedSeller = await prisma.seller.updateMany({
+      where: { id: contactId },
+      data: { rating },
+    });
+
+    if (updatedSeller.count > 0) {
+      return NextResponse.json({ message: 'Evaluation mise a jour', type: 'seller' }, { status: 200 });
+    }
+
+    const updatedContact = await prisma.contact.updateMany({
+      where: { id: contactId },
+      data: { rating },
+    });
+
+    if (updatedContact.count > 0) {
+      return NextResponse.json({ message: 'Evaluation mise a jour', type: 'contact' }, { status: 200 });
+    }
+
+    return NextResponse.json({ error: 'Contact introuvable' }, { status: 404 });
   } catch (error) {
     console.error('Erreur lors de la mise à jour de l\'évaluation:', error);
     return NextResponse.json({ error: 'Erreur interne du serveur' }, { status: 500 });

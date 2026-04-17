@@ -1,47 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-async function ensureSellersMaterializedFromContacts() {
-  const sellerContacts = await prisma.contact.findMany({
-    where: { type: 'SELLER' },
-    select: {
-      name: true,
-      phone: true,
-      email: true,
-      message: true,
-      estimation: true,
-      confidential: true,
-    },
-  });
+const normalizePhone = (value?: string) => {
+  const raw = (value || '').trim();
+  if (!raw) return '';
 
-  if (sellerContacts.length === 0) return;
+  if (raw.includes('|')) {
+    const [dialCode, _country, digits = ''] = raw.split('|');
+    const onlyDigits = digits.replace(/\D/g, '');
+    const cleanDialCode = (dialCode || '').replace(/\D/g, '');
+    return `${cleanDialCode}${onlyDigits}`;
+  }
 
-  const existingPhones = new Set(
-    (
-      await prisma.seller.findMany({
-        select: { phone: true },
-      })
-    ).map((seller) => seller.phone)
-  );
-
-  const missing = sellerContacts.filter((contact) => !existingPhones.has(contact.phone));
-  if (missing.length === 0) return;
-
-  await prisma.$transaction(
-    missing.map((contact) =>
-      prisma.seller.create({
-        data: {
-          name: contact.name,
-          phone: contact.phone,
-          email: contact.email,
-          message: contact.message,
-          confidential: contact.confidential,
-          price: contact.estimation,
-        },
-      })
-    )
-  );
-}
+  return raw.replace(/\D/g, '');
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -66,8 +38,6 @@ export async function GET(request: NextRequest) {
       });
       return NextResponse.json(buyers);
     } else if (type === 'sellers') {
-      await ensureSellersMaterializedFromContacts();
-
       if (status) {
         whereClause.status = status;
       }
@@ -82,8 +52,6 @@ export async function GET(request: NextRequest) {
       });
       return NextResponse.json(sellers);
     } else {
-      await ensureSellersMaterializedFromContacts();
-
       // Retourner les deux types
       const [buyers, sellers] = await Promise.all([
         prisma.buyer.findMany({
@@ -118,45 +86,112 @@ export async function POST(request: NextRequest) {
     const { type, ...data } = body;
 
     if (type === 'buyer') {
-      const buyer = await prisma.buyer.create({
-        data: {
-          name: data.name,
-          phone: data.phone,
-          email: data.email,
-          budget: data.budget,
-          message: data.message,
-          confidential: data.confidential || false,
-          propertyType: data.propertyType,
-          location: data.location,
-          minSurface: data.minSurface,
-          maxSurface: data.maxSurface,
-          minRooms: data.minRooms,
-          maxRooms: data.maxRooms,
-          hasGarden: data.hasGarden || false,
-          hasPool: data.hasPool || false,
-          hasSeaView: data.hasSeaView || false
-        }
+      const phone = normalizePhone(data.phone);
+      if (!phone) {
+        return NextResponse.json({ error: 'Phone is required' }, { status: 400 });
+      }
+
+      const existingBuyer = await prisma.buyer.findFirst({
+        where: {
+          OR: [{ phoneNormalized: phone }, { phone: data.phone?.trim() }],
+        },
       });
+
+      const buyer = existingBuyer
+        ? await prisma.buyer.update({
+            where: { id: existingBuyer.id },
+            data: {
+              name: data.name,
+              phone: data.phone.trim(),
+              phoneNormalized: phone,
+              email: data.email || null,
+              budget: data.budget || null,
+              message: data.message || null,
+              confidential: data.confidential || false,
+              propertyType: data.propertyType || null,
+              location: data.location || null,
+              minSurface: data.minSurface ?? null,
+              maxSurface: data.maxSurface ?? null,
+              minRooms: data.minRooms ?? null,
+              maxRooms: data.maxRooms ?? null,
+              hasGarden: data.hasGarden || false,
+              hasPool: data.hasPool || false,
+              hasSeaView: data.hasSeaView || false,
+            },
+          })
+        : await prisma.buyer.create({
+            data: {
+              name: data.name,
+              phone: data.phone.trim(),
+              phoneNormalized: phone,
+              email: data.email,
+              budget: data.budget,
+              message: data.message,
+              confidential: data.confidential || false,
+              propertyType: data.propertyType,
+              location: data.location,
+              minSurface: data.minSurface,
+              maxSurface: data.maxSurface,
+              minRooms: data.minRooms,
+              maxRooms: data.maxRooms,
+              hasGarden: data.hasGarden || false,
+              hasPool: data.hasPool || false,
+              hasSeaView: data.hasSeaView || false,
+            },
+          });
       return NextResponse.json(buyer);
     } else if (type === 'seller') {
-      const seller = await prisma.seller.create({
-        data: {
-          name: data.name,
-          phone: data.phone,
-          email: data.email,
-          message: data.message,
-          confidential: data.confidential || false,
-          propertyType: data.propertyType,
-          location: data.location,
-          surface: data.surface,
-          rooms: data.rooms,
-          price: data.price,
-          hasGarden: data.hasGarden || false,
-          hasPool: data.hasPool || false,
-          hasSeaView: data.hasSeaView || false,
-          description: data.description
-        }
+      const phone = normalizePhone(data.phone);
+      if (!phone) {
+        return NextResponse.json({ error: 'Phone is required' }, { status: 400 });
+      }
+
+      const existingSeller = await prisma.seller.findFirst({
+        where: {
+          OR: [{ phoneNormalized: phone }, { phone: data.phone?.trim() }],
+        },
       });
+
+      const seller = existingSeller
+        ? await prisma.seller.update({
+            where: { id: existingSeller.id },
+            data: {
+              name: data.name,
+              phone: data.phone.trim(),
+              phoneNormalized: phone,
+              email: data.email || null,
+              message: data.message || null,
+              confidential: data.confidential || false,
+              propertyType: data.propertyType || null,
+              location: data.location || null,
+              surface: data.surface ?? null,
+              rooms: data.rooms ?? null,
+              price: data.price || null,
+              hasGarden: data.hasGarden || false,
+              hasPool: data.hasPool || false,
+              hasSeaView: data.hasSeaView || false,
+              description: data.description || null,
+            },
+          })
+        : await prisma.seller.create({
+            data: {
+              name: data.name,
+              phone: data.phone.trim(),
+              phoneNormalized: phone,
+              email: data.email,
+              message: data.message,
+              confidential: data.confidential || false,
+              propertyType: data.propertyType,
+              location: data.location,
+              surface: data.surface,
+              rooms: data.rooms,
+              price: data.price,
+              hasGarden: data.hasGarden || false,
+              hasPool: data.hasPool || false,
+              hasSeaView: data.hasSeaView || false,
+              description: data.description,
+            },
+          });
       return NextResponse.json(seller);
     }
 

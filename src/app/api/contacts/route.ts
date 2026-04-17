@@ -1,17 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const normalizePhone = (value?: string) => {
+  const raw = (value || '').trim();
+  if (!raw) return '';
+
+  if (raw.includes('|')) {
+    const [dialCode, _country, digits = ''] = raw.split('|');
+    const onlyDigits = digits.replace(/\D/g, '');
+    const cleanDialCode = (dialCode || '').replace(/\D/g, '');
+    return `${cleanDialCode}${onlyDigits}`;
+  }
+
+  return raw.replace(/\D/g, '');
+};
+
 export async function GET(request: NextRequest) {
   try {
-    // Récupérer tous les acheteurs, vendeurs et contacts
-    const [buyers, sellers, contacts] = await Promise.all([
+    // Récupérer uniquement les profils CRM (buyers/sellers) pour éviter les doublons UI
+    const [buyers, sellers] = await Promise.all([
       prisma.buyer.findMany({
         orderBy: { createdAt: 'desc' }
       }),
       prisma.seller.findMany({
-        orderBy: { createdAt: 'desc' }
-      }),
-      prisma.contact.findMany({
         orderBy: { createdAt: 'desc' }
       })
     ]);
@@ -66,22 +77,6 @@ export async function GET(request: NextRequest) {
         status: mapSellerStatusToDashboard(seller.status),
         createdAt: seller.createdAt.toISOString(),
         updatedAt: seller.updatedAt.toISOString()
-      })),
-      ...contacts.map(contact => ({
-        id: contact.id,
-        name: contact.name,
-        phone: contact.phone,
-        email: contact.email,
-        type: contact.type === 'SELLER' ? 'SELLER' as const : 'BUYER' as const,
-        budget: contact.budget,
-        estimation: contact.estimation,
-        message: contact.message,
-        personalNote: contact.personalNote,
-        rating: contact.rating,
-        confidential: contact.confidential,
-        status: contact.status,
-        createdAt: contact.createdAt.toISOString(),
-        updatedAt: contact.updatedAt.toISOString()
       }))
     ];
 
@@ -155,12 +150,14 @@ export async function PUT(request: NextRequest) {
 
     // --- Gestion mise à jour complète d'un contact ---
     if (name) {
+      const normalizedPhone = normalizePhone(phone);
       // Buyer
       const updatedBuyer = await prisma.buyer.updateMany({
         where: { id },
         data: {
           name,
           phone,
+          phoneNormalized: normalizedPhone || null,
           email: email || null,
           budget: budget || null,
           message: message || null,
@@ -176,6 +173,7 @@ export async function PUT(request: NextRequest) {
         data: {
           name,
           phone,
+          phoneNormalized: normalizedPhone || null,
           email: email || null,
           price: estimation || null,
           message: message || null,
@@ -191,6 +189,7 @@ export async function PUT(request: NextRequest) {
         data: {
           name,
           phone,
+          phoneNormalized: normalizedPhone || null,
           email: email || null,
           budget: budget || null,
           estimation: estimation || null,
