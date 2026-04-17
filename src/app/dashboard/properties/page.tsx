@@ -838,25 +838,25 @@ export default function PropertiesDashboardPage() {
 
           <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px]">
+              <table className="w-full min-w-[980px] table-fixed">
                 <thead className="bg-white/10 border-b border-white/10">
                   <tr className="text-left text-xs uppercase tracking-wide text-white/60">
-                    <th className="px-4 py-3">Bien</th>
-                    <th className="px-4 py-3">Type / Statut</th>
-                    <th className="px-4 py-3">Prix</th>
-                    <th className="px-4 py-3">Zone</th>
-                    <th className="px-4 py-3">Proprietaire</th>
-                    <th className="px-4 py-3">Images</th>
-                    <th className="px-4 py-3">Matches</th>
+                    <th className="px-4 py-3 w-[18%]">Bien</th>
+                    <th className="px-4 py-3 w-[20%]">Type / Statut</th>
+                    <th className="px-4 py-3 w-[12%]">Prix</th>
+                    <th className="px-4 py-3 w-[14%]">Zone</th>
+                    <th className="px-4 py-3 w-[12%]">Proprietaire</th>
+                    <th className="px-4 py-3 w-[8%]">Images</th>
+                    <th className="px-4 py-3 w-[8%]">Matches</th>
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProperties.map((property) => (
-                    <tr key={property.id} className="border-b border-white/5 hover:bg-white/5">
+                    <tr key={property.id} className="border-b border-white/5 hover:bg-white/[0.08] transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-white">{property.title}</p>
-                        <p className="text-xs text-white/50">{property.surface ? `${property.surface} m2` : 'surface n/a'} - {property.rooms ? `${property.rooms}p` : 'pieces n/a'}</p>
+                        <p className="font-medium text-white truncate">{property.title}</p>
+                        <p className="text-xs text-white/50 truncate">{property.surface ? `${property.surface} m2` : 'surface n/a'} - {property.rooms ? `${property.rooms}p` : 'pieces n/a'}</p>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
@@ -872,32 +872,35 @@ export default function PropertiesDashboardPage() {
                       </td>
                       <td className="px-4 py-3 text-white font-semibold">{property.price}</td>
                       <td className="px-4 py-3 text-sm text-white/70">
-                        {property.location}
-                        {property.neighborhood ? <span className="block text-white/50">{property.neighborhood}</span> : null}
+                        <span className="block truncate">{property.location}</span>
+                        {property.neighborhood ? <span className="block text-white/50 truncate">{property.neighborhood}</span> : null}
                       </td>
-                      <td className="px-4 py-3 text-sm text-white/75">{property.seller.name}</td>
+                      <td className="px-4 py-3 text-sm text-white/75 truncate">{property.seller.name}</td>
                       <td className="px-4 py-3 text-sm text-white/75">{property.images.length}/5</td>
                       <td className="px-4 py-3 text-sm text-white/75">{property.matches.length}</td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-2">
                           <Link
                             href={`/dashboard/properties/${property.id}`}
-                            className="px-3 py-1.5 rounded-full bg-white text-black text-xs font-medium hover:bg-white/85"
+                            className="group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white text-black text-xs font-semibold hover:bg-white/90 active:scale-[0.98] transition-all"
                           >
+                            <Eye className="w-3.5 h-3.5" />
                             Voir
                           </Link>
                           <button
                             onClick={() => populateForm(property)}
-                            className="px-3 py-1.5 rounded-full border border-white/30 text-white text-xs hover:bg-white/10 inline-flex items-center gap-1"
+                            className="group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-sky-400/40 bg-sky-500/10 text-sky-100 text-xs font-semibold hover:bg-sky-500/20 hover:border-sky-300/70 active:scale-[0.98] transition-all"
+                            title="Modifier ce bien"
                           >
-                            <Pencil className="w-3 h-3" />
+                            <Pencil className="w-3.5 h-3.5 transition-transform group-hover:-rotate-6" />
                             Modifier
                           </button>
                           <button
                             onClick={() => deleteProperty(property.id)}
-                            className="px-3 py-1.5 rounded-full bg-red-800 text-white text-xs hover:bg-red-700 inline-flex items-center gap-1"
+                            className="group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-red-900/80 bg-red-950 text-red-100 text-xs font-semibold hover:bg-red-900 hover:border-red-700 active:scale-[0.98] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                            title="Supprimer ce bien"
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="w-3.5 h-3.5 transition-transform group-hover:rotate-[-8deg]" />
                             Supprimer
                           </button>
                         </div>
