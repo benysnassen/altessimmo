@@ -195,6 +195,7 @@ export default function PropertiesDashboardPage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [matchesOnly, setMatchesOnly] = useState(false);
+  const [activeView, setActiveView] = useState<'list' | 'form'>('list');
 
   useEffect(() => {
     const verify = async () => {
@@ -246,6 +247,7 @@ export default function PropertiesDashboardPage() {
     setForm(emptyForm());
     setError('');
     setMessage('');
+    setActiveView('list');
   };
 
   const populateForm = (property: PropertyRecord) => {
@@ -292,6 +294,7 @@ export default function PropertiesDashboardPage() {
           ].slice(0, 5)
         : emptyForm().images,
     });
+    setActiveView('form');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -482,6 +485,7 @@ export default function PropertiesDashboardPage() {
       setMessage(form.id ? 'Bien mis a jour avec succes.' : 'Bien ajoute avec succes.');
       resetForm();
       await loadData();
+      setActiveView('list');
     } catch {
       setError('Enregistrement impossible. Verifie les champs obligatoires et reessaie.');
     } finally {
@@ -569,13 +573,40 @@ export default function PropertiesDashboardPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 grid lg:grid-cols-[420px,1fr] gap-8">
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          onSubmit={submitForm}
-          className="bg-white/5 border border-white/10 rounded-2xl p-6 h-fit sticky top-6"
-        >
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-6">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-3 md:p-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setActiveView('list')}
+              className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                activeView === 'list' ? 'bg-white text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'
+              }`}
+            >
+              Listing des biens
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveView('form')}
+              className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                activeView === 'form' ? 'bg-white text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'
+              }`}
+            >
+              {form.id ? 'Modifier le bien' : 'Ajouter un bien'}
+            </button>
+            <span className="text-xs text-white/50 md:ml-auto">
+              Vue active: {activeView === 'list' ? 'Liste + filtres + matches' : 'Formulaire de saisie'}
+            </span>
+          </div>
+        </div>
+
+        {activeView === 'form' && (
+          <motion.form
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            onSubmit={submitForm}
+            className="bg-white/5 border border-white/10 rounded-2xl p-6"
+          >
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
               <h2 className="font-display text-2xl font-light">{form.id ? 'Modifier le bien' : 'Nouveau bien'}</h2>
@@ -752,9 +783,11 @@ export default function PropertiesDashboardPage() {
               {form.id ? 'Mettre a jour le bien' : 'Enregistrer le bien'}
             </button>
           </div>
-        </motion.form>
+          </motion.form>
+        )}
 
-        <div className="space-y-5">
+        {activeView === 'list' && (
+          <div className="space-y-5">
           <div className="bg-white/10 border border-white/20 rounded-2xl p-4 md:p-5">
             <h2 className="font-display text-xl md:text-2xl text-white mb-1">Listing des biens</h2>
             <p className="text-sm text-white/60">Filtre, parcours, matches et edition complete des biens.</p>
@@ -939,7 +972,8 @@ export default function PropertiesDashboardPage() {
               Aucun bien ne correspond aux filtres actifs.
             </div>
           )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
