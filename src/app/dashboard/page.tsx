@@ -1,14 +1,14 @@
-'use client';
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { 
-  Users, 
-  Home, 
-  Phone, 
-  Calendar, 
-  Shield, 
+"use client";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  Users,
+  Home,
+  Phone,
+  Calendar,
+  Shield,
   MoreVertical,
   Edit3,
   Plus,
@@ -27,27 +27,34 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
-  StickyNote
-} from 'lucide-react';
-import ChangePasswordModal from '@/app/components/ChangePasswordModal';
-import ContactDetailCard from '@/app/components/ContactDetailCard';
-import ProportionalStar from '@/app/components/ProportionalStar';
-import { useDropdownPosition } from '../hooks/useDropdownPosition';
-import { FaWhatsapp } from 'react-icons/fa';
+  StickyNote,
+} from "lucide-react";
+import ChangePasswordModal from "@/app/components/ChangePasswordModal";
+import ContactDetailCard from "@/app/components/ContactDetailCard";
+import ProportionalStar from "@/app/components/ProportionalStar";
+import { useDropdownPosition } from "../hooks/useDropdownPosition";
+import { FaWhatsapp } from "react-icons/fa";
 
 interface Contact {
   id: string;
   name: string;
   phone: string;
   email?: string | null;
-  type: 'BUYER' | 'SELLER';
+  type: "BUYER" | "SELLER";
   budget?: string | null;
   estimation?: string | null;
   message?: string | null;
   personalNote?: string | null;
   rating?: number | null;
   confidential: boolean;
-  status: 'NEW' | 'CONTACTED' | 'INTERESTED' | 'VIEWING' | 'OFFER' | 'SOLD' | 'ARCHIVED';
+  status:
+    | "NEW"
+    | "CONTACTED"
+    | "INTERESTED"
+    | "VIEWING"
+    | "OFFER"
+    | "SOLD"
+    | "ARCHIVED";
   createdAt: string;
   updatedAt: string;
 }
@@ -55,136 +62,155 @@ interface Contact {
 // Badges colorés avec icônes pour les statuts
 const statusConfig = {
   NEW: {
-    label: 'Nouveau',
+    label: "Nouveau",
     icon: Star,
-    className: 'bg-gradient-to-r from-gray-500/20 to-gray-600/20 text-gray-300 border border-gray-500/30',
-    iconColor: 'text-gray-400'
+    className:
+      "bg-gradient-to-r from-gray-500/20 to-gray-600/20 text-gray-300 border border-gray-500/30",
+    iconColor: "text-gray-400",
   },
   CONTACTED: {
-    label: 'Contacté',
+    label: "Contacté",
     icon: Phone,
-    className: 'bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-300 border border-blue-500/30',
-    iconColor: 'text-blue-400'
+    className:
+      "bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-300 border border-blue-500/30",
+    iconColor: "text-blue-400",
   },
   INTERESTED: {
-    label: 'Intéressé',
+    label: "Intéressé",
     icon: Star,
-    className: 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-yellow-300 border border-yellow-500/30',
-    iconColor: 'text-yellow-400'
+    className:
+      "bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-yellow-300 border border-yellow-500/30",
+    iconColor: "text-yellow-400",
   },
   VIEWING: {
-    label: 'Visite',
+    label: "Visite",
     icon: Eye,
-    className: 'bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-purple-300 border border-purple-500/30',
-    iconColor: 'text-purple-400'
+    className:
+      "bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-purple-300 border border-purple-500/30",
+    iconColor: "text-purple-400",
   },
   OFFER: {
-    label: 'Offre',
+    label: "Offre",
     icon: DollarSign,
-    className: 'bg-gradient-to-r from-orange-500/20 to-orange-600/20 text-orange-300 border border-orange-500/30',
-    iconColor: 'text-orange-400'
+    className:
+      "bg-gradient-to-r from-orange-500/20 to-orange-600/20 text-orange-300 border border-orange-500/30",
+    iconColor: "text-orange-400",
   },
   SOLD: {
-    label: 'Vendu',
+    label: "Vendu",
     icon: CheckCircle,
-    className: 'bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-300 border border-green-500/30',
-    iconColor: 'text-green-400'
+    className:
+      "bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-300 border border-green-500/30",
+    iconColor: "text-green-400",
   },
   ARCHIVED: {
-    label: 'Archivé',
+    label: "Archivé",
     icon: Archive,
-    className: 'bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-300 border border-red-500/30',
-    iconColor: 'text-red-400'
-  }
+    className:
+      "bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-300 border border-red-500/30",
+    iconColor: "text-red-400",
+  },
 };
 
 // Configuration pour les types de contacts
 const typeConfig = {
   BUYER: {
-    label: 'Acheteur',
+    label: "Acheteur",
     icon: ShoppingCart,
-    className: 'bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-300 border border-green-500/30',
-    iconColor: 'text-green-400'
+    className:
+      "bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-300 border border-green-500/30",
+    iconColor: "text-green-400",
   },
   SELLER: {
-    label: 'Vendeur',
+    label: "Vendeur",
     icon: Building2,
-    className: 'bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-300 border border-blue-500/30',
-    iconColor: 'text-blue-400'
-  }
+    className:
+      "bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-300 border border-blue-500/30",
+    iconColor: "text-blue-400",
+  },
 };
 
 // Fonction de formatage des montants
 const formatAmount = (amount: string) => {
-  const num = parseInt(amount.replace(/\D/g, ''));
+  const num = parseInt(amount.replace(/\D/g, ""));
   if (isNaN(num)) return amount;
-  
+
   if (num >= 1000000) {
     const millions = num / 1000000;
-    return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(2).replace(/\.?0+$/, '')}M`;
+    return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(2).replace(/\.?0+$/, "")}M`;
   } else if (num >= 1000) {
     const milliers = num / 1000;
-    return `${milliers % 1 === 0 ? milliers.toFixed(0) : milliers.toFixed(2).replace(/\.?0+$/, '')}K`;
+    return `${milliers % 1 === 0 ? milliers.toFixed(0) : milliers.toFixed(2).replace(/\.?0+$/, "")}K`;
   } else {
-    return `${num.toLocaleString('fr-FR')}`;
+    return `${num.toLocaleString("fr-FR")}`;
   }
 };
 
-
-
 // Fonction de formatage des dates (sans heure pour le tableau)
 const formatDateTable = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
+  return new Date(dateString).toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
   });
 };
 
 const COUNTRY_OPTIONS = [
-  { code: 'MA', dialCode: '+212', flag: '🇲🇦', label: 'Maroc' },
-  { code: 'FR', dialCode: '+33', flag: '🇫🇷', label: 'France' },
-  { code: 'ES', dialCode: '+34', flag: '🇪🇸', label: 'Espagne' },
-  { code: 'BE', dialCode: '+32', flag: '🇧🇪', label: 'Belgique' },
-  { code: 'NL', dialCode: '+31', flag: '🇳🇱', label: 'Pays-Bas' },
-  { code: 'IT', dialCode: '+39', flag: '🇮🇹', label: 'Italie' },
-  { code: 'DE', dialCode: '+49', flag: '🇩🇪', label: 'Allemagne' },
-  { code: 'GB', dialCode: '+44', flag: '🇬🇧', label: 'Royaume-Uni' },
-  { code: 'CA', dialCode: '+1', flag: '🇨🇦', label: 'Canada' },
-  { code: 'US', dialCode: '+1', flag: '🇺🇸', label: 'Etats-Unis' },
+  { code: "MA", dialCode: "+212", flag: "🇲🇦", label: "Maroc" },
+  { code: "FR", dialCode: "+33", flag: "🇫🇷", label: "France" },
+  { code: "ES", dialCode: "+34", flag: "🇪🇸", label: "Espagne" },
+  { code: "BE", dialCode: "+32", flag: "🇧🇪", label: "Belgique" },
+  { code: "NL", dialCode: "+31", flag: "🇳🇱", label: "Pays-Bas" },
+  { code: "IT", dialCode: "+39", flag: "🇮🇹", label: "Italie" },
+  { code: "DE", dialCode: "+49", flag: "🇩🇪", label: "Allemagne" },
+  { code: "GB", dialCode: "+44", flag: "🇬🇧", label: "Royaume-Uni" },
+  { code: "CA", dialCode: "+1", flag: "🇨🇦", label: "Canada" },
+  { code: "US", dialCode: "+1", flag: "🇺🇸", label: "Etats-Unis" },
 ];
 
 const defaultCountry = COUNTRY_OPTIONS[0];
 
 const extractPhoneParts = (value?: string) => {
-  const raw = (value || '').trim();
+  const raw = (value || "").trim();
   if (!raw) {
-    return { dialCode: defaultCountry.dialCode, country: defaultCountry.code, digits: '' };
+    return {
+      dialCode: defaultCountry.dialCode,
+      country: defaultCountry.code,
+      digits: "",
+    };
   }
 
-  if (raw.includes('|')) {
-    const [dialCode = defaultCountry.dialCode, country = defaultCountry.code, digits = ''] = raw.split('|');
-    return { dialCode, country, digits: digits.replace(/\D/g, '') };
+  if (raw.includes("|")) {
+    const [
+      dialCode = defaultCountry.dialCode,
+      country = defaultCountry.code,
+      digits = "",
+    ] = raw.split("|");
+    return { dialCode, country, digits: digits.replace(/\D/g, "") };
   }
 
-  const digits = raw.replace(/\D/g, '');
-  return { dialCode: defaultCountry.dialCode, country: defaultCountry.code, digits };
+  const digits = raw.replace(/\D/g, "");
+  return {
+    dialCode: defaultCountry.dialCode,
+    country: defaultCountry.code,
+    digits,
+  };
 };
 
 const formatPhoneNumber = (value: string) => {
-  const cleaned = value.replace(/\D/g, '').slice(0, 12);
+  const cleaned = value.replace(/\D/g, "").slice(0, 12);
   const groups = cleaned.match(/.{1,3}/g);
-  return groups ? groups.join(' ') : '';
+  return groups ? groups.join(" ") : "";
 };
 
 const toPhoneStorage = (dialCode: string, country: string, digits: string) =>
-  `${dialCode}|${country}|${digits.replace(/\D/g, '').slice(0, 12)}`;
+  `${dialCode}|${country}|${digits.replace(/\D/g, "").slice(0, 12)}`;
 
 // Fonction pour extraire le code pays du numéro de téléphone
 const getCountryCode = (phone: string): string => {
   // Si le format est nouveau (+1|US|123456789), extraire directement le pays
-  if (phone.includes('|')) {
-    const parts = phone.split('|');
+  if (phone.includes("|")) {
+    const parts = phone.split("|");
     if (parts.length >= 2) {
       return parts[1]; // Le pays est dans la deuxième partie
     }
@@ -192,43 +218,98 @@ const getCountryCode = (phone: string): string => {
 
   // Mapping des indicatifs vers les codes pays ISO
   const countryCodes: { [key: string]: string } = {
-    '+212': 'MA', // Maroc
-    '+33': 'FR',  // France
-    '+34': 'ES',  // Espagne
-    '+39': 'IT',  // Italie
-    '+49': 'DE',  // Allemagne
-    '+44': 'GB',  // Royaume-Uni
-    '+1': 'US',   // États-Unis (sera géré séparément pour le Canada)
-    '+971': 'AE', // Émirats arabes unis
-    '+966': 'SA', // Arabie saoudite
-    '+213': 'DZ', // Algérie
-    '+216': 'TN', // Tunisie
-    '+20': 'EG',  // Égypte
-    '+90': 'TR',  // Turquie
-    '+7': 'RU',   // Russie
-    '+86': 'CN',  // Chine
-    '+81': 'JP',  // Japon
-    '+82': 'KR',  // Corée du Sud
-    '+91': 'IN',  // Inde
-    '+55': 'BR',  // Brésil
-    '+54': 'AR',  // Argentine
-    '+61': 'AU',  // Australie
-    '+27': 'ZA',  // Afrique du Sud
+    "+212": "MA", // Maroc
+    "+33": "FR", // France
+    "+34": "ES", // Espagne
+    "+39": "IT", // Italie
+    "+49": "DE", // Allemagne
+    "+44": "GB", // Royaume-Uni
+    "+1": "US", // États-Unis (sera géré séparément pour le Canada)
+    "+971": "AE", // Émirats arabes unis
+    "+966": "SA", // Arabie saoudite
+    "+213": "DZ", // Algérie
+    "+216": "TN", // Tunisie
+    "+20": "EG", // Égypte
+    "+90": "TR", // Turquie
+    "+7": "RU", // Russie
+    "+86": "CN", // Chine
+    "+81": "JP", // Japon
+    "+82": "KR", // Corée du Sud
+    "+91": "IN", // Inde
+    "+55": "BR", // Brésil
+    "+54": "AR", // Argentine
+    "+61": "AU", // Australie
+    "+27": "ZA", // Afrique du Sud
   };
 
   // Cas spécial pour l'indicatif +1 (États-Unis/Canada)
-  if (phone.startsWith('+1')) {
+  if (phone.startsWith("+1")) {
     // Les numéros canadiens commencent généralement par +1 suivi de codes régionaux spécifiques
     // Codes régionaux canadiens principaux
-    const canadianAreaCodes = ['204', '226', '236', '249', '250', '263', '289', '306', '343', '354', '365', '367', '368', '382', '387', '403', '416', '418', '428', '431', '437', '438', '450', '468', '474', '506', '514', '519', '548', '579', '581', '584', '587', '604', '613', '639', '647', '672', '683', '705', '709', '742', '753', '778', '780', '782', '807', '819', '825', '867', '873', '879', '902', '905'];
-    
+    const canadianAreaCodes = [
+      "204",
+      "226",
+      "236",
+      "249",
+      "250",
+      "263",
+      "289",
+      "306",
+      "343",
+      "354",
+      "365",
+      "367",
+      "368",
+      "382",
+      "387",
+      "403",
+      "416",
+      "418",
+      "428",
+      "431",
+      "437",
+      "438",
+      "450",
+      "468",
+      "474",
+      "506",
+      "514",
+      "519",
+      "548",
+      "579",
+      "581",
+      "584",
+      "587",
+      "604",
+      "613",
+      "639",
+      "647",
+      "672",
+      "683",
+      "705",
+      "709",
+      "742",
+      "753",
+      "778",
+      "780",
+      "782",
+      "807",
+      "819",
+      "825",
+      "867",
+      "873",
+      "879",
+      "902",
+      "905",
+    ];
+
     // Extraire le code régional (3 chiffres après +1, en ignorant les espaces)
-    const cleanPhone = phone.replace(/\s/g, '');
+    const cleanPhone = phone.replace(/\s/g, "");
     const areaCode = cleanPhone.substring(2, 5);
     if (canadianAreaCodes.includes(areaCode)) {
-      return 'CA';
+      return "CA";
     }
-    return 'US';
+    return "US";
   }
 
   // Extraire l'indicatif du numéro
@@ -237,23 +318,23 @@ const getCountryCode = (phone: string): string => {
       return country;
     }
   }
-  
+
   // Par défaut, retourner le Maroc si on ne trouve pas
-  return 'MA';
+  return "MA";
 };
 
 // Fonction pour formater le numéro de téléphone avec des traits d'union
 const formatPhoneDisplay = (phone: string): string => {
   // Si le format est nouveau (+1|US|123456789), extraire les parties
-  if (phone.includes('|')) {
-    const parts = phone.split('|');
+  if (phone.includes("|")) {
+    const parts = phone.split("|");
     if (parts.length >= 3) {
       const countryCode = parts[0];
       const number = parts[2];
-      
+
       // Supprimer tous les caractères non numériques du numéro
-      const cleanedNumber = number.replace(/\D/g, '');
-      
+      const cleanedNumber = number.replace(/\D/g, "");
+
       // Formatage selon la longueur
       if (cleanedNumber.length <= 3) {
         return `${countryCode} ${cleanedNumber}`;
@@ -268,15 +349,15 @@ const formatPhoneDisplay = (phone: string): string => {
   }
 
   // Format ancien - Séparer l'indicatif du numéro
-  const parts = phone.split(' ');
+  const parts = phone.split(" ");
   if (parts.length < 2) return phone;
-  
+
   const countryCode = parts[0];
   const number = parts[1];
-  
+
   // Supprimer tous les caractères non numériques du numéro
-  const cleanedNumber = number.replace(/\D/g, '');
-  
+  const cleanedNumber = number.replace(/\D/g, "");
+
   // Formatage selon la longueur
   if (cleanedNumber.length <= 3) {
     return `${countryCode} ${cleanedNumber}`;
@@ -298,28 +379,34 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
       className="w-6 h-4 rounded-sm object-cover border border-white/20"
       onError={(e) => {
         // Fallback si l'image ne charge pas
-        e.currentTarget.style.display = 'none';
+        e.currentTarget.style.display = "none";
       }}
     />
   );
 };
 
 // Composant Badge cliquable pour les statuts
-const ClickableStatusBadge = ({ contact, onStatusChange }: { contact: Contact, onStatusChange: (id: string, newStatus: Contact['status']) => void }) => {
+const ClickableStatusBadge = ({
+  contact,
+  onStatusChange,
+}: {
+  contact: Contact;
+  onStatusChange: (id: string, newStatus: Contact["status"]) => void;
+}) => {
   const currentConfig = statusConfig[contact.status] || statusConfig.NEW;
   const IconComponent = currentConfig.icon;
-  
+
   const {
     isOpen,
     position,
     triggerRef,
     dropdownRef,
     toggleDropdown,
-    closeDropdown
+    closeDropdown,
   } = useDropdownPosition();
 
-  const handleStatusChange = (newStatus: Contact['status']) => {
-    console.log('Changing status for', contact.id, 'to', newStatus);
+  const handleStatusChange = (newStatus: Contact["status"]) => {
+    console.log("Changing status for", contact.id, "to", newStatus);
     onStatusChange(contact.id, newStatus);
     closeDropdown();
   };
@@ -333,8 +420,8 @@ const ClickableStatusBadge = ({ contact, onStatusChange }: { contact: Contact, o
     };
 
     if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [isOpen, closeDropdown]);
 
@@ -350,7 +437,7 @@ const ClickableStatusBadge = ({ contact, onStatusChange }: { contact: Contact, o
         <IconComponent className={`w-3 h-3 ${currentConfig.iconColor}`} />
         {currentConfig.label}
       </button>
-      
+
       {isOpen && (
         <motion.div
           ref={dropdownRef}
@@ -360,7 +447,7 @@ const ClickableStatusBadge = ({ contact, onStatusChange }: { contact: Contact, o
           className="absolute bg-black/90 border border-white/20 rounded-lg p-2 z-50 min-w-[120px]"
           style={{
             ...position,
-            transform: position.transform || 'translateY(4px)'
+            transform: position.transform || "translateY(4px)",
           }}
         >
           {Object.entries(statusConfig).map(([value, config]) => {
@@ -370,10 +457,10 @@ const ClickableStatusBadge = ({ contact, onStatusChange }: { contact: Contact, o
                 key={value}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleStatusChange(value as Contact['status']);
+                  handleStatusChange(value as Contact["status"]);
                 }}
                 className={`w-full text-left px-2 py-1 rounded-sm text-xs flex items-center gap-2 hover:bg-white/10 transition-colors ${
-                  contact.status === value ? 'bg-white/10' : ''
+                  contact.status === value ? "bg-white/10" : ""
                 }`}
               >
                 <StatusIcon className={`w-3 h-3 ${config.iconColor}`} />
@@ -388,16 +475,18 @@ const ClickableStatusBadge = ({ contact, onStatusChange }: { contact: Contact, o
 };
 
 // Composant Menu contextuel
-const ContextMenu = ({ contact, onEdit, onDelete, onClose }: { 
-  contact: Contact, 
-  onEdit: (contact: Contact) => void, 
-  onDelete: (id: string) => void,
-  onClose: () => void 
+const ContextMenu = ({
+  contact,
+  onEdit,
+  onDelete,
+  onClose,
+}: {
+  contact: Contact;
+  onEdit: (contact: Contact) => void;
+  onDelete: (id: string) => void;
+  onClose: () => void;
 }) => {
-  const {
-    position,
-    dropdownRef
-  } = useDropdownPosition();
+  const { position, dropdownRef } = useDropdownPosition();
 
   const handleEdit = () => {
     onEdit(contact);
@@ -418,7 +507,7 @@ const ContextMenu = ({ contact, onEdit, onDelete, onClose }: {
       className="absolute bg-black/90 border border-white/20 rounded-lg p-2 z-50 w-[60px] shadow-xl"
       style={{
         ...position,
-        transform: position.transform || 'translateY(8px)'
+        transform: position.transform || "translateY(8px)",
       }}
     >
       <button
@@ -438,31 +527,39 @@ const ContextMenu = ({ contact, onEdit, onDelete, onClose }: {
 };
 
 // Composant Badge réutilisable
-const Badge = ({ config, size = 'sm' }: { config: any, size?: 'sm' | 'md' }) => {
+const Badge = ({
+  config,
+  size = "sm",
+}: {
+  config: any;
+  size?: "sm" | "md";
+}) => {
   if (!config || !config.icon) {
     return <span className="text-white/40">-</span>;
   }
-  
+
   const IconComponent = config.icon;
-  const sizeClasses = size === 'sm' ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm';
-  
+  const sizeClasses =
+    size === "sm" ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-sm";
+
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full font-medium ${config.className} ${sizeClasses}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full font-medium ${config.className} ${sizeClasses}`}
+    >
       <IconComponent className={`w-3 h-3 ${config.iconColor}`} />
       {config.label}
     </span>
   );
 };
 
-
 // Composant Pagination
-const Pagination = ({ 
-  currentPage, 
-  totalPages, 
-  itemsPerPage, 
-  totalItems, 
-  onPageChange, 
-  onItemsPerPageChange 
+const Pagination = ({
+  currentPage,
+  totalPages,
+  itemsPerPage,
+  totalItems,
+  onPageChange,
+  onItemsPerPageChange,
 }: {
   currentPage: number;
   totalPages: number;
@@ -473,10 +570,10 @@ const Pagination = ({
 }) => {
   const pages = [];
   const maxVisiblePages = 5;
-  
+
   let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
   const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-  
+
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
@@ -489,9 +586,12 @@ const Pagination = ({
     <div className="flex items-center justify-between px-6 py-4 border-t border-white/10">
       <div className="flex items-center gap-4">
         <span className="text-sm text-white/60">
-          Affichage de {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)} à {Math.min(currentPage * itemsPerPage, totalItems)} sur {totalItems} contacts
+          Affichage de{" "}
+          {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)} à{" "}
+          {Math.min(currentPage * itemsPerPage, totalItems)} sur {totalItems}{" "}
+          contacts
         </span>
-        
+
         <div className="flex items-center gap-2">
           <span className="text-sm text-white/60">Par page:</span>
           <select
@@ -514,7 +614,7 @@ const Pagination = ({
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
-        
+
         <div className="flex gap-1">
           {startPage > 1 && (
             <>
@@ -527,24 +627,26 @@ const Pagination = ({
               {startPage > 2 && <span className="px-2 text-white/40">...</span>}
             </>
           )}
-          
-          {pages.map(page => (
+
+          {pages.map((page) => (
             <button
               key={page}
               onClick={() => onPageChange(page)}
               className={`px-3 py-1 text-sm border rounded-sm transition-colors ${
                 page === currentPage
-                  ? 'border-white/50 bg-white/10 text-white'
-                  : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white'
+                  ? "border-white/50 bg-white/10 text-white"
+                  : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
               }`}
             >
               {page}
             </button>
           ))}
-          
+
           {endPage < totalPages && (
             <>
-              {endPage < totalPages - 1 && <span className="px-2 text-white/40">...</span>}
+              {endPage < totalPages - 1 && (
+                <span className="px-2 text-white/40">...</span>
+              )}
               <button
                 onClick={() => onPageChange(totalPages)}
                 className="px-3 py-1 text-sm border border-white/20 rounded-sm text-white/60 hover:border-white/40 hover:text-white transition-colors"
@@ -554,7 +656,7 @@ const Pagination = ({
             </>
           )}
         </div>
-        
+
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
@@ -568,22 +670,28 @@ const Pagination = ({
 };
 
 // Composant Formulaire de modification
-const EditContactForm = ({ contact, onSave, onCancel }: { 
-  contact: Contact, 
-  onSave: (updatedContact: Contact) => void, 
-  onCancel: () => void 
+const EditContactForm = ({
+  contact,
+  onSave,
+  onCancel,
+}: {
+  contact: Contact;
+  onSave: (updatedContact: Contact) => void;
+  onCancel: () => void;
 }) => {
   const [formData, setFormData] = useState({
     name: contact.name,
     phone: contact.phone,
-    email: contact.email || '',
-    budget: contact.budget || '',
-    estimation: contact.estimation || '',
-    message: contact.message || '',
-    personalNote: contact.personalNote || '',
-    confidential: contact.confidential
+    email: contact.email || "",
+    budget: contact.budget || "",
+    estimation: contact.estimation || "",
+    message: contact.message || "",
+    personalNote: contact.personalNote || "",
+    confidential: contact.confidential,
   });
-  const [phoneParts, setPhoneParts] = useState(() => extractPhoneParts(contact.phone));
+  const [phoneParts, setPhoneParts] = useState(() =>
+    extractPhoneParts(contact.phone),
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -593,7 +701,7 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
       email: formData.email || undefined,
       budget: formData.budget || undefined,
       estimation: formData.estimation || undefined,
-      message: formData.message || undefined
+      message: formData.message || undefined,
     };
     onSave(updatedContact);
   };
@@ -615,7 +723,7 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
       >
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-light text-white">
-            Modifier {contact.type === 'BUYER' ? 'l\'acheteur' : 'le vendeur'}
+            Modifier {contact.type === "BUYER" ? "l'acheteur" : "le vendeur"}
           </h3>
           <button
             onClick={onCancel}
@@ -624,37 +732,50 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
             <X className="w-5 h-5 text-white/60" />
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-light text-white/60 mb-2">Nom</label>
+              <label className="block text-sm font-light text-white/60 mb-2">
+                Nom
+              </label>
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
                 required
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-light text-white/60 mb-2">Telephone / WhatsApp</label>
+              <label className="block text-sm font-light text-white/60 mb-2">
+                Telephone / WhatsApp
+              </label>
               <div className="flex items-center gap-2">
                 <select
                   value={`${phoneParts.dialCode}|${phoneParts.country}`}
                   onChange={(e) => {
-                    const [dialCode, country] = e.target.value.split('|');
+                    const [dialCode, country] = e.target.value.split("|");
                     setPhoneParts((prev) => ({ ...prev, dialCode, country }));
                     setFormData({
                       ...formData,
-                      phone: toPhoneStorage(dialCode, country, phoneParts.digits),
+                      phone: toPhoneStorage(
+                        dialCode,
+                        country,
+                        phoneParts.digits,
+                      ),
                     });
                   }}
                   className="w-36 px-2 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
                 >
                   {COUNTRY_OPTIONS.map((country) => (
-                    <option key={`${country.code}-${country.dialCode}`} value={`${country.dialCode}|${country.code}`}>
+                    <option
+                      key={`${country.code}-${country.dialCode}`}
+                      value={`${country.dialCode}|${country.code}`}
+                    >
                       {country.flag} {country.dialCode}
                     </option>
                   ))}
@@ -667,11 +788,17 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
                     pattern="[0-9 ]{8,16}"
                     value={formatPhoneNumber(phoneParts.digits)}
                     onChange={(e) => {
-                      const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
+                      const digits = e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 12);
                       setPhoneParts((prev) => ({ ...prev, digits }));
                       setFormData({
                         ...formData,
-                        phone: toPhoneStorage(phoneParts.dialCode, phoneParts.country, digits),
+                        phone: toPhoneStorage(
+                          phoneParts.dialCode,
+                          phoneParts.country,
+                          digits,
+                        ),
                       });
                     }}
                     className="w-full pl-9 pr-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
@@ -681,76 +808,98 @@ const EditContactForm = ({ contact, onSave, onCancel }: {
                 </div>
               </div>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-light text-white/60 mb-2">Email</label>
+              <label className="block text-sm font-light text-white/60 mb-2">
+                Email
+              </label>
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
               />
             </div>
-            
-            {contact.type === 'BUYER' ? (
+
+            {contact.type === "BUYER" ? (
               <div>
-                <label className="block text-sm font-light text-white/60 mb-2">Budget (MAD)</label>
+                <label className="block text-sm font-light text-white/60 mb-2">
+                  Budget (MAD)
+                </label>
                 <input
                   type="text"
                   value={formData.budget}
-                  onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, budget: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
                   placeholder="Ex: 2500000"
                 />
               </div>
             ) : (
               <div>
-                <label className="block text-sm font-light text-white/60 mb-2">Estimation (MAD)</label>
+                <label className="block text-sm font-light text-white/60 mb-2">
+                  Estimation (MAD)
+                </label>
                 <input
                   type="text"
                   value={formData.estimation}
-                  onChange={(e) => setFormData({ ...formData, estimation: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, estimation: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
                   placeholder="Ex: 4500000"
                 />
               </div>
             )}
           </div>
-          
+
           <div>
-            <label className="block text-sm font-light text-white/60 mb-2">Message</label>
+            <label className="block text-sm font-light text-white/60 mb-2">
+              Message
+            </label>
             <textarea
               value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, message: e.target.value })
+              }
               rows={3}
               className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none resize-none"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-light text-white/60 mb-2">Note personnelle</label>
+            <label className="block text-sm font-light text-white/60 mb-2">
+              Note personnelle
+            </label>
             <textarea
               value={formData.personalNote}
-              onChange={(e) => setFormData({ ...formData, personalNote: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, personalNote: e.target.value })
+              }
               rows={3}
               placeholder="Ex: Très bon investisseur, recherche que du top..."
               className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none resize-none"
             />
           </div>
-          
+
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
               id="confidential"
               checked={formData.confidential}
-              onChange={(e) => setFormData({ ...formData, confidential: e.target.checked })}
+              onChange={(e) =>
+                setFormData({ ...formData, confidential: e.target.checked })
+              }
               className="w-4 h-4 text-black bg-black/20 border-white/20 rounded focus:ring-black accent-black"
             />
             <label htmlFor="confidential" className="text-sm text-white/80">
               Accompagnement confidentiel
             </label>
           </div>
-          
+
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
@@ -778,7 +927,7 @@ const CreateClientForm = ({
   onCancel,
 }: {
   onCreate: (payload: {
-    type: 'buyer' | 'seller';
+    type: "buyer" | "seller";
     name: string;
     phone: string;
     email?: string;
@@ -791,32 +940,36 @@ const CreateClientForm = ({
   onCancel: () => void;
 }) => {
   const [formData, setFormData] = useState({
-    type: 'buyer' as 'buyer' | 'seller',
-    name: '',
-    phone: '',
-    email: '',
-    budget: '',
-    price: '',
-    location: '',
-    propertyType: '',
-    message: '',
+    type: "buyer" as "buyer" | "seller",
+    name: "",
+    phone: "",
+    email: "",
+    budget: "",
+    price: "",
+    location: "",
+    propertyType: "",
+    message: "",
   });
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [phoneParts, setPhoneParts] = useState(() => extractPhoneParts(''));
+  const [error, setError] = useState("");
+  const [phoneParts, setPhoneParts] = useState(() => extractPhoneParts(""));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setSubmitting(true);
     try {
       if (phoneParts.digits.length < 8) {
-        throw new Error('phone-too-short');
+        throw new Error("phone-too-short");
       }
 
       await onCreate({
         ...formData,
-        phone: toPhoneStorage(phoneParts.dialCode, phoneParts.country, phoneParts.digits),
+        phone: toPhoneStorage(
+          phoneParts.dialCode,
+          phoneParts.country,
+          phoneParts.digits,
+        ),
       });
     } catch {
       setError("Impossible d'enregistrer ce profil pour le moment.");
@@ -841,8 +994,13 @@ const CreateClientForm = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-medium text-black">Nouveau client/proprietaire</h3>
-          <button onClick={onCancel} className="p-2 hover:bg-black/5 rounded-sm transition-colors">
+          <h3 className="text-xl font-medium text-black">
+            Nouveau client/proprietaire
+          </h3>
+          <button
+            onClick={onCancel}
+            className="p-2 hover:bg-black/5 rounded-sm transition-colors"
+          >
             <X className="w-5 h-5 text-black/60" />
           </button>
         </div>
@@ -851,7 +1009,12 @@ const CreateClientForm = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <select
               value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value as 'buyer' | 'seller' })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  type: e.target.value as "buyer" | "seller",
+                })
+              }
               className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
             >
               <option value="buyer">Acheteur</option>
@@ -860,24 +1023,31 @@ const CreateClientForm = ({
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
               placeholder="Nom complet"
               required
             />
             <div className="md:col-span-2">
-              <label className="block text-sm font-light text-white/60 mb-2">Telephone / WhatsApp</label>
+              <label className="block text-sm font-light text-white/60 mb-2">
+                Telephone / WhatsApp
+              </label>
               <div className="flex items-center gap-2">
                 <select
                   value={`${phoneParts.dialCode}|${phoneParts.country}`}
                   onChange={(e) => {
-                    const [dialCode, country] = e.target.value.split('|');
+                    const [dialCode, country] = e.target.value.split("|");
                     setPhoneParts((prev) => ({ ...prev, dialCode, country }));
                   }}
                   className="w-40 px-2 py-2.5 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
                 >
                   {COUNTRY_OPTIONS.map((country) => (
-                    <option key={`${country.code}-${country.dialCode}`} value={`${country.dialCode}|${country.code}`}>
+                    <option
+                      key={`${country.code}-${country.dialCode}`}
+                      value={`${country.dialCode}|${country.code}`}
+                    >
                       {country.flag} {country.dialCode}
                     </option>
                   ))}
@@ -890,7 +1060,9 @@ const CreateClientForm = ({
                     pattern="[0-9 ]{8,16}"
                     value={formatPhoneNumber(phoneParts.digits)}
                     onChange={(e) => {
-                      const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
+                      const digits = e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 12);
                       setPhoneParts((prev) => ({ ...prev, digits }));
                     }}
                     className="w-full pl-9 pr-3 py-2.5 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
@@ -899,20 +1071,26 @@ const CreateClientForm = ({
                   />
                 </div>
               </div>
-              <p className="text-xs text-black/55 mt-1">Format automatique + controle regex chiffres.</p>
+              <p className="text-xs text-black/55 mt-1">
+                Format automatique + controle regex chiffres.
+              </p>
             </div>
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
               placeholder="Email"
             />
-            {formData.type === 'buyer' ? (
+            {formData.type === "buyer" ? (
               <input
                 type="text"
                 value={formData.budget}
-                onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, budget: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
                 placeholder="Budget"
               />
@@ -920,7 +1098,9 @@ const CreateClientForm = ({
               <input
                 type="text"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
                 placeholder="Prix attendu"
               />
@@ -928,21 +1108,27 @@ const CreateClientForm = ({
             <input
               type="text"
               value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, location: e.target.value })
+              }
               className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
               placeholder="Zone"
             />
             <input
               type="text"
               value={formData.propertyType}
-              onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, propertyType: e.target.value })
+              }
               className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none"
               placeholder="Type de bien recherche/propose"
             />
           </div>
           <textarea
             value={formData.message}
-            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, message: e.target.value })
+            }
             rows={3}
             className="w-full px-3 py-2 bg-white border border-black/20 rounded-sm text-black focus:border-black/50 focus:outline-none resize-none"
             placeholder="Notes utiles"
@@ -964,7 +1150,7 @@ const CreateClientForm = ({
               className="px-4 py-2 bg-black text-white hover:bg-black/85 transition-colors rounded-sm flex items-center gap-2 disabled:opacity-60"
             >
               <Save className="w-4 h-4" />
-              {submitting ? 'Enregistrement...' : 'Creer'}
+              {submitting ? "Enregistrement..." : "Creer"}
             </button>
           </div>
         </form>
@@ -977,13 +1163,19 @@ export default function Dashboard() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<'ALL' | 'BUYER' | 'SELLER'>('ALL');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | Contact['status']>('ALL');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"ALL" | "BUYER" | "SELLER">(
+    "ALL",
+  );
+  const [statusFilter, setStatusFilter] = useState<"ALL" | Contact["status"]>(
+    "ALL",
+  );
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-  const [contextMenuContact, setContextMenuContact] = useState<Contact | null>(null);
+  const [contextMenuContact, setContextMenuContact] = useState<Contact | null>(
+    null,
+  );
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -993,16 +1185,19 @@ export default function Dashboard() {
 
   useEffect(() => {
     checkAuth();
-    
+
     // Écouter l'événement d'édition depuis la carte de détail
     const handleEditContact = (event: CustomEvent) => {
       setEditingContact(event.detail);
     };
-    
-    window.addEventListener('editContact', handleEditContact as EventListener);
-    
+
+    window.addEventListener("editContact", handleEditContact as EventListener);
+
     return () => {
-      window.removeEventListener('editContact', handleEditContact as EventListener);
+      window.removeEventListener(
+        "editContact",
+        handleEditContact as EventListener,
+      );
     };
   }, []);
 
@@ -1022,40 +1217,40 @@ export default function Dashboard() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/verify');
+      const response = await fetch("/api/auth/verify");
       if (response.ok) {
         const data = await response.json();
         if (data.authenticated) {
           setIsAuthenticated(true);
           setUser(data.admin);
         } else {
-          router.push('/login');
+          router.push("/login");
         }
       } else {
-        router.push('/login');
+        router.push("/login");
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      router.push('/login');
+      console.error("Auth check failed:", error);
+      router.push("/login");
     }
   };
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/verify', { method: 'POST' });
-      router.push('/login');
+      await fetch("/api/auth/verify", { method: "POST" });
+      router.push("/login");
     } catch {
-      router.push('/login');
+      router.push("/login");
     }
   };
 
   const fetchContacts = async () => {
     try {
-      const response = await fetch('/api/contacts');
+      const response = await fetch("/api/contacts");
       const data = await response.json();
       setContacts(data);
     } catch (error) {
-      console.error('Erreur lors du chargement des contacts:', error);
+      console.error("Erreur lors du chargement des contacts:", error);
     } finally {
       setLoading(false);
     }
@@ -1065,153 +1260,173 @@ export default function Dashboard() {
     let filtered = contacts;
 
     if (searchTerm) {
-      filtered = filtered.filter(contact =>
-        contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.phone.includes(searchTerm) ||
-        (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase()))
+      filtered = filtered.filter(
+        (contact) =>
+          contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          contact.phone.includes(searchTerm) ||
+          (contact.email &&
+            contact.email.toLowerCase().includes(searchTerm.toLowerCase())),
       );
     }
 
-    if (typeFilter !== 'ALL') {
-      filtered = filtered.filter(contact => contact.type === typeFilter);
+    if (typeFilter !== "ALL") {
+      filtered = filtered.filter((contact) => contact.type === typeFilter);
     }
 
-    if (statusFilter !== 'ALL') {
-      filtered = filtered.filter(contact => contact.status === statusFilter);
+    if (statusFilter !== "ALL") {
+      filtered = filtered.filter((contact) => contact.status === statusFilter);
     }
 
     setFilteredContacts(filtered);
   };
 
-  const updateContactStatus = async (id: string, newStatus: Contact['status']) => {
-    console.log('updateContactStatus called:', id, newStatus);
+  const updateContactStatus = async (
+    id: string,
+    newStatus: Contact["status"],
+  ) => {
+    console.log("updateContactStatus called:", id, newStatus);
     try {
-      const response = await fetch('/api/contacts/', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: newStatus })
+      const response = await fetch("/api/contacts/", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: newStatus }),
       });
 
       if (response.ok) {
-        console.log('Status updated successfully');
-        setContacts(contacts.map(contact =>
-          contact.id === id ? { ...contact, status: newStatus } : contact
-        ));
+        console.log("Status updated successfully");
+        setContacts(
+          contacts.map((contact) =>
+            contact.id === id ? { ...contact, status: newStatus } : contact,
+          ),
+        );
       } else {
-        console.error('Failed to update status:', response.status);
+        console.error("Failed to update status:", response.status);
       }
     } catch (error) {
-      console.error('Erreur lors de la mise à jour:', error);
+      console.error("Erreur lors de la mise à jour:", error);
     }
   };
 
-  const handleUpdatePersonalNote = async (contactId: string, personalNote: string) => {
+  const handleUpdatePersonalNote = async (
+    contactId: string,
+    personalNote: string,
+  ) => {
     try {
-      const response = await fetch('/api/contacts/personal-note', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactId, personalNote })
+      const response = await fetch("/api/contacts/personal-note", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contactId, personalNote }),
       });
 
       if (response.ok) {
-        console.log('Note personnelle mise à jour avec succès');
-        setContacts(contacts.map(contact =>
-          contact.id === contactId ? { ...contact, personalNote } : contact
-        ));
+        console.log("Note personnelle mise à jour avec succès");
+        setContacts(
+          contacts.map((contact) =>
+            contact.id === contactId ? { ...contact, personalNote } : contact,
+          ),
+        );
         // Mettre à jour aussi le contact sélectionné si c'est le même
         if (selectedContact && selectedContact.id === contactId) {
           setSelectedContact({ ...selectedContact, personalNote });
         }
       } else {
-        console.error('Failed to update personal note:', response.status);
-        throw new Error('Erreur lors de la mise à jour de la note');
+        console.error("Failed to update personal note:", response.status);
+        throw new Error("Erreur lors de la mise à jour de la note");
       }
     } catch (error) {
-      console.error('Erreur lors de la mise à jour de la note personnelle:', error);
+      console.error(
+        "Erreur lors de la mise à jour de la note personnelle:",
+        error,
+      );
       throw error;
     }
   };
 
-  const handleUpdateRating = async (contactId: string, rating: number | null) => {
+  const handleUpdateRating = async (
+    contactId: string,
+    rating: number | null,
+  ) => {
     try {
-      const response = await fetch('/api/contacts/rating/', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactId, rating })
+      const response = await fetch("/api/contacts/rating/", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contactId, rating }),
       });
 
       if (response.ok) {
-        console.log('Évaluation mise à jour avec succès');
-        setContacts(contacts.map(contact =>
-          contact.id === contactId ? { ...contact, rating } : contact
-        ));
+        console.log("Évaluation mise à jour avec succès");
+        setContacts(
+          contacts.map((contact) =>
+            contact.id === contactId ? { ...contact, rating } : contact,
+          ),
+        );
         // Mettre à jour aussi le contact sélectionné si c'est le même
         if (selectedContact && selectedContact.id === contactId) {
           setSelectedContact({ ...selectedContact, rating });
         }
       } else {
-        console.error('Failed to update rating:', response.status);
-        throw new Error('Erreur lors de la mise à jour de l\'évaluation');
+        console.error("Failed to update rating:", response.status);
+        throw new Error("Erreur lors de la mise à jour de l'évaluation");
       }
     } catch (error) {
-      console.error('Erreur lors de la mise à jour de l\'évaluation:', error);
+      console.error("Erreur lors de la mise à jour de l'évaluation:", error);
       throw error;
     }
   };
 
   const handleEditContact = async (updatedContact: Contact) => {
     try {
-      const response = await fetch('/api/contacts/', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedContact)
+      const response = await fetch("/api/contacts/", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedContact),
       });
 
       if (response.ok) {
-        const updatedContacts = contacts.map(contact =>
-          contact.id === updatedContact.id ? updatedContact : contact
+        const updatedContacts = contacts.map((contact) =>
+          contact.id === updatedContact.id ? updatedContact : contact,
         );
         setContacts(updatedContacts);
-        
+
         // Mettre à jour selectedContact si c'est le contact actuellement sélectionné
         if (selectedContact && selectedContact.id === updatedContact.id) {
           setSelectedContact(updatedContact);
         }
-        
+
         setEditingContact(null);
       } else {
-        console.error('Failed to update contact');
+        console.error("Failed to update contact");
       }
     } catch (error) {
-      console.error('Error updating contact:', error);
+      console.error("Error updating contact:", error);
     }
   };
 
   const handleDeleteContact = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce contact ?')) {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce contact ?")) {
       return;
     }
 
     try {
-      const response = await fetch('/api/contacts/', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
+      const response = await fetch("/api/contacts/", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
       });
 
       if (response.ok) {
-        setContacts(contacts.filter(contact => contact.id !== id));
+        setContacts(contacts.filter((contact) => contact.id !== id));
         setContextMenuContact(null);
       } else {
-        console.error('Failed to delete contact');
+        console.error("Failed to delete contact");
       }
     } catch (error) {
-      console.error('Error deleting contact:', error);
+      console.error("Error deleting contact:", error);
     }
   };
 
   const handleCreateClient = async (payload: {
-    type: 'buyer' | 'seller';
+    type: "buyer" | "seller";
     name: string;
     phone: string;
     email?: string;
@@ -1221,23 +1436,23 @@ export default function Dashboard() {
     propertyType?: string;
     message?: string;
   }) => {
-    const response = await fetch('/api/clients/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/clients/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      throw new Error('create-failed');
+      throw new Error("create-failed");
     }
 
     await fetchContacts();
     setShowCreateClientModal(false);
   };
 
-  const buyers = contacts.filter(c => c.type === 'BUYER');
-  const sellers = contacts.filter(c => c.type === 'SELLER');
-  const newContacts = contacts.filter(c => c.status === 'NEW');
+  const buyers = contacts.filter((c) => c.type === "BUYER");
+  const sellers = contacts.filter((c) => c.type === "SELLER");
+  const newContacts = contacts.filter((c) => c.status === "NEW");
 
   // Logique de pagination
   const totalPages = Math.ceil(filteredContacts.length / itemsPerPage);
@@ -1263,7 +1478,9 @@ export default function Dashboard() {
           className="text-center"
         >
           <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/60 font-light">Vérification de l&apos;authentification...</p>
+          <p className="text-white/60 font-light">
+            Vérification de l&apos;authentification...
+          </p>
         </motion.div>
       </div>
     );
@@ -1314,14 +1531,18 @@ export default function Dashboard() {
                 <div className="relative group">
                   <div className="flex items-center space-x-2 text-white/60">
                     <User className="w-4 h-4" />
-                    <span className="text-sm font-medium">{user?.username}</span>
+                    <span className="text-sm font-medium">
+                      {user?.username}
+                    </span>
                   </div>
                   <button
                     onClick={() => setShowChangePasswordModal(true)}
                     className="absolute top-full right-0 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto"
                   >
                     <div className="bg-black/90 border border-white/20 rounded-lg p-2 whitespace-nowrap hover:bg-black/95 hover:border-white/30 transition-all duration-200 cursor-pointer">
-                      <span className="text-xs text-white/70">Changer mot de passe</span>
+                      <span className="text-xs text-white/70">
+                        Changer mot de passe
+                      </span>
                     </div>
                   </button>
                 </div>
@@ -1350,17 +1571,26 @@ export default function Dashboard() {
           <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 rounded-xl p-4 md:p-6 transition-all duration-300 hover:border-blue-400/40 hover:shadow-lg hover:shadow-blue-500/10">
             <div className="flex flex-col h-full">
               <div className="text-center mb-3">
-                <p className="text-white/70 text-sm md:text-base font-semibold mb-2">Nouveaux contacts</p>
+                <p className="text-white/70 text-sm md:text-base font-semibold mb-2">
+                  Nouveaux contacts
+                </p>
                 <div className="flex justify-center mb-2">
                   <div className="p-3 bg-blue-500/20 rounded-xl">
                     <Users className="w-6 h-6 md:w-7 md:h-7 text-blue-400" />
                   </div>
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-white">{newContacts.length}</p>
+                <p className="text-2xl md:text-3xl font-bold text-white">
+                  {newContacts.length}
+                </p>
               </div>
               <div className="mt-auto">
                 <div className="w-full bg-white/10 rounded-full h-1">
-                  <div className="bg-gradient-to-r from-blue-400 to-blue-500 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min((newContacts.length / Math.max(contacts.length, 1)) * 100, 100)}%` }}></div>
+                  <div
+                    className="bg-gradient-to-r from-blue-400 to-blue-500 h-1 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${Math.min((newContacts.length / Math.max(contacts.length, 1)) * 100, 100)}%`,
+                    }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -1370,17 +1600,26 @@ export default function Dashboard() {
           <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-xl p-4 md:p-6 transition-all duration-300 hover:border-purple-400/40 hover:shadow-lg hover:shadow-purple-500/10">
             <div className="flex flex-col h-full">
               <div className="text-center mb-3">
-                <p className="text-white/70 text-sm md:text-base font-semibold mb-2">Acheteurs actifs</p>
+                <p className="text-white/70 text-sm md:text-base font-semibold mb-2">
+                  Acheteurs actifs
+                </p>
                 <div className="flex justify-center mb-2">
                   <div className="p-3 bg-purple-500/20 rounded-xl">
                     <Home className="w-6 h-6 md:w-7 md:h-7 text-purple-400" />
                   </div>
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-white">{buyers.filter(b => b.status !== 'ARCHIVED').length}</p>
+                <p className="text-2xl md:text-3xl font-bold text-white">
+                  {buyers.filter((b) => b.status !== "ARCHIVED").length}
+                </p>
               </div>
               <div className="mt-auto">
                 <div className="w-full bg-white/10 rounded-full h-1">
-                  <div className="bg-gradient-to-r from-purple-400 to-purple-500 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min((buyers.filter(b => b.status !== 'ARCHIVED').length / Math.max(contacts.length, 1)) * 100, 100)}%` }}></div>
+                  <div
+                    className="bg-gradient-to-r from-purple-400 to-purple-500 h-1 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${Math.min((buyers.filter((b) => b.status !== "ARCHIVED").length / Math.max(contacts.length, 1)) * 100, 100)}%`,
+                    }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -1390,17 +1629,26 @@ export default function Dashboard() {
           <div className="group relative overflow-hidden bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 rounded-xl p-4 md:p-6 transition-all duration-300 hover:border-green-400/40 hover:shadow-lg hover:shadow-green-500/10">
             <div className="flex flex-col h-full">
               <div className="text-center mb-3">
-                <p className="text-white/70 text-sm md:text-base font-semibold mb-2">Vendeurs actifs</p>
+                <p className="text-white/70 text-sm md:text-base font-semibold mb-2">
+                  Vendeurs actifs
+                </p>
                 <div className="flex justify-center mb-2">
                   <div className="p-3 bg-green-500/20 rounded-xl">
                     <Shield className="w-6 h-6 md:w-7 md:h-7 text-green-400" />
                   </div>
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-white">{sellers.filter(s => s.status !== 'ARCHIVED').length}</p>
+                <p className="text-2xl md:text-3xl font-bold text-white">
+                  {sellers.filter((s) => s.status !== "ARCHIVED").length}
+                </p>
               </div>
               <div className="mt-auto">
                 <div className="w-full bg-white/10 rounded-full h-1">
-                  <div className="bg-gradient-to-r from-green-400 to-green-500 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min((sellers.filter(s => s.status !== 'ARCHIVED').length / Math.max(contacts.length, 1)) * 100, 100)}%` }}></div>
+                  <div
+                    className="bg-gradient-to-r from-green-400 to-green-500 h-1 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${Math.min((sellers.filter((s) => s.status !== "ARCHIVED").length / Math.max(contacts.length, 1)) * 100, 100)}%`,
+                    }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -1410,17 +1658,26 @@ export default function Dashboard() {
           <div className="group relative overflow-hidden bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 rounded-xl p-4 md:p-6 transition-all duration-300 hover:border-orange-400/40 hover:shadow-lg hover:shadow-orange-500/10">
             <div className="flex flex-col h-full">
               <div className="text-center mb-3">
-                <p className="text-white/70 text-sm md:text-base font-semibold mb-2">Ventes conclues</p>
+                <p className="text-white/70 text-sm md:text-base font-semibold mb-2">
+                  Ventes conclues
+                </p>
                 <div className="flex justify-center mb-2">
                   <div className="p-3 bg-orange-500/20 rounded-xl">
                     <DollarSign className="w-6 h-6 md:w-7 md:h-7 text-orange-400" />
                   </div>
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-white">{contacts.filter(c => c.status === 'SOLD').length}</p>
+                <p className="text-2xl md:text-3xl font-bold text-white">
+                  {contacts.filter((c) => c.status === "SOLD").length}
+                </p>
               </div>
               <div className="mt-auto">
                 <div className="w-full bg-white/10 rounded-full h-1">
-                  <div className="bg-gradient-to-r from-orange-400 to-orange-500 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min((contacts.filter(c => c.status === 'SOLD').length / Math.max(contacts.length, 1)) * 100, 100)}%` }}></div>
+                  <div
+                    className="bg-gradient-to-r from-orange-400 to-orange-500 h-1 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${Math.min((contacts.filter((c) => c.status === "SOLD").length / Math.max(contacts.length, 1)) * 100, 100)}%`,
+                    }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -1449,7 +1706,7 @@ export default function Dashboard() {
                 />
               </div>
             </div>
-            
+
             <div className="flex gap-2 md:gap-4">
               <select
                 value={typeFilter}
@@ -1460,7 +1717,7 @@ export default function Dashboard() {
                 <option value="BUYER">Acheteurs</option>
                 <option value="SELLER">Vendeurs</option>
               </select>
-              
+
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
@@ -1485,14 +1742,18 @@ export default function Dashboard() {
                 </span>
               </button>
               <Link
-  href="/dashboard/properties"
-  className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 border border-white/20 text-white rounded-full hover:bg-white/10 transition-colors shadow-lg self-center"
-  >
-  <Building2 size={18} strokeWidth={2.5} className="md:w-6 md:h-6" />
-  <span className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-    Gerer les biens
-  </span>
-</Link>
+                href="/dashboard/properties"
+                className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 border border-white/20 text-white rounded-full hover:bg-white/10 transition-colors shadow-lg self-center"
+              >
+                <Building2
+                  size={18}
+                  strokeWidth={2.5}
+                  className="md:w-6 md:h-6"
+                />
+                <span className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  Gerer les biens
+                </span>
+              </Link>
             </div>
           </div>
         </div>
@@ -1534,7 +1795,9 @@ export default function Dashboard() {
                       <span>Statut</span>
                     </div>
                   </th>
-                  <th className="hidden md:table-cell px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">Date</th>
+                  <th className="hidden md:table-cell px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">
+                    Date
+                  </th>
                   <th className="px-2 md:px-6 py-4 text-left text-sm font-light text-white/60 tracking-wide">
                     <div className="flex items-center gap-1">
                       <MoreVertical className="w-4 h-4" />
@@ -1556,7 +1819,9 @@ export default function Dashboard() {
                     <td className="px-2 md:px-6 py-4">
                       <div className="font-light text-white flex items-center gap-1">
                         <FlagIcon countryCode={getCountryCode(contact.phone)} />
-                        <span className="truncate max-w-[60px] md:max-w-none text-xs md:text-sm">{contact.name.substring(0, 8)}</span>
+                        <span className="truncate max-w-[60px] md:max-w-none text-xs md:text-sm">
+                          {contact.name.substring(0, 8)}
+                        </span>
                         {contact.personalNote && (
                           <StickyNote className="w-3 h-3 text-blue-400 flex-shrink-0" />
                         )}
@@ -1565,23 +1830,30 @@ export default function Dashboard() {
                         )}
                       </div>
                     </td>
-                    
+
                     <td className="px-2 md:px-6 py-4">
-                      <Badge config={typeConfig[contact.type] || typeConfig.BUYER} size="sm" />
+                      <Badge
+                        config={typeConfig[contact.type] || typeConfig.BUYER}
+                        size="sm"
+                      />
                     </td>
-                    
+
                     <td className="px-2 md:px-6 py-4">
                       <div className="text-white/80">
                         {contact.budget && (
                           <div className="flex items-center gap-1">
                             <DollarSign className="w-3 h-3 text-green-400" />
-                            <span className="text-green-300 font-mono text-xs md:text-base font-semibold">{formatAmount(contact.budget)}</span>
+                            <span className="text-green-300 font-mono text-xs md:text-base font-semibold">
+                              {formatAmount(contact.budget)}
+                            </span>
                           </div>
                         )}
                         {contact.estimation && (
                           <div className="flex items-center gap-1">
                             <DollarSign className="w-3 h-3 text-blue-400" />
-                            <span className="text-blue-300 font-mono text-xs md:text-base font-semibold">{formatAmount(contact.estimation)}</span>
+                            <span className="text-blue-300 font-mono text-xs md:text-base font-semibold">
+                              {formatAmount(contact.estimation)}
+                            </span>
                           </div>
                         )}
                         {!contact.budget && !contact.estimation && (
@@ -1589,33 +1861,37 @@ export default function Dashboard() {
                         )}
                       </div>
                     </td>
-                    
+
                     <td className="hidden md:table-cell px-6 py-4">
                       <ClickableStatusBadge
-                        contact={contact} 
-                        onStatusChange={updateContactStatus} 
+                        contact={contact}
+                        onStatusChange={updateContactStatus}
                       />
                     </td>
-                    
+
                     <td className="hidden md:table-cell px-6 py-4">
                       <div className="text-sm text-white/60 flex items-center gap-2">
                         <Calendar className="w-3 h-3 text-white/40" />
                         <span>{formatDateTable(contact.createdAt)}</span>
                       </div>
                     </td>
-                    
+
                     <td className="px-2 md:px-6 py-4">
                       <div className="relative">
-                        <button 
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setContextMenuContact(contextMenuContact?.id === contact.id ? null : contact);
+                            setContextMenuContact(
+                              contextMenuContact?.id === contact.id
+                                ? null
+                                : contact,
+                            );
                           }}
                           className="p-1 md:p-2 hover:bg-white/10 rounded-sm transition-colors"
                         >
                           <MoreVertical className="w-3 h-3 md:w-4 md:h-4 text-white/60" />
                         </button>
-                        
+
                         {contextMenuContact?.id === contact.id && (
                           <ContextMenu
                             contact={contact}
@@ -1631,14 +1907,14 @@ export default function Dashboard() {
               </tbody>
             </table>
           </div>
-          
+
           {filteredContacts.length === 0 && (
             <div className="text-center py-12">
               <p className="text-white/60 font-light">Aucun contact trouvé</p>
             </div>
           )}
         </div>
-        
+
         {/* Pagination */}
         {filteredContacts.length > 0 && (
           <Pagination
@@ -1651,17 +1927,17 @@ export default function Dashboard() {
           />
         )}
       </motion.div>
-      
+
       {/* Card de détail */}
       {selectedContact && (
-        <ContactDetailCard 
-          contact={selectedContact} 
-          onClose={() => setSelectedContact(null)} 
+        <ContactDetailCard
+          contact={selectedContact}
+          onClose={() => setSelectedContact(null)}
           onUpdateNote={handleUpdatePersonalNote}
           onUpdateRating={handleUpdateRating}
         />
       )}
-      
+
       {/* Formulaire d'édition */}
       {editingContact && (
         <EditContactForm
