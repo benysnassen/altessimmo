@@ -92,7 +92,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
           >
-            Altessimmo
+            Tetouan
           </motion.span>
         </motion.h1>
         

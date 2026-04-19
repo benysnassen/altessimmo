@@ -18,7 +18,7 @@ export default function MarketTicker() {
     { id: 'gold', label: 'OR (g) → MAD', value: null, prev: null, display: '—' },
     { id: 'btc', label: 'BTC → MAD', value: null, prev: null, display: '—' },
     // KPI immobilier au centre — valeur initiale indicative, remplacable dynamiquement
-    { id: 'sqm', label: "Prix m² Tétouan", value: 15000, prev: 14900, display: '15 000 MAD' }
+    { id: 'sqm', label: "Prix m² Tetouan", value: 15000, prev: 14900, display: '15 000 MAD' }
   ]);
 
   const [updatedAt, setUpdatedAt] = useState<string>('--:--');
@@ -113,7 +113,7 @@ export default function MarketTicker() {
           // KPI immobilier preserved from prev state (user can update dynamically)
           {
             id: 'sqm',
-            label: 'Prix m² Tétouan',
+            label: 'Prix m² Tetouan',
             value: prevMap.get('sqm')?.value ?? 15000,
             prev: prevMap.get('sqm')?.prev ?? (prevMap.get('sqm')?.value ?? null),
             display:

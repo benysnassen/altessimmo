@@ -27,16 +27,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
 
   const titles = {
-    fr: "Altessimmo Tétouan, Martil & Cabo Negro - Propriétés d'exception",
-    en: "Altessimmo Tétouan, Martil & Cabo Negro - Exceptional Properties",
-    es: "Altessimmo Tétouan, Martil & Cabo Negro - Propiedades excepcionales",
+    fr: "Altessimmo Tetouan, Martil & Cabo Negro - Propriétés d'exception",
+    en: "Altessimmo Tetouan, Martil & Cabo Negro - Exceptional Properties",
+    es: "Altessimmo Tetouan, Martil & Cabo Negro - Propiedades excepcionales",
     ar: "Altessimmo تطوان، مارتيل و كابو نيغرو - عقارات استثنائية"
   };
 
   const descriptions = {
-    fr: "Sélection discrète de biens immobiliers rares à Tétouan, Martil et Cabo Negro. Découvrez des propriétés haut de gamme, villas et appartements de prestige avec Altessimmo.",
-    en: "Discreet selection of rare properties in Tétouan, Martil and Cabo Negro. Discover high-end properties, luxury villas and prestigious apartments with Altessimmo.",
-    es: "Selección discreta de propiedades exclusivas en Tétouan, Martil y Cabo Negro. Descubra propiedades de alta gama, villas de lujo y apartamentos de prestigio con Altessimmo.",
+    fr: "Sélection discrète de biens immobiliers rares à Tetouan, Martil et Cabo Negro. Découvrez des propriétés haut de gamme, villas et appartements de prestige avec Altessimmo.",
+    en: "Discreet selection of rare properties in Tetouan, Martil and Cabo Negro. Discover high-end properties, luxury villas and prestigious apartments with Altessimmo.",
+    es: "Selección discreta de propiedades exclusivas en Tetouan, Martil y Cabo Negro. Descubra propiedades de alta gama, villas de lujo y apartamentos de prestigio con Altessimmo.",
     ar: "تشكيلة حصرية من العقارات النادرة في تطوان ومارتيل وكابو نيغرو. اكتشف عقارات راقية وفيلات فاخرة وشقق مرموقة مع Altessimmo."
   };
 
@@ -48,10 +48,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     description: descriptions[locale as keyof typeof descriptions] || descriptions.fr,
     keywords: [
-      "immobilier Tétouan",
+      "immobilier Tetouan",
       "immobilier Martil",
       "immobilier Cabo Negro",
-      "villa luxe Tétouan",
+      "villa luxe Tetouan",
       "appartement haut standing Martil",
       "achat vente Cabo Negro",
       "investissement Maroc",
@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: "/window.svg",
           width: 1200,
           height: 630,
-          alt: "Altessimmo Tétouan, Martil & Cabo Negro - Immobilier de prestige",
+          alt: "Altessimmo Tetouan, Martil & Cabo Negro - Immobilier de prestige",
         },
       ],
     },
