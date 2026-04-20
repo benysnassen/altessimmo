@@ -16,6 +16,7 @@ import {
   StickyNote
 } from 'lucide-react';
 import StarRating from './StarRating';
+import BuyerPropertyInterestsSection from './BuyerPropertyInterestsSection';
 
 // Composant Badge réutilisable
 const Badge = ({ config, size = 'md' }: { config: any, size?: 'sm' | 'md' | 'lg' }) => {
@@ -276,7 +277,9 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
               <Edit3 className="w-3 h-3 md:w-4 md:h-4 text-blue-400" />
             </button>
             <button
+              type="button"
               onClick={onClose}
+              aria-label="Fermer la fiche"
               className="p-1.5 md:p-2 hover:bg-white/10 rounded-full transition-colors"
             >
               <XCircle className="w-3 h-3 md:w-4 md:h-4 text-white/60" />
@@ -410,6 +413,10 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
                 )}
               </div>
             </div>
+          )}
+
+          {contact.type === 'BUYER' && (
+            <BuyerPropertyInterestsSection buyerId={contact.id} />
           )}
           
           {contact.message && (

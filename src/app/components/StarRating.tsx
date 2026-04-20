@@ -56,6 +56,8 @@ export default function StarRating({
         return (
           <button
             key={star}
+            type="button"
+            aria-label={`Noter ${star} sur 5`}
             onClick={() => handleStarClick(star)}
             onMouseEnter={() => handleStarHover(star)}
             onMouseLeave={handleMouseLeave}

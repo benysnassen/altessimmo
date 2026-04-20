@@ -60,7 +60,8 @@ model Buyer {
   offers       Offer[]
   notes        Note[]
   propertyMatches PropertyMatch[]
-  
+  propertyInterests BuyerPropertyInterest[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -185,10 +186,31 @@ model Property {
   isFeatured     Boolean         @default(false)
   images         PropertyImage[]
   matches        PropertyMatch[]
+  buyerInterests BuyerPropertyInterest[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
   @@map("properties")
+}
+
+/// Lien manuel prospect acheteur ↔ bien consulté / d'intérêt (snapshot au moment du lien).
+model BuyerPropertyInterest {
+  id                     String    @id @default(cuid())
+  buyerId                String
+  propertyId             String
+  buyer                  Buyer     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  property               Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  note                   String?
+  snapshotPrice          String?
+  snapshotRooms          Int?
+  snapshotLocation       String?
+  snapshotNeighborhood   String?
+  snapshotPropertyType   String?
+  snapshotSurface        Int?
+  createdAt              DateTime  @default(now())
+
+  @@unique([buyerId, propertyId])
+  @@map("buyer_property_interests")
 }
 
 model PropertyImage {
