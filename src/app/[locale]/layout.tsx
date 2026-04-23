@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "../globals.css";
 import Footer from "../components/Footer";
 import Script from "next/script";
+import Image from "next/image";
+import Link from "next/link";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -139,6 +141,21 @@ export default async function LocaleLayout({ children, params }: Props) {
 
       <body>
         <NextIntlClientProvider messages={messages}>
+          <Link
+            href={`/${locale}`}
+            className="fixed top-4 left-4 sm:top-6 sm:left-8 md:top-8 md:left-16 z-50 inline-flex items-center"
+            aria-label="Altessimmo - Accueil"
+          >
+            <Image
+              src="/tetuanlogowhite.png"
+              alt="Altessimmo"
+              width={360}
+              height={108}
+              priority
+              className="h-10 w-auto sm:h-12 md:h-24"
+            />
+          </Link>
+
           <LanguageSwitcher />
 
           <main>{children}</main>

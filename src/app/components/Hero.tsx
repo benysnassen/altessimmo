@@ -78,7 +78,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
       >
         {/* Main Headline - Ultra Elegant */}
         <motion.h1 
-          initial={{ opacity: 0, y: 100, scale: 0.8 }}
+          initial={false}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ 
             duration: 1.5, 
@@ -88,7 +88,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
           className="font-display text-6xl md:text-8xl font-thin mb-8 leading-none tracking-wider"
         >
           <motion.span
-            initial={{ opacity: 0, y: 50 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
           >
@@ -97,7 +97,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
         </motion.h1>
         
         <motion.h2 
-          initial={{ opacity: 0, y: 100, scale: 0.8 }}
+          initial={false}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ 
             duration: 1.5, 
@@ -107,7 +107,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
           className="font-display text-4xl md:text-5xl font-thin mb-8 leading-none tracking-wider"
         >
           <motion.span
-            initial={{ opacity: 0, y: 50 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
           >
@@ -117,7 +117,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
         
         {/* Elegant Line Animation */}
         <motion.div 
-          initial={{ width: 0, opacity: 0 }}
+          initial={false}
           animate={{ width: "8rem", opacity: 1 }}
           transition={{ 
             duration: 2, 
@@ -129,12 +129,12 @@ export default function Hero({ real_estate, discover }: HeroProps) {
         
         {/* Subtitle with Stagger Animation */}
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.8 }}
         >
           <motion.p 
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 2 }}
               className="text-sm sm:text-base md:text-lg font-light mb-16 text-white/60 tracking-widest uppercase"
@@ -146,7 +146,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
         {/* Elegant Mysterious Button */}
       {/* Elegant Mysterious Button */}
 <motion.div 
-  initial={{ opacity: 0, y: 50 }}
+  initial={false}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 1, delay: 2.5 }}
   className="pt-2"
