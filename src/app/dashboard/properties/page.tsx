@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   BedDouble,
   Bath,
+  Camera,
   Building2,
   Car,
   Check,
@@ -24,6 +25,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  X,
 } from 'lucide-react';
 
 type SellerOption = {
@@ -169,7 +171,7 @@ const emptyForm = (): PropertyForm => ({
   hasPool: false,
   hasSeaView: false,
   isFeatured: false,
-  images: Array.from({ length: 5 }, (_, index) => ({
+  images: Array.from({ length: 4 }, (_, index) => ({
     url: '',
     alt: '',
     isPrimary: index === 0,
@@ -306,14 +308,14 @@ export default function PropertiesDashboardPage() {
               sortOrder: index,
               localFile: null,
             })),
-            ...Array.from({ length: Math.max(0, 5 - property.images.length) }, (_, offset) => ({
+            ...Array.from({ length: Math.max(0, 4 - property.images.length) }, (_, offset) => ({
               url: '',
               alt: '',
               isPrimary: false,
               sortOrder: property.images.length + offset,
               localFile: null,
             })),
-          ].slice(0, 5)
+          ].slice(0, 8)
         : emptyForm().images,
     });
     setActiveView('form');
@@ -337,6 +339,58 @@ export default function PropertiesDashboardPage() {
       }
 
       return { ...current, images };
+    });
+  };
+
+  const addImageSlot = () => {
+    setForm((current) => {
+      if (current.images.length >= 8) return current;
+      return {
+        ...current,
+        images: [
+          ...current.images,
+          {
+            url: '',
+            alt: '',
+            isPrimary: current.images.length === 0,
+            sortOrder: current.images.length,
+            localFile: null,
+          },
+        ],
+      };
+    });
+  };
+
+  const removeImageSlot = (index: number) => {
+    setForm((current) => {
+      const next = current.images.filter((_, i) => i !== index);
+      if (next.length === 0) {
+        return {
+          ...current,
+          images: emptyForm().images,
+        };
+      }
+      if (!next.some((img) => img.isPrimary)) {
+        next[0] = { ...next[0], isPrimary: true };
+      }
+      return {
+        ...current,
+        images: next.map((img, i) => ({ ...img, sortOrder: i })),
+      };
+    });
+  };
+
+  const moveImage = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    setForm((current) => {
+      if (toIndex < 0 || toIndex >= current.images.length) return current;
+      const next = [...current.images];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return {
+        ...current,
+        images: next.map((img, i) => ({ ...img, sortOrder: i })),
+      };
     });
   };
 
@@ -433,7 +487,7 @@ export default function PropertiesDashboardPage() {
         isFeatured: form.isFeatured,
       };
 
-      const imageSlots = form.images.slice(0, 5);
+      const imageSlots = form.images.slice(0, 8);
       const nonEmptyImages = imageSlots.filter((image) => image.url || image.localFile);
       if (nonEmptyImages.length === 0) {
         throw new Error('at-least-one-image');
@@ -784,55 +838,96 @@ export default function PropertiesDashboardPage() {
               ))}
             </div>
 
-            <div className="border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="border border-white/10 rounded-xl p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ImageIcon className="w-4 h-4 text-white/60" />
-                  <span className="text-sm text-white/80">Images du bien (max 5)</span>
+                  <span className="text-sm text-white/80">Photo de l&apos;annonce</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-white/60">{form.images.filter((img) => img.url || img.localFile).length}/8</span>
+                  <button
+                    type="button"
+                    onClick={addImageSlot}
+                    disabled={form.images.length >= 8}
+                    className="px-3 py-1.5 rounded-full text-xs bg-black/10 border border-black/20 hover:bg-black/20 disabled:opacity-40"
+                  >
+                    + Ajouter une photo
+                  </button>
                 </div>
               </div>
-              <p className="text-xs text-white/50">
-                Les images sont uploades dans `public/uploads/properties/&lt;id-du-bien&gt;/` avec 1 image principale obligatoire.
-              </p>
-
-              {form.images.map((image, index) => (
-                <div key={`${image.id || 'new'}-${index}`} className="space-y-2 border border-white/10 rounded-lg p-3 bg-black/20">
-                  <label className="block">
-                    <span className="text-xs text-white/60">Upload local (optimise en WebP)</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) => handleFileUpload(index, event.target.files?.[0])}
-                      className="mt-1 block w-full text-xs text-white/70 file:mr-3 file:px-3 file:py-1.5 file:rounded-sm file:border-0 file:bg-white/15 file:text-white hover:file:bg-white/25"
-                    />
-                  </label>
-                  <input
-                    value={image.url}
-                    onChange={(event) => handleImageChange(index, 'url', event.target.value)}
-                    className="w-full px-3 py-2 bg-black/30 border border-white/10 rounded-sm text-white text-sm"
-                    placeholder={`URL image ${index + 1}`}
-                  />
-                  <input
-                    value={image.alt || ''}
-                    onChange={(event) => handleImageChange(index, 'alt', event.target.value)}
-                    className="w-full px-3 py-2 bg-black/30 border border-white/10 rounded-sm text-white text-sm"
-                    placeholder="Texte alternatif"
-                  />
-                  <div className="flex items-center justify-between">
-                    <label className="inline-flex items-center gap-2 text-xs text-white/70">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {form.images.map((image, index) => (
+                  <div
+                    key={`${image.id || 'new'}-${index}`}
+                    className="relative"
+                    draggable
+                    onDragStart={(event) => {
+                      event.dataTransfer.setData('text/plain', String(index));
+                    }}
+                    onDragOver={(event) => event.preventDefault()}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      const fromIndex = Number(event.dataTransfer.getData('text/plain'));
+                      moveImage(fromIndex, index);
+                    }}
+                  >
+                    <label
+                      className="relative group border-2 border-dashed border-black/20 rounded-xl bg-white/70 hover:border-black/40 transition-colors cursor-pointer overflow-hidden aspect-[4/3] block"
+                    >
                       <input
-                        type="radio"
-                        checked={image.isPrimary}
-                        onChange={() => handleImageChange(index, 'isPrimary', true)}
-                        name="primary-image"
-                        className="accent-white"
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) => handleFileUpload(index, event.target.files?.[0])}
+                        className="hidden"
                       />
-                      Image principale
+
+                      {image.url ? (
+                        <img
+                          src={image.url}
+                          alt={image.alt || `Photo ${index + 1}`}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-black/70">
+                          <Camera className="w-7 h-7 mb-2" />
+                          <span className="text-xs font-medium">{index + 1}/8</span>
+                        </div>
+                      )}
+
+                      {/* Use zinc, not black: .admin-light [class*="bg-black"] forces opaque cream and hides previews */}
+                      <div className="pointer-events-none absolute inset-0 z-[1] bg-transparent transition-colors group-hover:bg-zinc-900/10" />
                     </label>
-                    <span className="text-xs text-white/45">Image {index + 1}/5</span>
+
+                    <button
+                      type="button"
+                      onClick={() => handleImageChange(index, 'isPrimary', true)}
+                      disabled={!image.url}
+                      className={`absolute bottom-2 left-2 z-[2] px-2.5 py-1 rounded-full text-[11px] font-medium ${
+                        image.isPrimary
+                          ? 'bg-amber-400 text-black'
+                          : 'bg-white/90 text-black hover:bg-white'
+                      } ${!image.url ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {image.isPrimary ? '⭐ Photo principale' : 'Définir principale'}
+                    </button>
+                    {(image.url || form.images.length > 4) && (
+                      <button
+                        type="button"
+                        onClick={() => removeImageSlot(index)}
+                        className="absolute top-2 right-2 z-[2] p-1.5 rounded-full bg-zinc-900/75 text-white hover:bg-zinc-900"
+                        aria-label="Retirer cette photo"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <div className="rounded-lg bg-indigo-100 text-indigo-700 px-4 py-3 text-sm">
+                ℹ️ Faites glisser vos miniatures pour changer leur ordre.
+              </div>
             </div>
 
             {message && <p className="text-sm text-green-300">{message}</p>}
@@ -970,7 +1065,7 @@ export default function PropertiesDashboardPage() {
                         {property.neighborhood ? <span className="block text-white/50 truncate">{property.neighborhood}</span> : null}
                       </td>
                       <td className="px-4 py-3 text-sm text-white/75 truncate">{property.seller.name}</td>
-                      <td className="px-4 py-3 text-sm text-white/75">{property.images.length}/5</td>
+                      <td className="px-4 py-3 text-sm text-white/75">{property.images.length}/8</td>
                       <td className="px-4 py-3 text-sm text-white/75">{property.matches.length}</td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-2">

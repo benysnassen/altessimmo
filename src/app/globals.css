@@ -61,6 +61,20 @@ body {
   background-color: var(--color-cream) !important;
 }
 
+/* Substring match above also hits bg-black/0, /5, /10… used for transparent hovers — restore real opacity */
+.admin-light [class*="bg-black/0"] {
+  background-color: transparent !important;
+}
+.admin-light [class*="bg-black/5"] {
+  background-color: rgb(0 0 0 / 0.05) !important;
+}
+.admin-light [class*="bg-black/10"] {
+  background-color: rgb(0 0 0 / 0.1) !important;
+}
+.admin-light [class*="bg-black/15"] {
+  background-color: rgb(0 0 0 / 0.15) !important;
+}
+
 .admin-light [class*="bg-white/"] {
   background-color: var(--color-cream) !important;
 }
