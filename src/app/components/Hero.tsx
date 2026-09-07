@@ -3,6 +3,7 @@
 import { Link } from '@/i18n/routing'; // ✅ CORRECT
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { site, districtsLabel } from '@/config/site';
 
 
 interface HeroProps {
@@ -92,7 +93,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
           >
-            Tetouan
+            {site.city}
           </motion.span>
         </motion.h1>
         
@@ -139,7 +140,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
               transition={{ duration: 1, delay: 2 }}
               className="text-sm sm:text-base md:text-lg font-light mb-16 text-white/60 tracking-widest uppercase"
             >
-              Tetouan • Martil • Cabo Negro
+              {districtsLabel}
             </motion.p>
         </motion.div>
         

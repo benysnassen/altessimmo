@@ -46,7 +46,7 @@ model Buyer {
   
   // Préférences
   propertyType String? // Villa, Appartement, Terrain, etc.
-  location     String? // Tétouan, Cabo Negro, Martil, etc.
+  location     String? // Agdal, Hay Riad, Souissi, etc.
   minSurface   Int?    // Surface minimale en m²
   maxSurface   Int?    // Surface maximale en m²
   minRooms     Int?    // Nombre de pièces minimum
@@ -82,7 +82,7 @@ model Seller {
   
   // Bien à vendre
   propertyType String? // Villa, Appartement, Terrain, etc.
-  location     String? // Tétouan, Cabo Negro, Martil, etc.
+  location     String? // Agdal, Hay Riad, Souissi, etc.
   surface      Int?    // Surface en m²
   rooms        Int?    // Nombre de pièces
   price        String? // Prix demandé

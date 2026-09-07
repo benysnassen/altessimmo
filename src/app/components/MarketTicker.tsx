@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
+import { site } from '@/config/site';
 
 type Item = {
   id: string;
@@ -10,6 +11,14 @@ type Item = {
   display: string; // formatted string to show
 };
 
+const numberFmt = (n: number) =>
+  new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(n);
+
+const SQM_LABEL = `Prix m² ${site.city}`;
+const SQM_VALUE = site.pricePerSqm;
+/** Valeur précédente indicative, pour la flèche de tendance du ticker. */
+const SQM_PREV = SQM_VALUE - 100;
+
 export default function MarketTicker() {
   const [items, setItems] = useState<Item[]>([
     { id: 'eur', label: 'EUR → MAD', value: null, prev: null, display: '—' },
@@ -18,14 +27,11 @@ export default function MarketTicker() {
     { id: 'gold', label: 'OR (g) → MAD', value: null, prev: null, display: '—' },
     { id: 'btc', label: 'BTC → MAD', value: null, prev: null, display: '—' },
     // KPI immobilier au centre — valeur initiale indicative, remplacable dynamiquement
-    { id: 'sqm', label: "Prix m² Tetouan", value: 15000, prev: 14900, display: '15 000 MAD' }
+    { id: 'sqm', label: SQM_LABEL, value: SQM_VALUE, prev: SQM_PREV, display: `${numberFmt(SQM_VALUE)} MAD` }
   ]);
 
   const [updatedAt, setUpdatedAt] = useState<string>('--:--');
   const mounted = useRef(false);
-
-  const numberFmt = (n: number) =>
-    new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(n);
 
   async function fetchExchangeAndAssets() {
     try {
@@ -113,8 +119,8 @@ export default function MarketTicker() {
           // KPI immobilier preserved from prev state (user can update dynamically)
           {
             id: 'sqm',
-            label: 'Prix m² Tetouan',
-            value: prevMap.get('sqm')?.value ?? 15000,
+            label: SQM_LABEL,
+            value: prevMap.get('sqm')?.value ?? SQM_VALUE,
             prev: prevMap.get('sqm')?.prev ?? (prevMap.get('sqm')?.value ?? null),
             display:
               prevMap.get('sqm')?.value !== undefined

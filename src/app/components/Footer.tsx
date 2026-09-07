@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 import { useState } from "react";
+import { site } from '@/config/site';
 
 export default function Footer() {
   const [isRotating, setIsRotating] = useState(false);
@@ -26,7 +27,7 @@ export default function Footer() {
 
         {/* Texte centré */}
         <p className="text-xs text-white/40 tracking-widest uppercase text-center">
-          © {new Date().getFullYear()} Altessimmo Tetouan
+          © {new Date().getFullYear()} Altessimmo {site.city}
         </p>
 
         {/* Icône WhatsApp - FLOTTANTE */}

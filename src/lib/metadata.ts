@@ -1,63 +1,94 @@
 import type { Metadata } from "next";
+import {
+  site,
+  zonesBrandLabel,
+  zonesProseFr,
+  zonesProseEn,
+  zonesProseEs,
+  zonesProseAr,
+  seoKeywords,
+} from "@/config/site";
 
 type LocaleMetadata = {
   title: string;
   description: string;
 };
 
+type LocalizedMetadataOptions = {
+  /** Chemin de la page, sans la locale. Ex : "/contact". */
+  path?: string;
+  /** Surcharges page par page ; à défaut, les valeurs du site sont utilisées. */
+  title?: string;
+  description?: string;
+  /** Image OG relative à `baseUrl`. */
+  image?: string;
+  imageAlt?: string;
+};
+
 const metadata: Record<string, LocaleMetadata> = {
   fr: {
-    title: "Altessimmo Tetouan, Martil & Cabo Negro - Immobilier de Confiance et de Qualité",
-    description: "Sélection de propriétés de qualité à Tetouan, Martil et Cabo Negro. Villas, appartements et terrains. Confiance, transparence et accompagnement complet.",
+    title: `Altessimmo ${zonesBrandLabel} - Immobilier de Confiance et de Qualité`,
+    description: `Sélection de propriétés de qualité à ${zonesProseFr}. Villas, appartements et terrains. Confiance, transparence et accompagnement complet.`,
   },
   en: {
-    title: "Altessimmo Tetouan, Martil & Cabo Negro - Trusted Quality Real Estate",
-    description: "Selected quality properties in Tetouan, Martil and Cabo Negro. Villas, apartments and land. Trust, transparency and full guidance.",
+    title: `Altessimmo ${zonesBrandLabel} - Trusted Quality Real Estate`,
+    description: `Selected quality properties in ${zonesProseEn}. Villas, apartments and land. Trust, transparency and full guidance.`,
   },
   es: {
-    title: "Altessimmo Tetouan, Martil & Cabo Negro - Inmobiliaria de confianza y calidad",
-    description: "Propiedades de calidad cuidadosamente seleccionadas en Tetouan, Martil y Cabo Negro. Villas, apartamentos y terrenos. Confianza, transparencia y acompañamiento completo.",
+    title: `Altessimmo ${zonesBrandLabel} - Inmobiliaria de confianza y calidad`,
+    description: `Propiedades de calidad cuidadosamente seleccionadas en ${zonesProseEs}. Villas, apartamentos y terrenos. Confianza, transparencia y acompañamiento completo.`,
   },
   ar: {
-    title: "Altessimmo تطوان، مارتيل و كابو نيغرو - عقارات ثقة وجودة",
-    description: "عقارات ذات جودة مختارة بعناية في تطوان ومارتيل وكابو نيغرو. فيلات وشقق وأراضي. ثقة، شفافية ومرافقة كاملة.",
+    title: `Altessimmo ${zonesProseAr} - عقارات ثقة وجودة`,
+    description: `عقارات ذات جودة مختارة بعناية في ${zonesProseAr}. فيلات وشقق وأراضي. ثقة، شفافية ومرافقة كاملة.`,
   },
 };
 
-export function getLocalizedMetadata(locale: string): Metadata {
-  const { title, description } = metadata[locale] || metadata.fr;
+export function getLocalizedMetadata(
+  locale: string,
+  options: LocalizedMetadataOptions = {}
+): Metadata {
+  const base = metadata[locale] || metadata.fr;
+  const title = options.title ?? base.title;
+  const description = options.description ?? base.description;
 
-  const baseUrl = 'https://tetouan.altessimmo.com';
-  const imageUrl = `${baseUrl}/og-image-altessimmo.png`;
+  const baseUrl = site.baseUrl;
+  const path = options.path ?? '';
+  const imagePath = options.image ?? site.ogImage;
+  const imageUrl = `${baseUrl}${imagePath}`;
+  const imageType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+  const pageUrl = `${baseUrl}/${locale}${path}`;
 
   return {
     metadataBase: new URL(baseUrl),
-    title: {
-      default: title,
-      template: "%s | Altessimmo",
-    },
+    // Un titre de page est absolu : le template "%s | Altessimmo" du layout
+    // parent s'y appliquerait sinon, d'où un « | Altessimmo » en double.
+    title: options.title
+      ? { absolute: options.title }
+      : { default: title, template: "%s | Altessimmo" },
     description,
+    keywords: seoKeywords,
     alternates: {
-      canonical: `${baseUrl}/${locale}`,
+      canonical: pageUrl,
       languages: {
-        fr: '/fr',
-        en: '/en',
-        es: '/es',
-        ar: '/ar',
+        fr: `/fr${path}`,
+        en: `/en${path}`,
+        es: `/es${path}`,
+        ar: `/ar${path}`,
       },
     },
     openGraph: {
       title,
       description,
-      url: `${baseUrl}/${locale}`,
+      url: pageUrl,
       siteName: 'Altessimmo',
       images: [
         {
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: title,
-          type: 'image/png', // 👈 AJOUTE CETTE LIGNE
+          alt: options.imageAlt ?? title,
+          type: imageType,
         },
       ],
       locale,

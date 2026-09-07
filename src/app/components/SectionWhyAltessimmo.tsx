@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Link } from '@/i18n/routing';
+import { zonesProseFr } from '@/config/site';
 
 export default function SectionWhyAltessimmo() {
   return (
@@ -55,7 +56,7 @@ export default function SectionWhyAltessimmo() {
           {[
             { title: "Estimation Gratuite en 48h", desc: "Recevez une estimation réaliste et confidentielle, sans engagement." },
             { title: "Acheteurs Cash Disponibles", desc: "Nous disposons d’un réseau actif d’investisseurs prêts à acheter immédiatement." },
-            { title: "Présence Locale Forte", desc: "Tetouan, Martil, Cabo Negro — nous connaissons chaque quartier, chaque opportunité." },
+            { title: "Présence Locale Forte", desc: `${zonesProseFr} — nous connaissons chaque quartier, chaque opportunité.` },
             { title: "Indépendance Totale", desc: "Un interlocuteur unique, réactif et disponible 7j/7, pour une vente sans perte de temps." }
           ].map((item, index) => (
             <motion.div

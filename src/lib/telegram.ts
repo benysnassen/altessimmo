@@ -1,3 +1,4 @@
+import { site } from '@/config/site';
 // lib/telegram.ts
 
 export async function sendTelegramNotification(message: string) {
@@ -35,7 +36,7 @@ export async function sendTelegramNotification(message: string) {
   
   // Fonction pour formater joliment les données du formulaire
   export function formatFormData(formData: Record<string, any>): string {
-    let message = '🔔 <b>Nouveau formulaire reçu !</b>\n\n';
+    let message = `🔔 <b>Nouveau formulaire — ${site.city}</b>\n\n`;
     
     Object.entries(formData).forEach(([key, value]) => {
       // Formatage du nom de champ (capitalize et remplacer _ par espace)

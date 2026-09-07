@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Altessimmo Rabat",
+  "short_name": "Altessimmo",
   "icons": [
     {
       "src": "/file.svg",
@@ -17,5 +17,8 @@
   ],
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "display": "standalone"
+  "display": "standalone",
+  "description": "Immobilier de prestige à Rabat : villas, appartements et terrains.",
+  "lang": "fr",
+  "start_url": "/fr/"
 }

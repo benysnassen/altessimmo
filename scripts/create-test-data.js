@@ -3,6 +3,9 @@
 /**
  * Script de création de données de test
  * Usage: node scripts/create-test-data.js
+ *
+ * Quartiers alignés sur `site.districts` (src/config/site.ts) ; ce script est en
+ * CommonJS et ne peut pas importer le module TS, garder les deux en phase à la main.
  */
 
 const { PrismaClient } = require('@prisma/client');
@@ -33,9 +36,9 @@ async function createTestData() {
         phone: '+212123456789',
         email: 'jean.dupont@email.com',
         budget: '2500000',
-        message: 'Recherche une villa avec jardin à Tétouan',
+        message: 'Recherche une villa avec jardin à Agdal',
         propertyType: 'Villa',
-        location: 'Tétouan',
+        location: 'Agdal',
         minSurface: 200,
         maxSurface: 400,
         minRooms: 4,
@@ -52,7 +55,7 @@ async function createTestData() {
         budget: '1800000',
         message: 'Appartement moderne avec vue mer',
         propertyType: 'Appartement',
-        location: 'Cabo Negro',
+        location: 'Hay Riad',
         minSurface: 120,
         maxSurface: 200,
         minRooms: 3,
@@ -69,7 +72,7 @@ async function createTestData() {
         budget: '3200000',
         message: 'Villa de luxe avec piscine et jardin',
         propertyType: 'Villa',
-        location: 'Martil',
+        location: 'Hassan',
         minSurface: 300,
         maxSurface: 500,
         minRooms: 5,
@@ -97,7 +100,7 @@ async function createTestData() {
         email: 'sophie.laurent@email.com',
         message: 'Villa familiale à vendre en toute discrétion',
         propertyType: 'Villa',
-        location: 'Tétouan',
+        location: 'Souissi',
         surface: 350,
         rooms: 6,
         price: '2800000',
@@ -111,9 +114,9 @@ async function createTestData() {
         name: 'Mohammed Alami',
         phone: '+212444555666',
         email: 'mohammed.alami@email.com',
-        message: 'Appartement haut de gamme à Cabo Negro',
+        message: 'Appartement haut de gamme à Hay Riad',
         propertyType: 'Appartement',
-        location: 'Cabo Negro',
+        location: 'Hay Riad',
         surface: 180,
         rooms: 4,
         price: '2200000',
@@ -129,7 +132,7 @@ async function createTestData() {
         email: 'isabelle.moreau@email.com',
         message: 'Villa de prestige avec piscine privée',
         propertyType: 'Villa',
-        location: 'Martil',
+        location: 'Les Orangers',
         surface: 450,
         rooms: 7,
         price: '4500000',
