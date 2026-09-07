@@ -17,10 +17,10 @@ export const site = {
   geo: { lat: 34.0209, lng: -6.8416 },
 
   /**
-   * Image Open Graph unique du site (1200x630).
-   * ⚠️ Le visuel actuel porte encore « TETOUAN • MARTIL • CABO NEGRO » : à refaire.
+   * Image Open Graph unique du site (1200x630), composée à partir du logo
+   * vectoriel. Le sous-titre y est figé : régénérer si `districts` change.
    */
-  ogImage: "/og-image-altessimmo.png",
+  ogImage: "/og-rabat-altessimmo.png",
 
   districts: [
     "Agdal", "Hay Riad", "Souissi", "Hassan",

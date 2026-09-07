@@ -165,12 +165,12 @@ export default async function LocaleLayout({ children, params }: Props) {
             aria-label="Altessimmo - Accueil"
           >
             <Image
-              src="/tetuanlogowhite.png"
-              alt="Altessimmo"
-              width={360}
-              height={108}
+              src="/logo-rabat-altessimmo-white.svg"
+              alt="Altessimmo Rabat"
+              width={284}
+              height={49}
               priority
-              className="h-10 w-auto sm:h-12 md:h-24"
+              className="h-6 w-auto sm:h-8 md:h-14"
             />
           </Link>
 
