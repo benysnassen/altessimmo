@@ -9,7 +9,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-import { site, zonesBrandLabel, zonesProseFr, zonesProseEn, zonesProseEs, zonesProseAr, seoKeywords } from "@/config/site";
+import { site, zonesBrandLabel, zonesProseFr, zonesProseEn, zonesProseAr, seoKeywords } from "@/config/site";
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -28,14 +28,12 @@ export function generateViewport(): Viewport {
 const titles = {
   fr: `Altessimmo ${zonesBrandLabel} - Propriétés d'exception`,
   en: `Altessimmo ${zonesBrandLabel} - Exceptional Properties`,
-  es: `Altessimmo ${zonesBrandLabel} - Propiedades excepcionales`,
   ar: `Altessimmo ${zonesProseAr} - عقارات استثنائية`,
 };
 
 const descriptions = {
   fr: `Sélection discrète de biens immobiliers rares à ${zonesProseFr}. Découvrez des propriétés haut de gamme, villas et appartements de prestige avec Altessimmo.`,
   en: `Discreet selection of rare properties in ${zonesProseEn}. Discover high-end properties, luxury villas and prestigious apartments with Altessimmo.`,
-  es: `Selección discreta de propiedades exclusivas en ${zonesProseEs}. Descubra propiedades de alta gama, villas de lujo y apartamentos de prestigio con Altessimmo.`,
   ar: `تشكيلة حصرية من العقارات النادرة في ${zonesProseAr}. اكتشف عقارات راقية وفيلات فاخرة وشقق مرموقة مع Altessimmo.`,
 };
 
@@ -59,13 +57,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       languages: {
         'fr': '/fr',
         'en': '/en',
-        'es': '/es',
         'ar': '/ar',
       }
     },
     openGraph: {
       type: "website",
-      locale: locale === 'fr' ? 'fr_FR' : locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : 'ar_AR',
+      locale: locale === 'fr' ? 'fr_FR' : locale === 'en' ? 'en_US' : 'ar_AR',
       url: `${site.baseUrl}/${locale}`,
       siteName: "Altessimmo",
       title: titles[locale as keyof typeof titles] || titles.fr,

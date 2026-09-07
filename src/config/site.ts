@@ -58,13 +58,11 @@ export const zonesBrandLabel =
 /** Prose courante, par locale : "Rabat" (ou "Rabat, Salé et Témara") */
 export const zonesProseFr = joinList(site.zones, "et");
 export const zonesProseEn = joinList(site.zones, "and");
-export const zonesProseEs = joinList(site.zones, "y");
 export const zonesProseAr = joinListAr(site.zonesAr);
 
 export const zonesProse: Record<string, string> = {
   fr: zonesProseFr,
   en: zonesProseEn,
-  es: zonesProseEs,
   ar: zonesProseAr,
 };
 

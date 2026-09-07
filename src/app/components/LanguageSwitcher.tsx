@@ -10,7 +10,6 @@ import Flag from 'react-world-flags';
 const languages: Record<string, { code: string; name: string }> = {
   fr: { code: 'FR', name: 'Français' },
   en: { code: 'US', name: 'English' },
-  es: { code: 'ES', name: 'Español' },
   ar: { code: 'MA', name: 'العربية' },
 };
 

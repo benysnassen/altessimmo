@@ -4,7 +4,6 @@ import {
   zonesBrandLabel,
   zonesProseFr,
   zonesProseEn,
-  zonesProseEs,
   zonesProseAr,
   seoKeywords,
 } from "@/config/site";
@@ -33,10 +32,6 @@ const metadata: Record<string, LocaleMetadata> = {
   en: {
     title: `Altessimmo ${zonesBrandLabel} - Trusted Quality Real Estate`,
     description: `Selected quality properties in ${zonesProseEn}. Villas, apartments and land. Trust, transparency and full guidance.`,
-  },
-  es: {
-    title: `Altessimmo ${zonesBrandLabel} - Inmobiliaria de confianza y calidad`,
-    description: `Propiedades de calidad cuidadosamente seleccionadas en ${zonesProseEs}. Villas, apartamentos y terrenos. Confianza, transparencia y acompañamiento completo.`,
   },
   ar: {
     title: `Altessimmo ${zonesProseAr} - عقارات ثقة وجودة`,
@@ -73,7 +68,6 @@ export function getLocalizedMetadata(
       languages: {
         fr: `/fr${path}`,
         en: `/en${path}`,
-        es: `/es${path}`,
         ar: `/ar${path}`,
       },
     },

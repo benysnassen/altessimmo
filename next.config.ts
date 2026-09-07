@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
         destination: `${site.baseUrl}/:path*`,
         permanent: true,
       },
+      // La locale es a ete retiree. Sans ces regles le middleware next-intl
+      // prend "es" pour un segment et renvoie vers /fr/es/*, donc en 404.
+      { source: '/es', destination: '/fr', permanent: true },
+      { source: '/es/:path*', destination: '/fr/:path*', permanent: true },
     ];
   }
 };
