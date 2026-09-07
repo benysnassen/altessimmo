@@ -1,5 +1,6 @@
 import "../globals.css";
 import Footer from "../components/Footer";
+import { fontVariables } from "@/lib/fonts";
 
 export default function DashboardLayout({
   children,
@@ -7,7 +8,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={fontVariables}>
       <body>
         <main>{children}</main>
         <Footer />

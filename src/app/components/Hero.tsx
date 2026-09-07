@@ -86,7 +86,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
             ease: [0.25, 0.46, 0.45, 0.94],
             delay: 0.2
           }}
-          className="font-display text-6xl md:text-8xl font-thin mb-8 leading-none tracking-wider"
+          className="font-display text-6xl md:text-8xl font-light mb-8 leading-none tracking-wider"
         >
           <motion.span
             initial={false}
@@ -105,7 +105,7 @@ export default function Hero({ real_estate, discover }: HeroProps) {
             ease: [0.25, 0.46, 0.45, 0.94],
             delay: 0.9
           }}
-          className="font-display text-4xl md:text-5xl font-thin mb-8 leading-none tracking-wider"
+          className="font-display text-4xl md:text-5xl font-light mb-8 leading-none tracking-wider"
         >
           <motion.span
             initial={false}

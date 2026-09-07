@@ -10,6 +10,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { site, zonesBrandLabel, zonesProseFr, zonesProseEn, zonesProseAr, seoKeywords } from "@/config/site";
+import { fontVariables } from "@/lib/fonts";
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -126,7 +127,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   };
 
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={fontVariables}>
       <head>
         <script
           type="application/ld+json"
