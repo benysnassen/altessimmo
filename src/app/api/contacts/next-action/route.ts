@@ -17,7 +17,7 @@ export async function PATCH(request: NextRequest) {
   if (!acces.ok) return acces.response;
 
   try {
-    const { contactId, nextActionAt } = await request.json();
+    const { contactId, nextActionAt, markContacted } = await request.json();
 
     if (!contactId) {
       return NextResponse.json({ error: 'ID du contact requis' }, { status: 400 });
@@ -32,6 +32,11 @@ export async function PATCH(request: NextRequest) {
       date = parsee;
     }
 
+    // « Rappele » : l'action est faite, la date tombe. Et un prospect qu'on
+    // vient d'avoir au telephone n'est plus « Nouveau » — mais on ne touche a
+    // rien au-dela, le suivi appartient a l'agent.
+    const donnees: Record<string, unknown> = { nextActionAt: date };
+
     const cibles = [
       { modele: prisma.buyer, type: 'buyer' as const },
       { modele: prisma.seller, type: 'seller' as const },
@@ -39,13 +44,32 @@ export async function PATCH(request: NextRequest) {
     ];
 
     for (const { modele, type } of cibles) {
-      const maj = await (modele as { updateMany: (args: unknown) => Promise<{ count: number }> }).updateMany({
+      const client = modele as {
+        updateMany: (args: unknown) => Promise<{ count: number }>;
+        findFirst: (args: unknown) => Promise<{ status: string } | null>;
+      };
+
+      const existante = await client.findFirst({
         where: { id: contactId },
-        data: { nextActionAt: date },
+        select: { status: true },
+      });
+
+      if (!existante) continue;
+
+      const maj = await client.updateMany({
+        where: { id: contactId },
+        data:
+          markContacted && existante.status === 'NEW'
+            ? { ...donnees, status: 'CONTACTED' }
+            : donnees,
       });
 
       if (maj.count > 0) {
-        return NextResponse.json({ nextActionAt: date ? date.toISOString() : null, type });
+        return NextResponse.json({
+          nextActionAt: date ? date.toISOString() : null,
+          status: markContacted && existante.status === 'NEW' ? 'CONTACTED' : existante.status,
+          type,
+        });
       }
     }
 

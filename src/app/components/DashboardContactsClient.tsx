@@ -27,6 +27,7 @@ import {
   ChevronRight,
   StickyNote,
   CalendarClock,
+  UserPlus,
 } from "lucide-react";
 import ChangePasswordModal from "@/app/components/ChangePasswordModal";
 import ContactDetailCard from "@/app/components/ContactDetailCard";
@@ -58,6 +59,7 @@ interface Contact {
   horizon?: Horizon | null;
   sourcePage?: string | null;
   nextActionAt?: string | null;
+  origin?: "buyer" | "seller" | "contact";
   status:
     | "NEW"
     | "CONTACTED"
@@ -200,6 +202,15 @@ const toPhoneStorage = (dialCode: string, country: string, digits: string) =>
   `${dialCode}|${country}|${digits.replace(/\D/g, "").slice(0, 12)}`;
 
 // Fonction pour extraire le code pays du numéro de téléphone
+/**
+ * Numero au format international sans separateur : 212600000001. C'est ce
+ * qu'attendent tel: et wa.me, et le telephone est stocke en trois morceaux.
+ */
+const numeroInternational = (phone: string): string => {
+  const { dialCode, digits } = extractPhoneParts(phone);
+  return `${dialCode.replace(/\D/g, "")}${digits}`;
+};
+
 const getCountryCode = (phone: string): string => {
   // Si le format est nouveau (+1|US|123456789), extraire directement le pays
   if (phone.includes("|")) {
@@ -472,11 +483,15 @@ const ContextMenu = ({
   contact,
   onEdit,
   onDelete,
+  onMarkContacted,
+  onConvert,
   onClose,
 }: {
   contact: Contact;
   onEdit: (contact: Contact) => void;
   onDelete: (id: string) => void;
+  onMarkContacted: (contact: Contact) => void;
+  onConvert: (contact: Contact) => void;
   onClose: () => void;
 }) => {
   const { position, dropdownRef } = useDropdownPosition();
@@ -503,8 +518,51 @@ const ContextMenu = ({
         transform: position.transform || "translateY(8px)",
       }}
     >
+      {/* Joindre le prospect sans quitter la liste ni recopier son numero. */}
+      <a
+        href={`tel:+${numeroInternational(contact.phone)}`}
+        onClick={(e) => e.stopPropagation()}
+        title="Appeler"
+        className="w-full px-3 py-2 rounded-sm flex items-center justify-center hover:bg-white/10 transition-colors"
+      >
+        <Phone className="w-4 h-4 text-emerald-400" />
+      </a>
+      <a
+        href={`https://wa.me/${numeroInternational(contact.phone)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        title="WhatsApp"
+        className="w-full px-3 py-2 rounded-sm flex items-center justify-center hover:bg-white/10 transition-colors"
+      >
+        <FaWhatsapp className="w-4 h-4 text-green-400" />
+      </a>
+      <button
+        onClick={() => {
+          onMarkContacted(contact);
+          onClose();
+        }}
+        title="Rappele : retire la date de relance, et passe un lead Nouveau en Contacte"
+        className="w-full px-3 py-2 rounded-sm flex items-center justify-center hover:bg-white/10 transition-colors"
+      >
+        <CheckCircle className="w-4 h-4 text-amber-400" />
+      </button>
+      {contact.origin === "contact" && (
+        <button
+          onClick={() => {
+            onConvert(contact);
+            onClose();
+          }}
+          title="Convertir ce lead en fiche client"
+          className="w-full px-3 py-2 rounded-sm flex items-center justify-center hover:bg-white/10 transition-colors"
+        >
+          <UserPlus className="w-4 h-4 text-purple-400" />
+        </button>
+      )}
+      <div className="my-1 border-t border-white/10" />
       <button
         onClick={handleEdit}
+        title="Modifier"
         className="w-full text-left px-3 py-2 rounded-sm text-sm flex items-center justify-center hover:bg-white/10 transition-colors text-white/80"
       >
         <Edit3 className="w-4 h-4 text-blue-400" />
@@ -1347,6 +1405,71 @@ export default function DashboardContactsClient({
    * Pose ou efface la date de rappel. `null` retire le prospect des relances
    * sans toucher a son statut : ce n'est pas la meme information.
    */
+  /**
+   * « Rappele » : l'action est faite. La date de relance tombe, et un lead
+   * encore Nouveau passe Contacte. Un seul appel, pour que le geste reste un
+   * geste.
+   */
+  const handleMarkContacted = async (contact: Contact) => {
+    try {
+      const response = await fetch("/api/contacts/next-action/", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contactId: contact.id,
+          nextActionAt: null,
+          markContacted: true,
+        }),
+      });
+
+      if (!response.ok) {
+        alert("Le rappel n'a pas ete enregistre. Reessayez.");
+        return;
+      }
+
+      const { status } = await response.json();
+      setContacts((precedents) =>
+        precedents.map((c) =>
+          c.id === contact.id
+            ? { ...c, nextActionAt: null, status: status || c.status }
+            : c,
+        ),
+      );
+    } catch (error) {
+      console.error("Erreur lors du marquage rappele:", error);
+      alert("Le rappel n'a pas ete enregistre. Reessayez.");
+    }
+  };
+
+  /**
+   * Promeut un lead du formulaire en fiche client. La ligne `contacts` reste
+   * en place avec son historique ; la liste cesse simplement de l'afficher en
+   * double, puisqu'elle deduplique par telephone.
+   */
+  const handleConvertLead = async (contact: Contact) => {
+    const cible = contact.type === "SELLER" ? "proprietaire" : "acheteur";
+    if (!confirm(`Creer une fiche ${cible} pour ${contact.name} ?`)) return;
+
+    try {
+      const response = await fetch("/api/contacts/convert/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contactId: contact.id }),
+      });
+
+      if (response.ok) {
+        await fetchContacts();
+        return;
+      }
+
+      const { error } = await response.json().catch(() => ({ error: null }));
+      alert(error || "La conversion a echoue. Reessayez.");
+    } catch (error) {
+      console.error("Erreur lors de la conversion:", error);
+      alert("La conversion a echoue. Reessayez.");
+    }
+  };
+
   const handleUpdateNextAction = async (
     contactId: string,
     nextActionAt: string | null,
@@ -2104,6 +2227,8 @@ export default function DashboardContactsClient({
                             contact={contact}
                             onEdit={setEditingContact}
                             onDelete={handleDeleteContact}
+                            onMarkContacted={handleMarkContacted}
+                            onConvert={handleConvertLead}
                             onClose={() => setContextMenuContact(null)}
                           />
                         )}

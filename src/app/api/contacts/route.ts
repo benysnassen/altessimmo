@@ -92,6 +92,7 @@ export async function GET(request: NextRequest) {
         horizon: qualificationByPhone.get(`BUYER:${buyer.phoneNormalized}`)?.horizon ?? null,
         sourcePage: qualificationByPhone.get(`BUYER:${buyer.phoneNormalized}`)?.sourcePage ?? null,
         nextActionAt: buyer.nextActionAt ? buyer.nextActionAt.toISOString() : null,
+        origin: 'buyer' as const,
         createdAt: buyer.createdAt.toISOString(),
         updatedAt: buyer.updatedAt.toISOString()
       })),
@@ -111,6 +112,7 @@ export async function GET(request: NextRequest) {
         horizon: qualificationByPhone.get(`SELLER:${seller.phoneNormalized}`)?.horizon ?? null,
         sourcePage: qualificationByPhone.get(`SELLER:${seller.phoneNormalized}`)?.sourcePage ?? null,
         nextActionAt: seller.nextActionAt ? seller.nextActionAt.toISOString() : null,
+        origin: 'seller' as const,
         createdAt: seller.createdAt.toISOString(),
         updatedAt: seller.updatedAt.toISOString()
       })),
@@ -138,6 +140,8 @@ export async function GET(request: NextRequest) {
           horizon: contact.horizon,
           sourcePage: contact.sourcePage,
           nextActionAt: contact.nextActionAt ? contact.nextActionAt.toISOString() : null,
+          // Un lead brut : pas encore de fiche client, donc convertible.
+          origin: 'contact' as const,
           createdAt: contact.createdAt.toISOString(),
           updatedAt: contact.updatedAt.toISOString()
         }))

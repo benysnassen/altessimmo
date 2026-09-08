@@ -126,7 +126,23 @@ export async function POST(request: NextRequest) {
       messageDuJour: message || null,
       sourcePageDuJour: cleanSourcePage,
     });
-    await sendTelegramNotification(telegramMessage);
+    const notifie = await sendTelegramNotification(telegramMessage);
+
+    // Telegram tombe : le lead est bien en base, mais personne n'est prevenu
+    // et le dashboard n'est pas temps reel. Le CRM devient alors le canal de
+    // secours — le prospect remonte en tete, a rappeler aujourd'hui, plutot
+    // que de dormir sans que personne le sache.
+    if (!notifie) {
+      console.error(
+        `ALERTE: notification Telegram non delivree pour le contact ${contact.id}`
+      );
+      if (!contact.nextActionAt) {
+        await prisma.contact.update({
+          where: { id: contact.id },
+          data: { nextActionAt: new Date() },
+        });
+      }
+    }
 
     return NextResponse.json(
       { message: 'Message envoyé avec succès', contact },
