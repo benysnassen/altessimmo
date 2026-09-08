@@ -18,7 +18,7 @@ export default function About() {
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="font-display text-2xl font-thin tracking-widest uppercase text-white/80"
+            className="font-display text-2xl font-normal tracking-widest uppercase text-white/80"
           >
             À propos
           </motion.h2>

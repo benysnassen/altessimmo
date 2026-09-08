@@ -134,7 +134,7 @@ export default function ProprietaireDetailPage() {
                   <User className="h-7 w-7" aria-hidden />
                 </div>
                 <div>
-                  <h1 className="font-display text-2xl font-semibold text-[var(--color-sand-dark)] md:text-3xl">{seller.name}</h1>
+                  <h1 className="font-display text-2xl font-bold text-[var(--color-sand-dark)] md:text-3xl">{seller.name}</h1>
                   <p className="mt-2 text-sm text-[var(--color-sand-dark)]/55">Propriétaire · {statusFr}</p>
                 </div>
               </div>

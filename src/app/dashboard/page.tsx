@@ -151,7 +151,7 @@ export default function DashboardHubPage() {
                   Propriétaires
                 </Link>
               </nav>
-              <h1 className="font-display text-3xl font-light tracking-wide mb-2">
+              <h1 className="font-display text-3xl font-normal tracking-wide mb-2">
                 Dashboard
               </h1>
               <p className="text-white/60 font-light">
@@ -330,7 +330,7 @@ export default function DashboardHubPage() {
                 <p className="text-xs uppercase tracking-wider text-white/45 mb-2">
                   CRM
                 </p>
-                <h2 className="font-display text-2xl font-light text-white mb-2">
+                <h2 className="font-display text-2xl font-normal text-white mb-2">
                   Acheteurs
                 </h2>
                 <p className="text-white/55 text-sm leading-relaxed">
@@ -351,7 +351,7 @@ export default function DashboardHubPage() {
                 <p className="text-xs uppercase tracking-wider text-white/45 mb-2">
                   CRM
                 </p>
-                <h2 className="font-display text-2xl font-light text-white mb-2">
+                <h2 className="font-display text-2xl font-normal text-white mb-2">
                   Propriétaires
                 </h2>
                 <p className="text-white/55 text-sm leading-relaxed">

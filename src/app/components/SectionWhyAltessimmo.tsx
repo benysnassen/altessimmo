@@ -37,7 +37,7 @@ export default function SectionWhyAltessimmo() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="font-display text-4xl md:text-6xl font-thin tracking-widest mb-8"
+          className="font-display text-4xl md:text-6xl font-normal tracking-widest mb-8"
         >
           Pourquoi <span className="text-white/70">Altessimmo</span> ?
         </motion.h2>

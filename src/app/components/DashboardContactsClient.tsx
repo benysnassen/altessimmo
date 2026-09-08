@@ -1530,7 +1530,7 @@ export default function DashboardContactsClient({
                   Propriétaires
                 </Link>
               </nav>
-              <h1 className="font-display text-3xl font-light tracking-wide mb-2">
+              <h1 className="font-display text-3xl font-normal tracking-wide mb-2">
                 {contactKind === "BUYER"
                   ? "Acheteurs"
                   : "Propriétaires"}

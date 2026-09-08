@@ -117,7 +117,7 @@ export default function LoginPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="font-display text-2xl font-light text-black mb-4 tracking-wide"
+              className="font-display text-2xl font-normal text-black mb-4 tracking-wide"
             >
               Accès Administrateur
             </motion.h1>

@@ -668,7 +668,7 @@ export default function PropertiesDashboardPage() {
               <ArrowLeft className="w-4 h-4" />
               Retour au dashboard
             </Link>
-            <h1 className="font-display text-3xl font-light tracking-wide mb-2">Biens & matching</h1>
+            <h1 className="font-display text-3xl font-normal tracking-wide mb-2">Biens & matching</h1>
             <p className="text-white/60 font-light">
               Enregistre les proprietes, lie-les a un proprietaire et visualise les acheteurs pertinents.
             </p>
@@ -727,7 +727,7 @@ export default function PropertiesDashboardPage() {
           >
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
-              <h2 className="font-display text-2xl font-light">{form.id ? 'Modifier le bien' : 'Nouveau bien'}</h2>
+              <h2 className="font-display text-2xl font-normal">{form.id ? 'Modifier le bien' : 'Nouveau bien'}</h2>
               <p className="text-white/50 text-sm mt-1">Titre, medias, criteres et proprietaire associe.</p>
             </div>
             {form.id && (

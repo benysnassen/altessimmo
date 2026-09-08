@@ -178,7 +178,7 @@ export default function ContactForm() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="font-display text-2xl font-light text-black mb-4 tracking-wide"
+              className="font-display text-2xl font-normal text-black mb-4 tracking-wide"
             >
               {t('message_sent')}
             </motion.h2>
@@ -212,7 +212,7 @@ export default function ContactForm() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="font-display text-3xl font-light text-black mb-4 tracking-wide"
+              className="font-display text-3xl font-normal text-black mb-4 tracking-wide"
             >
               {isSeller ? t('entrust_property') : t('find_your_property')}
             </motion.h2>

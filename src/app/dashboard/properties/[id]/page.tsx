@@ -341,7 +341,7 @@ export default function PropertyDetailPage() {
 
           {/* Description à gauche · critères + lieu + badges + propriétaire resserrés à droite */}
           <div className="border-t border-[var(--color-cream-border)] px-4 py-4 md:px-5 md:py-5">
-            <h1 className="font-display text-xl font-semibold leading-snug text-[var(--color-sand-dark)] md:text-2xl">
+            <h1 className="font-display text-xl font-bold leading-snug text-[var(--color-sand-dark)] md:text-2xl">
               {property.title}
             </h1>
             <p className="mt-1 text-base font-medium text-[var(--color-sand-dark)]/85 md:text-lg">{descTitle}</p>
@@ -419,7 +419,7 @@ export default function PropertyDetailPage() {
                       <User className="h-6 w-6" aria-hidden />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-display text-base font-semibold leading-tight text-[var(--color-sand-dark)] group-hover:text-[var(--color-accent)]">
+                      <p className="font-display text-base font-bold leading-tight text-[var(--color-sand-dark)] group-hover:text-[var(--color-accent)]">
                         {property.seller.name}
                       </p>
                       {property.seller.email ? (
