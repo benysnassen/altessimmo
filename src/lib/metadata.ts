@@ -26,16 +26,16 @@ type LocalizedMetadataOptions = {
 
 const metadata: Record<string, LocaleMetadata> = {
   fr: {
-    title: `Altessimmo ${zonesBrandLabel} - Immobilier de Confiance et de Qualité`,
-    description: `Sélection de propriétés de qualité à ${zonesProseFr}. Villas, appartements et terrains. Confiance, transparence et accompagnement complet.`,
+    title: `Altessimmo ${zonesBrandLabel} - Villas, appartements et terrains`,
+    description: `Villas, appartements et terrains à ${zonesProseFr}. Un seul interlocuteur, du premier appel à la signature.`,
   },
   en: {
-    title: `Altessimmo ${zonesBrandLabel} - Trusted Quality Real Estate`,
-    description: `Selected quality properties in ${zonesProseEn}. Villas, apartments and land. Trust, transparency and full guidance.`,
+    title: `Altessimmo ${zonesBrandLabel} - Villas, apartments and land`,
+    description: `Villas, apartments and land in ${zonesProseEn}. One person to talk to, from the first call to signing.`,
   },
   ar: {
-    title: `Altessimmo ${zonesProseAr} - عقارات ثقة وجودة`,
-    description: `عقارات ذات جودة مختارة بعناية في ${zonesProseAr}. فيلات وشقق وأراضي. ثقة، شفافية ومرافقة كاملة.`,
+    title: `Altessimmo ${zonesProseAr} - فيلات وشقق وأراضٍ`,
+    description: `فيلات وشقق وأراضٍ في ${zonesProseAr}. محاور واحد، من أول اتصال حتى التوقيع.`,
   },
 };
 

@@ -5,7 +5,10 @@ import { routing } from "./i18n/routing";
 const intlMiddleware = createMiddleware(routing);
 
 const PROTECTED_ROUTES = ["/dashboard"];
-const ADMIN_ROUTES = ["/login", "/dashboard"]; // Routes admin non traduites
+// Routes admin non traduites. Absente d'ici, une page hors de [locale] part
+// dans next-intl, qui la prefixe d'une locale — et 404, la page n'existant pas
+// sous [locale]. C'est ce qui rendait /admin-setup inaccessible.
+const ADMIN_ROUTES = ["/login", "/dashboard", "/admin-setup"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

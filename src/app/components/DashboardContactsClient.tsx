@@ -31,6 +31,7 @@ import ChangePasswordModal from "@/app/components/ChangePasswordModal";
 import ContactDetailCard from "@/app/components/ContactDetailCard";
 import ProportionalStar from "@/app/components/ProportionalStar";
 import { useDropdownPosition } from "../hooks/useDropdownPosition";
+import { HORIZON_BADGES, HORIZONS, type Horizon } from "@/lib/leads";
 import { FaWhatsapp } from "react-icons/fa";
 
 interface Contact {
@@ -45,6 +46,8 @@ interface Contact {
   personalNote?: string | null;
   rating?: number | null;
   confidential: boolean;
+  horizon?: Horizon | null;
+  sourcePage?: string | null;
   status:
     | "NEW"
     | "CONTACTED"
@@ -1137,6 +1140,7 @@ export default function DashboardContactsClient({
   const [statusFilter, setStatusFilter] = useState<"ALL" | Contact["status"]>(
     "ALL",
   );
+  const [horizonFilter, setHorizonFilter] = useState<"ALL" | Horizon>("ALL");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -1176,11 +1180,11 @@ export default function DashboardContactsClient({
 
   useEffect(() => {
     filterContacts();
-  }, [contacts, searchTerm, statusFilter, contactKind]);
+  }, [contacts, searchTerm, statusFilter, horizonFilter, contactKind]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filters change
-  }, [searchTerm, statusFilter, contactKind]);
+  }, [searchTerm, statusFilter, horizonFilter, contactKind]);
 
   const checkAuth = async () => {
     try {
@@ -1238,6 +1242,10 @@ export default function DashboardContactsClient({
 
     if (statusFilter !== "ALL") {
       filtered = filtered.filter((contact) => contact.status === statusFilter);
+    }
+
+    if (horizonFilter !== "ALL") {
+      filtered = filtered.filter((contact) => contact.horizon === horizonFilter);
     }
 
     setFilteredContacts(filtered);
@@ -1740,6 +1748,18 @@ export default function DashboardContactsClient({
                 <option value="SOLD">Vendu</option>
                 <option value="ARCHIVED">Archivé</option>
               </select>
+              <select
+                value={horizonFilter}
+                onChange={(e) => setHorizonFilter(e.target.value as any)}
+                className="flex-1 px-2 md:px-4 py-3 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none [&>option]:bg-black [&>option]:text-white text-sm"
+              >
+                <option value="ALL">Toutes les échéances</option>
+                {HORIZONS.map((horizon) => (
+                  <option key={horizon} value={horizon}>
+                    {HORIZON_BADGES[horizon].emoji} {HORIZON_BADGES[horizon].label}
+                  </option>
+                ))}
+              </select>
               <button
                 onClick={() => setShowCreateClientModal(true)}
                 className="group relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12 bg-white text-black rounded-full hover:bg-white/90 transition-colors shadow-lg self-center"
@@ -1828,6 +1848,16 @@ export default function DashboardContactsClient({
                         <span className="truncate max-w-[60px] md:max-w-none text-xs md:text-sm">
                           {contact.name.substring(0, 8)}
                         </span>
+                        {contact.horizon && (
+                          <span
+                            className="flex-shrink-0 text-xs"
+                            title={HORIZON_BADGES[contact.horizon].label}
+                            role="img"
+                            aria-label={HORIZON_BADGES[contact.horizon].label}
+                          >
+                            {HORIZON_BADGES[contact.horizon].emoji}
+                          </span>
+                        )}
                         {contact.personalNote && (
                           <StickyNote className="w-3 h-3 text-blue-400 flex-shrink-0" />
                         )}

@@ -1,33 +1,37 @@
 {
-    "home":{
-        "real_estate":"Real Estate",
-        "discover":"discover"
-        },
-    
-        "contact": {
-            "find_your_property": "Find your property",
-            "we_support_sale": "We support you in selling your property with discretion and professionalism.",
-            "help_find_dream": "Find your ideal property in Rabat and its surroundings, with personalized support.",
-            "want_to_sell": "Would you rather sell?",
-            "full_name": "Full name",
-            "full_name_placeholder": "Your full name",
-            "phone_whatsapp": "Phone / WhatsApp",
-            "email_optional": "Email (optional)",
-            "email_placeholder": "your@email.com",
-            "estimated_budget": "Estimated budget (MAD)",
-            "free_message": "Free message",
-            "message_placeholder": "Describe your criteria, preferences, needs...",
-            "confidential_support": "I want confidential and discreet support",
-            "entrust_property": "Entrust your property",
-            "looking_to_buy": "Looking to buy instead?",
-            "describe_property": "Describe your property, its location, its features...",
-            "property_valuation":"Property valuation (MAD)",
-            "send_discreetly":"Send Discreetly",
-            "sending":"Sending...",
-            "required_name": "Name is required",
-            "invalid_phone": "The number must contain at least 8 digits",
-            "invalid_email": "Invalid email address",
-            "message_sent": "Message sent",
-            "success_message": "Thank you for your trust. We will contact you as soon as possible to discuss your project with complete discretion."
-        }
+  "home": {
+    "real_estate": "Villas & Apartments",
+    "discover": "let’s talk"
+  },
+  "contact": {
+    "find_your_property": "Find Your Property",
+    "help_find_dream": "If you tell us what you are looking for, you will get a shortlist.",
+    "entrust_property": "Entrust Your Property",
+    "we_support_sale": "A reasoned valuation, screened viewings, complete discretion.",
+    "want_to_sell": "Selling instead?",
+    "looking_to_buy": "Buying instead?",
+    "full_name": "First & Last Name",
+    "full_name_placeholder": "",
+    "phone_whatsapp": "Phone / WhatsApp",
+    "email_optional": "Email (optional)",
+    "email_placeholder": "you@example.com",
+    "estimated_budget": "Budget (MAD)",
+    "property_valuation": "Asking price (MAD)",
+    "free_message": "Your message",
+    "message_placeholder": "District, size, number of bedrooms, timing…",
+    "describe_property": "District, size, number of rooms, condition…",
+    "send_discreetly": "Send my request",
+    "sending": "Sending…",
+    "required_name": "Please give your name",
+    "invalid_phone": "Enter a number with at least 8 digits",
+    "invalid_email": "Check this email address",
+    "message_sent": "Message received",
+    "success_message": "We will call you back on the number you gave us, to talk it through.",
+    "horizon_buy": "When do you want to buy?",
+    "horizon_sell": "When do you want to sell?",
+    "horizon_immediate": "Within 3 months",
+    "horizon_six_months": "In 6 to 12 months",
+    "horizon_exploring": "Just looking for now",
+    "required_horizon": "Pick a timeframe"
+  }
 }

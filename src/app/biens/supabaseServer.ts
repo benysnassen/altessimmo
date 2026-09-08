@@ -1,14 +1,23 @@
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/auth-helpers-nextjs';
 
-function getEnv(name: string, fallback?: string) {
-  return process.env[name] || (fallback ? process.env[fallback] : undefined);
+function getEnv(...names: string[]) {
+  for (const name of names) {
+    if (process.env[name]) return process.env[name];
+  }
+  return undefined;
 }
 
 export async function getSupabaseServerClient() {
   const cookieStore = await cookies();
   const supabaseUrl = getEnv('NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL');
-  const supabaseAnonKey = getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_ANON_KEY');
+  // Supabase nomme desormais cette cle « publishable » ; les projets plus
+  // anciens l'appellent « anon ». On accepte les deux.
+  const supabaseAnonKey = getEnv(
+    'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'SUPABASE_ANON_KEY'
+  );
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return null;
