@@ -202,3 +202,17 @@ La liste du dashboard ne lisait plus la table `contacts` depuis le commit
 `05041cf` (« pour eviter les doublons UI ») : les leads du formulaire y etaient
 devenus invisibles. Ils y sont retablis, dedupliques sur
 `type + phoneNormalized` contre les fiches acheteur/proprietaire.
+
+---
+
+## Etat : livre
+
+La specification a ete executee, ecarts compris, et le travail s'est poursuivi
+au-dela sur un audit du CRM mene sous un critere unique — aucun lead perdu.
+Ont suivi : la fermeture des routes API du dashboard, la fin des echecs
+silencieux du formulaire, l'historisation des demandes, la relance par date de
+prochaine action, les gestes rapides et la conversion d'un lead en fiche
+client.
+
+L'usage quotidien de l'outil est decrit dans `CRM.md`. Les invariants a tenir
+en touchant au code le sont dans `CLAUDE.md`.
