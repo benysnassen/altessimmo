@@ -32,6 +32,7 @@
     "horizon_immediate": "Within 3 months",
     "horizon_six_months": "In 6 to 12 months",
     "horizon_exploring": "Just looking for now",
-    "required_horizon": "Pick a timeframe"
+    "required_horizon": "Pick a timeframe",
+    "submit_error": "Your request didn’t go through. Your answers are kept below — please try again in a moment."
   }
 }

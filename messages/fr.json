@@ -32,6 +32,7 @@
     "horizon_immediate": "Dans les 3 mois",
     "horizon_six_months": "Dans 6 à 12 mois",
     "horizon_exploring": "Je me renseigne",
-    "required_horizon": "Choisissez une échéance"
+    "required_horizon": "Choisissez une échéance",
+    "submit_error": "Votre demande n’est pas partie. Vos réponses sont conservées ci-dessous : réessayez dans un instant."
   }
 }

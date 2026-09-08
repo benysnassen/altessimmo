@@ -32,6 +32,7 @@
     "horizon_immediate": "خلال 3 أشهر",
     "horizon_six_months": "خلال 6 إلى 12 شهراً",
     "horizon_exploring": "أستطلع فقط",
-    "required_horizon": "اختر المدة"
+    "required_horizon": "اختر المدة",
+    "submit_error": "لم يتم إرسال طلبك. إجاباتك محفوظة أدناه، يرجى المحاولة مرة أخرى بعد لحظات."
   }
 }

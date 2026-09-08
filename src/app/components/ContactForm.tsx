@@ -20,6 +20,7 @@ export default function ContactForm() {
   const { width, height } = useWindowSize();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitFailed, setSubmitFailed] = useState(false);
   const [showConfetti, setShowConfetti] = useState(true);
   const [budgetValue, setBudgetValue] = useState(1500000);
 
@@ -91,6 +92,7 @@ export default function ContactForm() {
 
   const onSubmit = async (data: Record<string, unknown>) => {
     // Validation côté client
+    setSubmitFailed(false);
       try {
       const response = await fetch('/api/contact/', {
         method: 'POST',
@@ -101,14 +103,19 @@ export default function ContactForm() {
       });
 
       if (response.ok) {
+        setSubmitFailed(false);
         setIsSubmitted(true);
         setShowConfetti(true); // On remet les confettis à true
 
         reset();
+      } else {
+        // Le lead se perdait ici en silence : le visiteur repartait en croyant
+        // avoir envoye. On le dit, et on garde ses reponses pour reessayer.
+        setSubmitFailed(true);
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      
+      setSubmitFailed(true);
     }
   };
 
@@ -577,6 +584,15 @@ export default function ContactForm() {
               transition={{ duration: 0.6, delay: 1.2 }}
               className="text-center pt-6"
             >
+              {submitFailed && (
+                <p
+                  role="alert"
+                  aria-live="assertive"
+                  className="mb-4 text-sm text-red-600 font-light leading-relaxed"
+                >
+                  {t('submit_error')}
+                </p>
+              )}
               <button
                 type="submit"
                 disabled={isSubmitting}
