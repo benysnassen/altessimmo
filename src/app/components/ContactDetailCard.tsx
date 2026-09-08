@@ -18,7 +18,14 @@ import {
   Link2
 } from 'lucide-react';
 import StarRating from './StarRating';
-import { HORIZON_BADGES, type Horizon } from '@/lib/leads';
+import {
+  HORIZON_BADGES,
+  etatRelance,
+  RELANCE_STYLES,
+  jourISO,
+  dansNJours,
+  type Horizon,
+} from '@/lib/leads';
 import BuyerPropertyInterestsSection from './BuyerPropertyInterestsSection';
 
 // Composant Badge réutilisable
@@ -64,6 +71,7 @@ interface Contact {
   personalNote?: string | null;
   rating?: number | null;
   confidential: boolean;
+  nextActionAt?: string | null;
   horizon?: Horizon | null;
   sourcePage?: string | null;
   status: 'NEW' | 'CONTACTED' | 'INTERESTED' | 'VIEWING' | 'OFFER' | 'SOLD' | 'ARCHIVED';
@@ -76,6 +84,7 @@ interface ContactDetailCardProps {
   onClose: () => void;
   onUpdateNote: (contactId: string, personalNote: string) => void;
   onUpdateRating: (contactId: string, rating: number | null) => void;
+  onUpdateNextAction: (contactId: string, nextActionAt: string | null) => Promise<void>;
 }
 
 // Montants abreges : 1.5M, 800K. Au niveau du module, l'historique des envois
@@ -181,7 +190,101 @@ const HistoriqueEnvois = ({ phone, type }: { phone: string; type: 'BUYER' | 'SEL
   );
 };
 
-const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating }: ContactDetailCardProps) => {
+/**
+ * Quand rappeler ce prospect. Les raccourcis couvrent le geste courant — on
+ * raccroche, on repousse a demain ou a la semaine prochaine — et le champ de
+ * date reste la pour tout le reste.
+ */
+const BlocRelance = ({
+  contact,
+  onUpdateNextAction,
+}: {
+  contact: Contact;
+  onUpdateNextAction: (contactId: string, nextActionAt: string | null) => Promise<void>;
+}) => {
+  const [enCours, setEnCours] = useState(false);
+  const etat = etatRelance(contact.nextActionAt);
+
+  const poser = async (date: Date | null) => {
+    setEnCours(true);
+    try {
+      await onUpdateNextAction(contact.id, date ? date.toISOString() : null);
+    } catch {
+      // Le handler previent deja l'utilisateur.
+    } finally {
+      setEnCours(false);
+    }
+  };
+
+  const raccourcis: { libelle: string; jours: number }[] = [
+    { libelle: "Demain", jours: 1 },
+    { libelle: 'Dans 3 j', jours: 3 },
+    { libelle: 'Dans 1 sem.', jours: 7 },
+    { libelle: 'Dans 1 mois', jours: 30 },
+  ];
+
+  return (
+    <div className="border-t border-white/10 pt-3 md:pt-4">
+      <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">
+        Prochaine action
+      </h4>
+
+      <div className="flex items-center gap-2 flex-wrap mb-3">
+        {etat === 'aucune' ? (
+          <span className="text-white/40 text-xs md:text-sm">
+            Aucune date — ce prospect n&apos;est pas suivi
+          </span>
+        ) : (
+          <span
+            className={`inline-flex items-center gap-1 px-2 py-1 rounded-sm border text-xs ${RELANCE_STYLES[etat].classe}`}
+          >
+            <CalendarClock className="w-3 h-3" />
+            {new Date(contact.nextActionAt as string).toLocaleDateString('fr-FR', {
+              weekday: 'short',
+              day: 'numeric',
+              month: 'long',
+            })}
+            {etat !== 'a_venir' && ` — ${RELANCE_STYLES[etat].libelle.toLowerCase()}`}
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {raccourcis.map((r) => (
+          <button
+            key={r.jours}
+            disabled={enCours}
+            onClick={() => poser(dansNJours(r.jours))}
+            className="px-2.5 py-1.5 rounded-sm border border-white/20 text-white/70 text-xs hover:bg-white/10 transition-colors disabled:opacity-40"
+          >
+            {r.libelle}
+          </button>
+        ))}
+        <input
+          type="date"
+          disabled={enCours}
+          min={jourISO()}
+          value={contact.nextActionAt ? jourISO(new Date(contact.nextActionAt)) : ''}
+          onChange={(e) =>
+            poser(e.target.value ? new Date(`${e.target.value}T12:00:00`) : null)
+          }
+          className="px-2 py-1.5 rounded-sm border border-white/20 bg-black/20 text-white/80 text-xs focus:border-white/50 focus:outline-none disabled:opacity-40"
+        />
+        {contact.nextActionAt && (
+          <button
+            disabled={enCours}
+            onClick={() => poser(null)}
+            className="px-2.5 py-1.5 rounded-sm border border-white/20 text-white/50 text-xs hover:bg-white/10 transition-colors disabled:opacity-40"
+          >
+            Retirer
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating, onUpdateNextAction }: ContactDetailCardProps) => {
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteValue, setNoteValue] = useState(contact.personalNote || '');
   const [currentRating, setCurrentRating] = useState(contact.rating);
@@ -526,6 +629,8 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
             <BuyerPropertyInterestsSection buyerId={contact.id} />
           )}
           
+          <BlocRelance contact={contact} onUpdateNextAction={onUpdateNextAction} />
+
           <HistoriqueEnvois phone={contact.phone} type={contact.type} />
 
           {contact.message && (

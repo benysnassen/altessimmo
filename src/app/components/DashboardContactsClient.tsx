@@ -26,12 +26,21 @@ import {
   ChevronLeft,
   ChevronRight,
   StickyNote,
+  CalendarClock,
 } from "lucide-react";
 import ChangePasswordModal from "@/app/components/ChangePasswordModal";
 import ContactDetailCard from "@/app/components/ContactDetailCard";
 import ProportionalStar from "@/app/components/ProportionalStar";
 import { useDropdownPosition } from "../hooks/useDropdownPosition";
-import { HORIZON_BADGES, HORIZONS, type Horizon } from "@/lib/leads";
+import {
+  HORIZON_BADGES,
+  HORIZONS,
+  etatRelance,
+  RELANCE_STYLES,
+  RANG_RELANCE,
+  type EtatRelance,
+  type Horizon,
+} from "@/lib/leads";
 import { FaWhatsapp } from "react-icons/fa";
 
 interface Contact {
@@ -48,6 +57,7 @@ interface Contact {
   confidential: boolean;
   horizon?: Horizon | null;
   sourcePage?: string | null;
+  nextActionAt?: string | null;
   status:
     | "NEW"
     | "CONTACTED"
@@ -1177,6 +1187,7 @@ export default function DashboardContactsClient({
     "ALL",
   );
   const [horizonFilter, setHorizonFilter] = useState<"ALL" | Horizon>("ALL");
+  const [relanceFilter, setRelanceFilter] = useState<"ALL" | EtatRelance>("ALL");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -1216,11 +1227,11 @@ export default function DashboardContactsClient({
 
   useEffect(() => {
     filterContacts();
-  }, [contacts, searchTerm, statusFilter, horizonFilter, contactKind]);
+  }, [contacts, searchTerm, statusFilter, horizonFilter, relanceFilter, contactKind]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filters change
-  }, [searchTerm, statusFilter, horizonFilter, contactKind]);
+  }, [searchTerm, statusFilter, horizonFilter, relanceFilter, contactKind]);
 
   const checkAuth = async () => {
     try {
@@ -1284,6 +1295,24 @@ export default function DashboardContactsClient({
       filtered = filtered.filter((contact) => contact.horizon === horizonFilter);
     }
 
+    if (relanceFilter !== "ALL") {
+      filtered = filtered.filter(
+        (contact) => etatRelance(contact.nextActionAt) === relanceFilter,
+      );
+    }
+
+    // Ce qui brule remonte : en retard, puis aujourd'hui, puis a venir par
+    // date, et enfin ce qui n'est pas suivi, du plus recent au plus ancien.
+    filtered = [...filtered].sort((a, b) => {
+      const ra = RANG_RELANCE[etatRelance(a.nextActionAt)];
+      const rb = RANG_RELANCE[etatRelance(b.nextActionAt)];
+      if (ra !== rb) return ra - rb;
+      if (a.nextActionAt && b.nextActionAt) {
+        return a.nextActionAt.localeCompare(b.nextActionAt);
+      }
+      return b.createdAt.localeCompare(a.createdAt);
+    });
+
     setFilteredContacts(filtered);
   };
 
@@ -1311,6 +1340,38 @@ export default function DashboardContactsClient({
       }
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
+    }
+  };
+
+  /**
+   * Pose ou efface la date de rappel. `null` retire le prospect des relances
+   * sans toucher a son statut : ce n'est pas la meme information.
+   */
+  const handleUpdateNextAction = async (
+    contactId: string,
+    nextActionAt: string | null,
+  ) => {
+    const response = await fetch("/api/contacts/next-action/", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contactId, nextActionAt }),
+    });
+
+    if (!response.ok) {
+      alert("La date de rappel n'a pas ete enregistree. Reessayez.");
+      throw new Error("Echec de la mise a jour de la date de rappel");
+    }
+
+    const { nextActionAt: enregistree } = await response.json();
+    setContacts((precedents) =>
+      precedents.map((contact) =>
+        contact.id === contactId
+          ? { ...contact, nextActionAt: enregistree }
+          : contact,
+      ),
+    );
+    if (selectedContact && selectedContact.id === contactId) {
+      setSelectedContact({ ...selectedContact, nextActionAt: enregistree });
     }
   };
 
@@ -1487,6 +1548,20 @@ export default function DashboardContactsClient({
         };
 
   // Logique de pagination
+  // Compte sur l'onglet entier, pas sur la liste filtree : le compteur doit
+  // rester lisible meme quand on a filtre sur autre chose.
+  const compteurRelances = contacts
+    .filter((contact) => contact.type === contactKind)
+    .reduce(
+      (acc, contact) => {
+        const etat = etatRelance(contact.nextActionAt);
+        if (etat === "retard") acc.retard += 1;
+        if (etat === "aujourdhui") acc.aujourdhui += 1;
+        return acc;
+      },
+      { retard: 0, aujourdhui: 0 },
+    );
+
   const totalPages = Math.ceil(filteredContacts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -1759,6 +1834,42 @@ export default function DashboardContactsClient({
         className="max-w-7xl mx-auto px-0 md:px-8 pb-8"
       >
         <div className="bg-white/5 border border-white/10 rounded-sm p-6">
+          {/* Ce qui doit etre rappele, avant tout le reste. */}
+          {(compteurRelances.retard > 0 || compteurRelances.aujourdhui > 0) && (
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              {compteurRelances.retard > 0 && (
+                <button
+                  onClick={() =>
+                    setRelanceFilter(relanceFilter === "retard" ? "ALL" : "retard")
+                  }
+                  className={`px-3 py-1.5 rounded-sm border text-sm transition-colors ${RELANCE_STYLES.retard.classe} ${relanceFilter === "retard" ? "ring-1 ring-red-400/60" : "hover:brightness-125"}`}
+                >
+                  {compteurRelances.retard} en retard
+                </button>
+              )}
+              {compteurRelances.aujourdhui > 0 && (
+                <button
+                  onClick={() =>
+                    setRelanceFilter(
+                      relanceFilter === "aujourdhui" ? "ALL" : "aujourdhui",
+                    )
+                  }
+                  className={`px-3 py-1.5 rounded-sm border text-sm transition-colors ${RELANCE_STYLES.aujourdhui.classe} ${relanceFilter === "aujourdhui" ? "ring-1 ring-amber-400/60" : "hover:brightness-125"}`}
+                >
+                  {compteurRelances.aujourdhui} à rappeler aujourd&apos;hui
+                </button>
+              )}
+              {relanceFilter !== "ALL" && (
+                <button
+                  onClick={() => setRelanceFilter("ALL")}
+                  className="px-3 py-1.5 rounded-sm border border-white/20 text-sm text-white/60 hover:bg-white/10 transition-colors"
+                >
+                  Tout afficher
+                </button>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -1799,6 +1910,17 @@ export default function DashboardContactsClient({
                     {HORIZON_BADGES[horizon].emoji} {HORIZON_BADGES[horizon].label}
                   </option>
                 ))}
+              </select>
+              <select
+                value={relanceFilter}
+                onChange={(e) => setRelanceFilter(e.target.value as any)}
+                className="flex-1 px-2 md:px-4 py-3 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none [&>option]:bg-black [&>option]:text-white text-sm"
+              >
+                <option value="ALL">Toutes les relances</option>
+                <option value="retard">En retard</option>
+                <option value="aujourdhui">À rappeler aujourd&apos;hui</option>
+                <option value="a_venir">À venir</option>
+                <option value="aucune">Sans date de rappel</option>
               </select>
               <button
                 onClick={() => setShowCreateClientModal(true)}
@@ -1943,6 +2065,22 @@ export default function DashboardContactsClient({
                         <Calendar className="w-3 h-3 text-white/40" />
                         <span>{formatDateTable(contact.createdAt)}</span>
                       </div>
+                      {(() => {
+                        const etat = etatRelance(contact.nextActionAt);
+                        if (etat === "aucune") return null;
+                        return (
+                          <div
+                            className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-sm border text-[11px] ${RELANCE_STYLES[etat].classe}`}
+                          >
+                            <CalendarClock className="w-3 h-3" />
+                            <span>
+                              {etat === "a_venir"
+                                ? formatDateTable(contact.nextActionAt as string)
+                                : RELANCE_STYLES[etat].libelle}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </td>
 
                     <td className="px-2 md:px-6 py-4">
@@ -2006,6 +2144,7 @@ export default function DashboardContactsClient({
           contact={selectedContact}
           onClose={() => setSelectedContact(null)}
           onUpdateNote={handleUpdatePersonalNote}
+          onUpdateNextAction={handleUpdateNextAction}
           onUpdateRating={handleUpdateRating}
         />
       )}

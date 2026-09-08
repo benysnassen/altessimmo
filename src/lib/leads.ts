@@ -82,3 +82,61 @@ export function countryFlag(code: string): string {
     ...code.toUpperCase().split('').map((c) => 0x1f1e6 + c.charCodeAt(0) - 65)
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* Relances                                                            */
+/* ------------------------------------------------------------------ */
+
+export type EtatRelance = 'retard' | 'aujourdhui' | 'a_venir' | 'aucune';
+
+/** Minuit du jour de la date donnee, pour comparer des jours et non des heures. */
+function jour(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+}
+
+/**
+ * Ou en est la relance d'un prospect. Une date passee est « en retard », pas
+ * « a venir » : c'est tout l'interet du dispositif.
+ */
+export function etatRelance(
+  nextActionAt: string | null | undefined,
+  maintenant: Date = new Date()
+): EtatRelance {
+  if (!nextActionAt) return 'aucune';
+  const date = new Date(nextActionAt);
+  if (Number.isNaN(date.getTime())) return 'aucune';
+
+  const ecart = jour(date) - jour(maintenant);
+  if (ecart < 0) return 'retard';
+  if (ecart === 0) return 'aujourdhui';
+  return 'a_venir';
+}
+
+export const RELANCE_STYLES: Record<
+  Exclude<EtatRelance, 'aucune'>,
+  { libelle: string; classe: string }
+> = {
+  retard: { libelle: 'En retard', classe: 'text-red-300 border-red-500/40 bg-red-500/10' },
+  aujourdhui: { libelle: "Aujourd'hui", classe: 'text-amber-300 border-amber-500/40 bg-amber-500/10' },
+  a_venir: { libelle: 'A venir', classe: 'text-white/60 border-white/20 bg-white/5' },
+};
+
+/** Ordre d'affichage : ce qui brule d'abord, ce qui n'est pas suivi en dernier. */
+export const RANG_RELANCE: Record<EtatRelance, number> = {
+  retard: 0,
+  aujourdhui: 1,
+  a_venir: 2,
+  aucune: 3,
+};
+
+/** Date du jour au format d'un <input type="date">, fuseau local respecte. */
+export function jourISO(date: Date = new Date()): string {
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}`;
+}
+
+/** Dans n jours, a midi — midi evite les surprises de fuseau et d'heure d'ete. */
+export function dansNJours(n: number, depuis: Date = new Date()): Date {
+  const d = new Date(depuis.getFullYear(), depuis.getMonth(), depuis.getDate() + n, 12, 0, 0);
+  return d;
+}

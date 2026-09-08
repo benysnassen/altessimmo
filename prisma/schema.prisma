@@ -32,6 +32,11 @@ model Contact {
   horizon     ContactHorizon?  // echeance du projet
   sourcePage  String?          // page d'entree du lead, ex "/fr/contact"
 
+  /// Date de la prochaine action a mener. Le dashboard ouvre dessus : ce qui
+  /// est en retard, puis ce qui est du aujourd'hui. C'est le filet contre
+  /// l'oubli — un lead sans date n'est pas suivi.
+  nextActionAt DateTime?
+
   // Chaque envoi du formulaire, conserve tel quel. La fiche porte l'etat
   // courant, cette liste porte le passe : rien n'y est jamais ecrase.
   submissions ContactSubmission[]
@@ -39,6 +44,7 @@ model Contact {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([nextActionAt])
   @@map("contacts")
 }
 
@@ -91,6 +97,11 @@ model Buyer {
   hasPool      Boolean @default(false)
   hasSeaView   Boolean @default(false)
   
+  /// Date de la prochaine action a mener. Le dashboard ouvre dessus : ce qui
+  /// est en retard, puis ce qui est du aujourd'hui. C'est le filet contre
+  /// l'oubli — un lead sans date n'est pas suivi.
+  nextActionAt DateTime?
+
   // Historique
   visits       Visit[]
   offers       Offer[]
@@ -101,6 +112,7 @@ model Buyer {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([nextActionAt])
   @@map("buyers")
 }
 
@@ -127,6 +139,11 @@ model Seller {
   hasSeaView   Boolean @default(false)
   description  String? // Description détaillée
   
+  /// Date de la prochaine action a mener. Le dashboard ouvre dessus : ce qui
+  /// est en retard, puis ce qui est du aujourd'hui. C'est le filet contre
+  /// l'oubli — un lead sans date n'est pas suivi.
+  nextActionAt DateTime?
+
   // Historique
   visits       Visit[]
   offers       Offer[]
@@ -136,6 +153,7 @@ model Seller {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([nextActionAt])
   @@map("sellers")
 }
 
