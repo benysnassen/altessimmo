@@ -78,6 +78,109 @@ interface ContactDetailCardProps {
   onUpdateRating: (contactId: string, rating: number | null) => void;
 }
 
+// Montants abreges : 1.5M, 800K. Au niveau du module, l'historique des envois
+// s'en sert aussi.
+const formatAmount = (amount: string) => {
+  const num = parseInt(amount.replace(/\D/g, ''));
+  if (isNaN(num)) return amount;
+
+  if (num >= 1000000) {
+    const millions = num / 1000000;
+    return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(2).replace(/\.?0+$/, '')}M`;
+  } else if (num >= 1000) {
+    const milliers = num / 1000;
+    return `${milliers % 1 === 0 ? milliers.toFixed(0) : milliers.toFixed(2).replace(/\.?0+$/, '')}K`;
+  } else {
+    return `${num.toLocaleString('fr-FR')}`;
+  }
+};
+
+type Envoi = {
+  id: string;
+  message: string | null;
+  budget: string | null;
+  estimation: string | null;
+  horizon: Horizon | null;
+  sourcePage: string | null;
+  createdAt: string;
+};
+
+/**
+ * Ce que le prospect a dit, envoi apres envoi. La fiche ne montre que l'etat
+ * courant ; c'est ici qu'on retrouve l'argumentaire du rappel.
+ */
+const HistoriqueEnvois = ({ phone, type }: { phone: string; type: 'BUYER' | 'SELLER' }) => {
+  const [envois, setEnvois] = useState<Envoi[]>([]);
+  const [charge, setCharge] = useState(false);
+
+  useEffect(() => {
+    let annule = false;
+    const params = new URLSearchParams({ phone, type });
+    fetch(`/api/contacts/submissions/?${params}`)
+      .then((r) => (r.ok ? r.json() : { submissions: [] }))
+      .then((d) => {
+        if (!annule) {
+          setEnvois(d.submissions || []);
+          setCharge(true);
+        }
+      })
+      .catch(() => !annule && setCharge(true));
+    return () => {
+      annule = true;
+    };
+  }, [phone, type]);
+
+  // Un seul envoi n'est pas un historique : la fiche le montre deja.
+  if (!charge || envois.length < 2) return null;
+
+  return (
+    <div className="border-t border-white/10 pt-3 md:pt-4">
+      <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">
+        Demandes ({envois.length})
+      </h4>
+      <div className="space-y-3">
+        {envois.map((envoi, i) => (
+          <div key={envoi.id} className="border-l-2 border-white/20 pl-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-white/40 text-[11px] md:text-xs">
+                {new Date(envoi.createdAt).toLocaleString('fr-FR')}
+              </span>
+              {i === 0 && (
+                <span className="text-[10px] uppercase tracking-wider text-white/50">la plus recente</span>
+              )}
+              {envoi.horizon && (
+                <span className="text-[11px] md:text-xs text-white/60">
+                  {HORIZON_BADGES[envoi.horizon].emoji} {HORIZON_BADGES[envoi.horizon].label}
+                </span>
+              )}
+            </div>
+            {envoi.message && (
+              <p className="text-white/80 text-xs md:text-sm leading-relaxed break-words mt-1">
+                {envoi.message}
+              </p>
+            )}
+            <div className="flex gap-3 flex-wrap mt-1">
+              {envoi.budget && (
+                <span className="text-green-300/80 font-mono text-[11px] md:text-xs">
+                  {formatAmount(envoi.budget)}
+                </span>
+              )}
+              {envoi.estimation && (
+                <span className="text-blue-300/80 font-mono text-[11px] md:text-xs">
+                  {formatAmount(envoi.estimation)}
+                </span>
+              )}
+              {envoi.sourcePage && (
+                <span className="text-white/40 text-[11px] md:text-xs break-all">{envoi.sourcePage}</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating }: ContactDetailCardProps) => {
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteValue, setNoteValue] = useState(contact.personalNote || '');
@@ -119,21 +222,6 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating }: C
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
-
-  const formatAmount = (amount: string) => {
-    const num = parseInt(amount.replace(/\D/g, ''));
-    if (isNaN(num)) return amount;
-
-    if (num >= 1000000) {
-      const millions = num / 1000000;
-      return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(2).replace(/\.?0+$/, '')}M`;
-    } else if (num >= 1000) {
-      const milliers = num / 1000;
-      return `${milliers % 1 === 0 ? milliers.toFixed(0) : milliers.toFixed(2).replace(/\.?0+$/, '')}K`;
-    } else {
-      return `${num.toLocaleString('fr-FR')}`;
-    }
   };
 
   const formatPhoneDisplay = (phone: string) => {
@@ -438,6 +526,8 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
             <BuyerPropertyInterestsSection buyerId={contact.id} />
           )}
           
+          <HistoriqueEnvois phone={contact.phone} type={contact.type} />
+
           {contact.message && (
             <div className="border-t border-white/10 pt-3 md:pt-4">
               <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">Message</h4>

@@ -647,6 +647,7 @@ const EditContactForm = ({
     message: contact.message || "",
     personalNote: contact.personalNote || "",
     confidential: contact.confidential,
+    horizon: contact.horizon || "",
   });
   const [phoneParts, setPhoneParts] = useState(() =>
     extractPhoneParts(contact.phone),
@@ -661,6 +662,7 @@ const EditContactForm = ({
       budget: formData.budget || undefined,
       estimation: formData.estimation || undefined,
       message: formData.message || undefined,
+      horizon: (formData.horizon || null) as Horizon | null,
     };
     onSave(updatedContact);
   };
@@ -811,6 +813,40 @@ const EditContactForm = ({
                   className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none"
                   placeholder="Ex: 4500000"
                 />
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-light text-white/60 mb-2">
+                Echeance
+              </label>
+              <select
+                value={formData.horizon}
+                onChange={(e) =>
+                  setFormData({ ...formData, horizon: e.target.value })
+                }
+                className="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-sm text-white focus:border-white/50 focus:outline-none [&>option]:bg-black [&>option]:text-white"
+              >
+                <option value="">Non renseignee</option>
+                {HORIZONS.map((horizon) => (
+                  <option key={horizon} value={horizon}>
+                    {HORIZON_BADGES[horizon].emoji} {HORIZON_BADGES[horizon].label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Page d'entree : releve automatiquement, jamais saisi a la main. */}
+            {contact.sourcePage && (
+              <div>
+                <label className="block text-sm font-light text-white/60 mb-2">
+                  Page d&apos;origine
+                </label>
+                <p className="w-full px-3 py-2 bg-black/10 border border-white/10 rounded-sm text-white/50 text-sm break-all">
+                  {contact.sourcePage}
+                </p>
               </div>
             )}
           </div>
@@ -1366,10 +1402,14 @@ export default function DashboardContactsClient({
 
         setEditingContact(null);
       } else {
+        // Une modification perdue en silence, c'est une information fausse
+        // affichee comme vraie jusqu'au prochain rechargement.
         console.error("Failed to update contact");
+        alert("La modification n'a pas ete enregistree. Reessayez.");
       }
     } catch (error) {
       console.error("Error updating contact:", error);
+      alert("La modification n'a pas ete enregistree. Reessayez.");
     }
   };
 

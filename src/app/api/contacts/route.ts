@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/adminAuth';
+import { isHorizon } from '@/lib/leads';
 
 const normalizePhone = (value?: string) => {
   const raw = (value || '').trim();
@@ -157,7 +158,29 @@ export async function PUT(request: NextRequest) {
 
   try {
     const data = await request.json();
-    const { id, status, name, phone, email, budget, estimation, message, personalNote, confidential } = data;
+    const { id, status, name, phone, email, budget, estimation, message, personalNote, confidential, horizon } = data;
+
+    // L'echeance n'existe que sur les contacts : ni buyers ni sellers ne la
+    // portent. Un champ absent de la requete ne doit rien effacer, d'ou la
+    // distinction entre « non fourni » et « vide ».
+    const horizonFourni = Object.prototype.hasOwnProperty.call(data, 'horizon');
+    const cleanHorizon = isHorizon(horizon) ? horizon : null;
+
+    /**
+     * Reporte l'echeance sur la ligne `contacts` correspondante. Une fiche
+     * acheteur ou proprietaire n'a pas de colonne horizon : sans ce report,
+     * modifier l'echeance d'un lead promu ne sauvegarderait rien.
+     */
+    const reporterHorizon = async (
+      telephoneNormalise: string,
+      type: 'BUYER' | 'SELLER'
+    ) => {
+      if (!horizonFourni || !telephoneNormalise) return;
+      await prisma.contact.updateMany({
+        where: { type, phoneNormalized: telephoneNormalise },
+        data: { horizon: cleanHorizon },
+      });
+    };
 
     if (!id) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
@@ -231,7 +254,10 @@ export async function PUT(request: NextRequest) {
           confidential: confidential || false
         }
       });
-      if (updatedBuyer.count > 0) return NextResponse.json({ success: true, type: 'buyer' });
+      if (updatedBuyer.count > 0) {
+        await reporterHorizon(normalizedPhone, 'BUYER');
+        return NextResponse.json({ success: true, type: 'buyer' });
+      }
 
       // Seller
       const updatedSeller = await prisma.seller.updateMany({
@@ -247,7 +273,10 @@ export async function PUT(request: NextRequest) {
           confidential: confidential || false
         }
       });
-      if (updatedSeller.count > 0) return NextResponse.json({ success: true, type: 'seller' });
+      if (updatedSeller.count > 0) {
+        await reporterHorizon(normalizedPhone, 'SELLER');
+        return NextResponse.json({ success: true, type: 'seller' });
+      }
 
       // Contact
       const updatedContact = await prisma.contact.updateMany({
@@ -261,7 +290,8 @@ export async function PUT(request: NextRequest) {
           estimation: estimation || null,
           message: message || null,
           personalNote: personalNote || null,
-          confidential: confidential || false
+          confidential: confidential || false,
+          ...(horizonFourni ? { horizon: cleanHorizon } : {})
         }
       });
       if (updatedContact.count > 0) return NextResponse.json({ success: true, type: 'contact' });
