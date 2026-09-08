@@ -32,10 +32,33 @@ model Contact {
   horizon     ContactHorizon?  // echeance du projet
   sourcePage  String?          // page d'entree du lead, ex "/fr/contact"
 
+  // Chaque envoi du formulaire, conserve tel quel. La fiche porte l'etat
+  // courant, cette liste porte le passe : rien n'y est jamais ecrase.
+  submissions ContactSubmission[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("contacts")
+}
+
+/// Un envoi du formulaire de contact. En ajout seul : ni mise a jour ni
+/// suppression, c'est la memoire des echanges avec le prospect.
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  message     String?
+  budget      String?
+  estimation  String?
+  horizon     ContactHorizon?
+  sourcePage  String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([contactId, createdAt])
+  @@map("contact_submissions")
 }
 
 enum ContactHorizon {

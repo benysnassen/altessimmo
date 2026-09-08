@@ -66,16 +66,22 @@ export async function POST(request: NextRequest) {
             name,
             phone: phone.trim(),
             phoneNormalized: normalizedPhone,
-            email: email || null,
-            budget: budget || null,
-            estimation: estimation || null,
-            message: message || null,
-            confidential: confidential || false,
-            horizon: cleanHorizon,
+            // Une valeur absente ne remplace jamais une valeur connue : le
+            // prospect qui repose une question sans redonner son budget ne
+            // doit pas le voir disparaitre de sa fiche.
+            email: email || existingContact.email,
+            budget: budget || existingContact.budget,
+            estimation: estimation || existingContact.estimation,
+            message: message || existingContact.message,
+            confidential: confidential ?? existingContact.confidential,
+            horizon: cleanHorizon ?? existingContact.horizon,
             // La premiere page d'entree est l'information interessante :
             // on ne l'ecrase pas a la resoumission.
             sourcePage: existingContact.sourcePage ?? cleanSourcePage,
-            status: 'NEW',
+            // Le suivi ne repart pas de zero : un prospect passe en VISITE qui
+            // repose une question reste en VISITE. Seul un lead archive
+            // revient dans le circuit, puisqu'il se manifeste a nouveau.
+            status: existingContact.status === 'ARCHIVED' ? 'NEW' : existingContact.status,
           },
         })
       : await prisma.contact.create({
@@ -95,10 +101,31 @@ export async function POST(request: NextRequest) {
           },
         });
 
+    // Memoire de l'echange. La fiche porte l'etat courant, cette ligne porte
+    // ce que le prospect a dit cette fois-ci — elle ne sera jamais modifiee.
+    await prisma.contactSubmission.create({
+      data: {
+        contactId: contact.id,
+        message: message || null,
+        budget: budget || null,
+        estimation: estimation || null,
+        horizon: cleanHorizon,
+        sourcePage: cleanSourcePage,
+      },
+    });
+
+    const nombreEnvois = await prisma.contactSubmission.count({
+      where: { contactId: contact.id },
+    });
+
     console.log('Nouveau contact sauvegardé:', contact);
 
     // 🔔 ENVOI DE LA NOTIFICATION TELEGRAM
-    const telegramMessage = formatContactMessage(contact);
+    const telegramMessage = formatContactMessage(contact, {
+      envois: nombreEnvois,
+      messageDuJour: message || null,
+      sourcePageDuJour: cleanSourcePage,
+    });
     await sendTelegramNotification(telegramMessage);
 
     return NextResponse.json(
@@ -147,17 +174,31 @@ function formatLocalTime(country: string | null): string | null {
 }
 
 // Fonction pour formater le message spécifiquement pour vos contacts
-function formatContactMessage(contact: any): string {
+type ContexteEnvoi = {
+  envois: number;
+  messageDuJour: string | null;
+  sourcePageDuJour: string | null;
+};
+
+function formatContactMessage(contact: any, contexte: ContexteEnvoi): string {
   const typeText = contact.type === 'SELLER' ? 'VENDEUR' : 'ACHETEUR';
+  // Un prospect qui revient est un signal fort : il ne doit pas se lire comme
+  // un lead neuf.
+  const revient = contexte.envois > 1;
   // Priorite d'appel, lisible d'un coup d'oeil en haut de la notification.
   const horizon: unknown = contact.horizon;
   const priority = isHorizon(horizon)
     ? HORIZON_BADGES[horizon]
     : { emoji: '⚪️', label: null };
 
-  let message = `${priority.emoji} <b>Nouveau ${typeText} — ${site.city}</b>\n`;
+  let message = revient
+    ? `${priority.emoji} <b>${typeText} QUI REVIENT — ${site.city}</b>\n`
+    : `${priority.emoji} <b>Nouveau ${typeText} — ${site.city}</b>\n`;
   if (priority.label) {
     message += `<i>${priority.label}</i>\n`;
+  }
+  if (revient) {
+    message += `<i>${contexte.envois}e demande, statut conserve : ${contact.status}</i>\n`;
   }
   message += `\n`;
 
@@ -189,9 +230,13 @@ function formatContactMessage(contact: any): string {
   if (contact.sourcePage) {
     message += `<b>🔗 Page d'origine:</b> ${contact.sourcePage}\n`;
   }
+  if (contexte.sourcePageDuJour && contexte.sourcePageDuJour !== contact.sourcePage) {
+    message += `<b>🔗 Page cette fois-ci:</b> ${contexte.sourcePageDuJour}\n`;
+  }
   
-  if (contact.message) {
-    message += `\n<b>💬 Message:</b>\n${contact.message}\n`;
+  const messageAffiche = contexte.messageDuJour || contact.message;
+  if (messageAffiche) {
+    message += `\n<b>💬 Message:</b>\n${messageAffiche}\n`;
   }
   
   if (contact.confidential) {
