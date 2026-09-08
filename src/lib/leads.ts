@@ -112,12 +112,19 @@ export function etatRelance(
   return 'a_venir';
 }
 
+/**
+ * Le dashboard est en thème clair : la classe `admin-light` de `globals.css`
+ * retourne les utilitaires en `white` et `black`, mais **pas** les couleurs
+ * nommées. Un `text-red-300`, pensé pour du noir, tomberait a 1,9:1 sur le
+ * fond creme — illisible, et c'est le signal le plus important de l'ecran.
+ * D'ou des tons 700, lisibles sur clair, avec des fonds teintes discrets.
+ */
 export const RELANCE_STYLES: Record<
   Exclude<EtatRelance, 'aucune'>,
   { libelle: string; classe: string }
 > = {
-  retard: { libelle: 'En retard', classe: 'text-red-300 border-red-500/40 bg-red-500/10' },
-  aujourdhui: { libelle: "Aujourd'hui", classe: 'text-amber-300 border-amber-500/40 bg-amber-500/10' },
+  retard: { libelle: 'En retard', classe: 'text-red-700 border-red-500/40 bg-red-500/10' },
+  aujourdhui: { libelle: "Aujourd'hui", classe: 'text-amber-700 border-amber-500/40 bg-amber-500/10' },
   a_venir: { libelle: 'A venir', classe: 'text-white/60 border-white/20 bg-white/5' },
 };
 

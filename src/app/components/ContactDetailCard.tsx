@@ -170,12 +170,12 @@ const HistoriqueEnvois = ({ phone, type }: { phone: string; type: 'BUYER' | 'SEL
             )}
             <div className="flex gap-3 flex-wrap mt-1">
               {envoi.budget && (
-                <span className="text-green-300/80 font-mono text-[11px] md:text-xs">
+                <span className="text-green-700 font-mono text-[11px] md:text-xs">
                   {formatAmount(envoi.budget)}
                 </span>
               )}
               {envoi.estimation && (
-                <span className="text-blue-300/80 font-mono text-[11px] md:text-xs">
+                <span className="text-blue-700 font-mono text-[11px] md:text-xs">
                   {formatAmount(envoi.estimation)}
                 </span>
               )}
