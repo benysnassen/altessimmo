@@ -1,38 +1,37 @@
 {
-    "home":{
-    "real_estate":"العقارات",
-    "discover":"اِسْتَكْشِفْ"
-},
-
-    "contact": {
-      "real_estate": "العقارات",
-      "discover": "اكتشف",
-      "find_your_property": "ابحث عن عقارك",
-      "we_support_sale": "نرافقكم في بيع عقاركم بسرية واحترافية.",
-      "help_find_dream": "اعثروا على العقار المثالي في الرباط ومحيطها مع مرافقة شخصية.",
-      "want_to_sell": "هل ترغب في البيع بدلاً من ذلك؟",
-      "full_name": "الاسم الكامل",
-      "full_name_placeholder": "اسمك الكامل",
-      "phone_whatsapp": "الهاتف / واتساب",
-      "email_optional": "البريد الإلكتروني (اختياري)",
-      "email_placeholder": "your@email.com",
-      "estimated_budget": "الميزانية المتوقعة (درهم)",
-      "free_message": "رسالة حرة",
-      "message_placeholder": "صف معاييرك، تفضيلاتك، واحتياجاتك...",
-      "confidential_support": "أرغب في مرافقة سرية وخاصة",
-      "entrust_property": "فوّض عقارك",
-      "looking_to_buy": "هل تبحث عن شراء بدلاً من ذلك؟",
-      "describe_property": "صف عقارك، موقعه، وخصائصه...",
-      "property_valuation":"(MAD) تقدير قيمة العقار",
-      "send_discreetly": "إرسال بشكل سري",
-      "sending": "جاري الإرسال...",
-      "required_name": "الاسم مطلوب",
-      "invalid_phone": "يجب أن يحتوي الرقم على 8 أرقام على الأقل",
-      "invalid_email": "البريد الإلكتروني غير صالح",
-      "message_sent": "تم إرسال الرسالة",
-      "success_message": "شكراً لثقتكم. سنتواصل معكم في أقرب وقت ممكن لمناقشة مشروعكم بسرية تامة."    
-    }
+  "home": {
+    "real_estate": "فيلات وشقق",
+    "discover": "لنتحدث"
+  },
+  "contact": {
+    "find_your_property": "ابحث عن عقارك",
+    "help_find_dream": "إذا أخبرتنا بما تبحث عنه، سنرسل لك انتقاءً.",
+    "entrust_property": "فوّض لنا عقارك",
+    "we_support_sale": "تقدير مدروس، زيارات منتقاة، وسرية تامة.",
+    "want_to_sell": "ترغب في البيع؟",
+    "looking_to_buy": "ترغب في الشراء؟",
+    "full_name": "الاسم الكامل",
+    "full_name_placeholder": "",
+    "phone_whatsapp": "الهاتف / واتساب",
+    "email_optional": "البريد الإلكتروني (اختياري)",
+    "email_placeholder": "you@example.com",
+    "estimated_budget": "الميزانية (درهم)",
+    "property_valuation": "السعر المطلوب (درهم)",
+    "free_message": "رسالتك",
+    "message_placeholder": "الحي، المساحة، عدد الغرف، الأجل…",
+    "describe_property": "الحي، المساحة، عدد الغرف، حالة العقار…",
+    "send_discreetly": "إرسال الطلب",
+    "sending": "جارٍ الإرسال…",
+    "required_name": "يرجى ذكر اسمك",
+    "invalid_phone": "أدخل رقماً من 8 أرقام على الأقل",
+    "invalid_email": "تحقق من البريد الإلكتروني",
+    "message_sent": "تم استلام رسالتك",
+    "success_message": "سنتصل بك على الرقم الذي تركته لنتحدث في التفاصيل.",
+    "horizon_buy": "متى ترغب في الشراء؟",
+    "horizon_sell": "متى ترغب في البيع؟",
+    "horizon_immediate": "خلال 3 أشهر",
+    "horizon_six_months": "خلال 6 إلى 12 شهراً",
+    "horizon_exploring": "أستطلع فقط",
+    "required_horizon": "اختر المدة"
   }
-  
-
-
+}

@@ -13,9 +13,12 @@ import {
   ShoppingCart,
   Edit3, 
   XCircle,
-  StickyNote
+  StickyNote,
+  CalendarClock,
+  Link2
 } from 'lucide-react';
 import StarRating from './StarRating';
+import { HORIZON_BADGES, type Horizon } from '@/lib/leads';
 import BuyerPropertyInterestsSection from './BuyerPropertyInterestsSection';
 
 // Composant Badge réutilisable
@@ -61,6 +64,8 @@ interface Contact {
   personalNote?: string | null;
   rating?: number | null;
   confidential: boolean;
+  horizon?: Horizon | null;
+  sourcePage?: string | null;
   status: 'NEW' | 'CONTACTED' | 'INTERESTED' | 'VIEWING' | 'OFFER' | 'SOLD' | 'ARCHIVED';
   createdAt: string;
   updatedAt: string;
@@ -320,6 +325,20 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
               <div className="flex items-center gap-2">
                 <Shield className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
                 <span className="text-white/80 text-xs md:text-sm">Confidentiel</span>
+              </div>
+            )}
+            {contact.horizon && (
+              <div className="flex items-center gap-2">
+                <CalendarClock className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
+                <span className="text-white/80 text-xs md:text-sm">
+                  {HORIZON_BADGES[contact.horizon].emoji} {HORIZON_BADGES[contact.horizon].label}
+                </span>
+              </div>
+            )}
+            {contact.sourcePage && (
+              <div className="flex items-center gap-2">
+                <Link2 className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
+                <span className="text-white/80 text-xs md:text-sm break-all">{contact.sourcePage}</span>
               </div>
             )}
           </div>

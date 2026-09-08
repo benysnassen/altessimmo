@@ -17,14 +17,39 @@ const normalizePhone = (value?: string) => {
 
 export async function GET(request: NextRequest) {
   try {
-    // Récupérer uniquement les profils CRM (buyers/sellers) pour éviter les doublons UI
-    const [buyers, sellers] = await Promise.all([
+    // Profils CRM et leads du formulaire. Un lead promu en fiche client
+    // existe des deux cotes : la deduplication se fait plus bas sur le
+    // telephone normalise, pas en excluant les contacts de la liste.
+    const [buyers, sellers, contacts] = await Promise.all([
       prisma.buyer.findMany({
         orderBy: { createdAt: 'desc' }
       }),
       prisma.seller.findMany({
         orderBy: { createdAt: 'desc' }
+      }),
+      prisma.contact.findMany({
+        orderBy: { createdAt: 'desc' }
       })
+    ]);
+
+    // La qualification (echeance, page d'entree) reste sur le contact meme
+    // apres promotion : on la retrouve par telephone, par type.
+    const qualificationByPhone = new Map(
+      contacts
+        .filter((contact) => contact.phoneNormalized)
+        .map((contact) => [
+          `${contact.type}:${contact.phoneNormalized}`,
+          { horizon: contact.horizon, sourcePage: contact.sourcePage },
+        ])
+    );
+
+    const hasProfile = new Set([
+      ...buyers
+        .filter((buyer) => buyer.phoneNormalized)
+        .map((buyer) => `BUYER:${buyer.phoneNormalized}`),
+      ...sellers
+        .filter((seller) => seller.phoneNormalized)
+        .map((seller) => `SELLER:${seller.phoneNormalized}`),
     ]);
 
     // Mapping des statuts Prisma vers les statuts du dashboard
@@ -59,6 +84,8 @@ export async function GET(request: NextRequest) {
         rating: buyer.rating,
         confidential: buyer.confidential,
         status: mapBuyerStatusToDashboard(buyer.status),
+        horizon: qualificationByPhone.get(`BUYER:${buyer.phoneNormalized}`)?.horizon ?? null,
+        sourcePage: qualificationByPhone.get(`BUYER:${buyer.phoneNormalized}`)?.sourcePage ?? null,
         createdAt: buyer.createdAt.toISOString(),
         updatedAt: buyer.updatedAt.toISOString()
       })),
@@ -75,10 +102,42 @@ export async function GET(request: NextRequest) {
         rating: seller.rating,
         confidential: seller.confidential,
         status: mapSellerStatusToDashboard(seller.status),
+        horizon: qualificationByPhone.get(`SELLER:${seller.phoneNormalized}`)?.horizon ?? null,
+        sourcePage: qualificationByPhone.get(`SELLER:${seller.phoneNormalized}`)?.sourcePage ?? null,
         createdAt: seller.createdAt.toISOString(),
         updatedAt: seller.updatedAt.toISOString()
-      }))
+      })),
+      // Les leads du formulaire pas encore promus en fiche client. Sans
+      // telephone normalise, impossible de rapprocher : on les garde.
+      ...contacts
+        .filter(
+          (contact) =>
+            !contact.phoneNormalized ||
+            !hasProfile.has(`${contact.type}:${contact.phoneNormalized}`)
+        )
+        .map(contact => ({
+          id: contact.id,
+          name: contact.name,
+          phone: contact.phone,
+          email: contact.email,
+          type: contact.type === 'SELLER' ? 'SELLER' as const : 'BUYER' as const,
+          budget: contact.budget,
+          estimation: contact.estimation,
+          message: contact.message,
+          personalNote: contact.personalNote,
+          rating: contact.rating,
+          confidential: contact.confidential,
+          status: contact.status,
+          horizon: contact.horizon,
+          sourcePage: contact.sourcePage,
+          createdAt: contact.createdAt.toISOString(),
+          updatedAt: contact.updatedAt.toISOString()
+        }))
     ];
+
+    // Fiches et leads sont concatenes : sans tri, les leads finiraient
+    // tous apres les fiches quelle que soit leur date.
+    allContacts.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
     return NextResponse.json(allContacts);
   } catch (error) {

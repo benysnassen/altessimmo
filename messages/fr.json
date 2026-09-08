@@ -1,34 +1,37 @@
 {
-    "home":
-    {
-        "real_estate":"Immobilier",
-        "discover": "découvrir"
-    },    
-        "contact": {
-          "find_your_property": "Trouvez votre bien",
-          "we_support_sale": "Nous vous accompagnons dans la vente de votre propriété avec discrétion et professionnalisme.",
-          "help_find_dream": "Trouvez la propriété idéale à Rabat et ses alentours, avec un accompagnement personnalisé.", 
-          "want_to_sell": "Vous souhaitez plutôt vendre ?",
-          "full_name": "Nom complet",
-          "full_name_placeholder": "Votre nom complet",
-          "phone_whatsapp": "Téléphone / WhatsApp",
-          "email_optional": "Email (optionnel)",
-          "email_placeholder": "votre@email.com",
-          "estimated_budget": "Budget estimé (MAD)",
-          "free_message": "Message libre",
-          "message_placeholder": "Décrivez vos critères, vos préférences, vos besoins...",
-          "confidential_support": "Je souhaite un accompagnement confidentiel et discret",
-          "entrust_property": "Confiez votre bien",
-          "looking_to_buy": "Vous cherchez plutôt à acheter ?",
-          "describe_property": "Décrivez votre propriété, sa localisation, ses caractéristiques...",
-          "property_valuation":"Estimation du bien (MAD)",
-          "send_discreetly": "Envoyer Discrètement",
-          "sending":"Envoi en cours...",
-          "required_name": "Nom requis",
-        "invalid_phone": "Le numéro doit contenir au moins 8 chiffres",
-        "invalid_email": "Email invalide",
-        "message_sent": "Message envoyé", 
-        "success_message": "Merci pour votre confiance. Nous vous contacterons dans les plus brefs délais pour échanger sur votre projet en toute discrétion."
-        }
-} 
-
+  "home": {
+    "real_estate": "Villas & Appartements",
+    "discover": "parlons-en"
+  },
+  "contact": {
+    "find_your_property": "Trouvez Votre Bien",
+    "help_find_dream": "Si vous nous dites ce que vous cherchez, vous recevrez une sélection.",
+    "entrust_property": "Confiez Votre Bien",
+    "we_support_sale": "Une estimation argumentée, des visites filtrées, une discrétion totale.",
+    "want_to_sell": "Plutôt vendre ?",
+    "looking_to_buy": "Plutôt acheter ?",
+    "full_name": "Nom & Prénom",
+    "full_name_placeholder": "",
+    "phone_whatsapp": "Téléphone / WhatsApp",
+    "email_optional": "Email (facultatif)",
+    "email_placeholder": "vous@exemple.com",
+    "estimated_budget": "Budget (MAD)",
+    "property_valuation": "Prix souhaité (MAD)",
+    "free_message": "Votre message",
+    "message_placeholder": "Quartier, surface, nombre de chambres, échéance…",
+    "describe_property": "Quartier, surface, nombre de pièces, état du bien…",
+    "send_discreetly": "Envoyer ma demande",
+    "sending": "Envoi…",
+    "required_name": "Indiquez votre nom",
+    "invalid_phone": "Indiquez un numéro d’au moins 8 chiffres",
+    "invalid_email": "Vérifiez cette adresse email",
+    "message_sent": "Message reçu",
+    "success_message": "Nous vous rappelons sur le numéro que vous avez indiqué, pour en parler de vive voix.",
+    "horizon_buy": "Quand souhaitez-vous acheter ?",
+    "horizon_sell": "Quand souhaitez-vous vendre ?",
+    "horizon_immediate": "Dans les 3 mois",
+    "horizon_six_months": "Dans 6 à 12 mois",
+    "horizon_exploring": "Je me renseigne",
+    "required_horizon": "Choisissez une échéance"
+  }
+}

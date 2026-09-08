@@ -4,10 +4,11 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { Mail, Phone, User, MessageSquare, ChevronDown, Shield, DollarSign, ArrowRight, Home, ShoppingCart } from 'lucide-react';
+import { Mail, Phone, User, MessageSquare, ChevronDown, DollarSign, ArrowRight, Home, ShoppingCart, CalendarClock } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 import { Link } from '@/i18n/routing';
+import { HORIZONS, HORIZON_LABEL_KEYS } from '@/lib/leads';
 
 export default function ContactForm() {
   const t = useTranslations('contact');
@@ -41,7 +42,8 @@ export default function ContactForm() {
       budget: '',
       estimation: '',
       message: '',
-      confidential: false,
+      horizon: '',
+      sourcePage: '',
       type: isSeller ? 'seller' : 'buyer',
       honeypot: '', // honeypot
     },
@@ -59,6 +61,11 @@ export default function ContactForm() {
       setValue('estimation', '');
     }
   }, [typeParam, isSeller, budgetValue, setValue]);
+
+  // Page d'entree du lead : releve une seule fois, au montage.
+  useEffect(() => {
+    setValue('sourcePage', window.location.pathname);
+  }, [setValue]);
 
 
   const phoneValue = watch('phone');
@@ -506,6 +513,39 @@ export default function ContactForm() {
               </motion.div>
             )}
 
+            {/* Echeance du projet */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.95 }}
+            >
+              <span className="block text-sm text-black/60 font-light mb-3 tracking-wide">
+                <CalendarClock className="inline w-4 h-4 mr-2" />
+                {isSeller ? t('horizon_sell') : t('horizon_buy')} <span className="text-red-500">*</span>
+              </span>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {HORIZONS.map((horizon) => (
+                  <label
+                    key={horizon}
+                    className="flex items-center gap-3 px-3 py-3 border border-black/20 rounded-sm cursor-pointer transition-colors duration-300 hover:border-black/40 has-[:checked]:border-black has-[:checked]:bg-black/5"
+                  >
+                    <input
+                      type="radio"
+                      value={horizon}
+                      {...register('horizon', { required: t('required_horizon') })}
+                      className="w-4 h-4 accent-black"
+                    />
+                    <span className="text-sm text-black/70 font-light">
+                      {t(HORIZON_LABEL_KEYS[horizon])}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {errors.horizon && (
+                <p className="text-red-500 text-sm mt-1">{errors.horizon.message}</p>
+              )}
+            </motion.div>
+
             {/* Message */}
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
@@ -527,23 +567,8 @@ export default function ContactForm() {
               />
             </motion.div>
 
-            {/* Confidentiality Checkbox */}
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 1.1 }}
-              className="flex items-start space-x-3"
-            >
-              <input
-                {...register('confidential')}
-                type="checkbox"
-                className="mt-1 w-4 h-4 text-black border-black/20 rounded focus:ring-black focus:ring-2 accent-black"
-              />
-              <label className="text-sm text-black/60 font-light leading-relaxed flex items-center">
-                <Shield className="w-4 h-4 mr-2" />
-                {t('confidential_support')}
-              </label>
-            </motion.div>
+            {/* Page d'entree du lead, invisible pour le visiteur */}
+            <input type="hidden" {...register('sourcePage')} />
 
             {/* Submit Button */}
             <motion.div 

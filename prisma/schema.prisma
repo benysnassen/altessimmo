@@ -25,10 +25,23 @@ model Contact {
   rating      Int?     // Évaluation de 1 à 5 étoiles
   confidential Boolean @default(false)
   status      ContactStatus @default(NEW)
+
+  // Qualification du lead. Tous optionnels : les contacts deja en base
+  // restent valides. Le pays n'est pas stocke : l'indicatif telephonique est
+  // deja dans `phone`, il suffit.
+  horizon     ContactHorizon?  // echeance du projet
+  sourcePage  String?          // page d'entree du lead, ex "/fr/contact"
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("contacts")
+}
+
+enum ContactHorizon {
+  IMMEDIATE    // sous 3 mois
+  SIX_MONTHS   // 3 a 12 mois
+  EXPLORING    // se renseigne
 }
 
 model Buyer {
