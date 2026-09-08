@@ -11,15 +11,15 @@ type Props = {
 // Titres/descriptions propres à la page ; le reste (baseUrl, OG, twitter,
 // alternates, keywords) vient de getLocalizedMetadata pour éviter le doublon.
 const contactTitles: Record<string, string> = {
-  fr: `Contact - Altessimmo ${zonesBrandLabel} | Achetez ou vendez un bien d’exception`,
-  en: `Contact - Altessimmo ${zonesBrandLabel} | Buy or sell an exceptional property`,
-  ar: `اتصل بنا - Altessimmo ${zonesProseAr} | اشترِ أو بع عقاراً استثنائياً`,
+  fr: `Contact - Altessimmo ${zonesBrandLabel} | Acheter ou vendre`,
+  en: `Contact - Altessimmo ${zonesBrandLabel} | Buying or selling`,
+  ar: `اتصل بنا - Altessimmo ${zonesProseAr} | شراء أو بيع`,
 };
 
 const contactDescriptions: Record<string, string> = {
-  fr: `Vous souhaitez acheter ou vendre une propriété rare à ${zonesProseFr} ? Contactez Altessimmo pour un accompagnement discret et personnalisé.`,
-  en: `Looking to buy or sell a rare property in ${zonesProseEn}? Contact Altessimmo for discreet, personalized guidance.`,
-  ar: `هل ترغب في شراء أو بيع عقار نادر في ${zonesProseAr}؟ تواصل مع Altessimmo لمرافقة سرية وشخصية.`,
+  fr: `Acheter ou vendre à ${zonesProseFr} : décrivez votre projet en une minute, nous vous rappelons. Sans engagement.`,
+  en: `Buying or selling in ${zonesProseEn}: describe your project in a minute and we call you back. No commitment.`,
+  ar: `شراء أو بيع في ${zonesProseAr}: صف مشروعك في دقيقة وسنتصل بك. دون أي التزام.`,
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

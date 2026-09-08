@@ -60,6 +60,14 @@ export const zonesProseFr = joinList(site.zones, "et");
 export const zonesProseEn = joinList(site.zones, "and");
 export const zonesProseAr = joinListAr(site.zonesAr);
 
+/**
+ * Quartiers phares en prose, pour les descriptions : "Agdal, Hay Riad et
+ * Souissi". Les quartiers ne sont nommes qu'en francais : la locale arabe
+ * s'en tient aux zones.
+ */
+export const districtsProseFr = joinList(site.districts.slice(0, 3), "et");
+export const districtsProseEn = joinList(site.districts.slice(0, 3), "and");
+
 export const zonesProse: Record<string, string> = {
   fr: zonesProseFr,
   en: zonesProseEn,

@@ -9,7 +9,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-import { site, zonesBrandLabel, zonesProseFr, zonesProseEn, zonesProseAr, seoKeywords } from "@/config/site";
+import { site, zonesBrandLabel, zonesProseFr, zonesProseEn, zonesProseAr, districtsProseFr, districtsProseEn, seoKeywords } from "@/config/site";
 import { fontVariables } from "@/lib/fonts";
 type Props = {
   children: React.ReactNode;
@@ -27,15 +27,15 @@ export function generateViewport(): Viewport {
 }
 
 const titles = {
-  fr: `Altessimmo ${zonesBrandLabel} - Propriétés d'exception`,
-  en: `Altessimmo ${zonesBrandLabel} - Exceptional Properties`,
-  ar: `Altessimmo ${zonesProseAr} - عقارات استثنائية`,
+  fr: `Altessimmo ${zonesBrandLabel} - Villas, appartements et terrains`,
+  en: `Altessimmo ${zonesBrandLabel} - Villas, apartments and land`,
+  ar: `Altessimmo ${zonesProseAr} - فيلات وشقق وأراضٍ`,
 };
 
 const descriptions = {
-  fr: `Sélection discrète de biens immobiliers rares à ${zonesProseFr}. Découvrez des propriétés haut de gamme, villas et appartements de prestige avec Altessimmo.`,
-  en: `Discreet selection of rare properties in ${zonesProseEn}. Discover high-end properties, luxury villas and prestigious apartments with Altessimmo.`,
-  ar: `تشكيلة حصرية من العقارات النادرة في ${zonesProseAr}. اكتشف عقارات راقية وفيلات فاخرة وشقق مرموقة مع Altessimmo.`,
+  fr: `Villas, appartements et terrains à ${zonesProseFr} : ${districtsProseFr}. Un seul interlocuteur, du premier appel à la signature.`,
+  en: `Villas, apartments and land in ${zonesProseEn}: ${districtsProseEn}. One person to talk to, from the first call to signing.`,
+  ar: `فيلات وشقق وأراضٍ في ${zonesProseAr}. محاور واحد، من أول اتصال حتى التوقيع.`,
 };
 
 // Métadonnées internationalisées
@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: site.ogImage,
           width: 1200,
           height: 630,
-          alt: `Altessimmo ${zonesBrandLabel} - Immobilier de prestige`,
+          alt: `Altessimmo ${zonesBrandLabel} - Villas, appartements et terrains`,
         },
       ],
     },
