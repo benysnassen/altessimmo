@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/adminAuth';
 
 type PropertyInput = {
   id?: string;
@@ -221,7 +222,10 @@ function sanitizePayload(data: PropertyInput) {
   };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const properties = await prisma.property.findMany({
       include: {
@@ -269,6 +273,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const body = (await request.json()) as PropertyInput;
     const data = sanitizePayload(body);
@@ -298,6 +305,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const body = (await request.json()) as PropertyInput;
 
@@ -373,6 +383,9 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const { id } = await request.json();
 

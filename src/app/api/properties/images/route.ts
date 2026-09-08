@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/adminAuth';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { randomUUID } from 'crypto';
@@ -51,6 +52,9 @@ async function uploadToSupabaseStorage(file: File, propertyId: string, fileExten
 }
 
 export async function POST(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;

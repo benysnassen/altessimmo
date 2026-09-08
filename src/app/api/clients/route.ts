@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/adminAuth';
 
 const normalizePhone = (value?: string) => {
   const raw = (value || '').trim();
@@ -16,6 +17,9 @@ const normalizePhone = (value?: string) => {
 };
 
 export async function GET(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
@@ -81,6 +85,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const body = await request.json();
     const { type, ...data } = body;

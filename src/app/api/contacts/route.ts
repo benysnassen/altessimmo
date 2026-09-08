@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/adminAuth';
 
 const normalizePhone = (value?: string) => {
   const raw = (value || '').trim();
@@ -16,6 +17,9 @@ const normalizePhone = (value?: string) => {
 };
 
 export async function GET(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     // Profils CRM et leads du formulaire. Un lead promu en fiche client
     // existe des deux cotes : la deduplication se fait plus bas sur le
@@ -148,6 +152,9 @@ export async function GET(request: NextRequest) {
 
 
 export async function PUT(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const data = await request.json();
     const { id, status, name, phone, email, budget, estimation, message, personalNote, confidential } = data;
@@ -272,6 +279,9 @@ export async function PUT(request: NextRequest) {
 
 
 export async function DELETE(request: NextRequest) {
+  const acces = await requireAdmin(request);
+  if (!acces.ok) return acces.response;
+
   try {
     const { id } = await request.json();
     
