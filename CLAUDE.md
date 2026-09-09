@@ -253,8 +253,6 @@ change rien tant qu'un nouveau build n'est pas parti.
 - **Scripts jetables à la racine** : `test-*.js`, `check-admins.js`.
 - **`prisma/dev.db`** a été désindexée mais reste dans l'historique git, avec 4 contacts
   réels et un hash admin. Le secret est à considérer comme compromis.
-- **Icônes du manifest et favicon** pointent sur `/file.svg` (placeholder Next) alors
-  que `favicon.svg`, `apple-touch-icon.png` et `web-app-manifest-*.png` existent.
 
 ## Conventions
 

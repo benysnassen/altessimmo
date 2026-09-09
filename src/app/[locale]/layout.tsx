@@ -85,12 +85,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [site.ogImage],
     },
     icons: {
-      icon: [{ url: "/file.svg", type: "image/svg+xml" }],
-      apple: [{ url: "/file.svg", sizes: "180x180", type: "image/svg+xml" }],
-      other: [
-        { rel: "manifest", url: "/site.webmanifest" },
-        { rel: "mask-icon", url: "/file.svg", color: "#5bbad5" },
-      ],
+      // Le .ico est deja emis par la convention `src/app/favicon.ico`.
+      icon: [{ url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" }],
+      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+      other: [{ rel: "manifest", url: "/site.webmanifest" }],
     },
   };
 }
