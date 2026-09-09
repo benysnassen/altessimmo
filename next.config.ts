@@ -3,7 +3,6 @@ import createNextIntlPlugin from 'next-intl/plugin';
 import { site } from './src/config/site';
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   serverExternalPackages: ['@prisma/client'],
   images: {
     unoptimized: true

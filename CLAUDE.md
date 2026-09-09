@@ -257,16 +257,21 @@ change rien tant qu'un nouveau build n'est pas parti.
   du dashboard suppose qu'on l'ouvre.
 - **La liste des contacts est chargée entière côté navigateur** puis paginée en mémoire.
   Tient pour un fichier de taille humaine, pas au-delà de quelques milliers de fiches.
-- **Vestiges Hostinger** : `.htaccess`, `server.js`, `output: 'standalone'`,
-  `create-admin-hostinger.php`, les guides `HOSTINGER_*.md`, `SUBDOMAIN_*.md`,
-  `MIGRATION_GUIDE.md`, et `scripts/{sync,migrate}-to-hostinger.js` qui contiennent
-  encore une chaîne MySQL Tétouan. Le projet tourne sur Vercel, tout cela est mort.
 - **Route `/test`** publique et buildée en production. En `Disallow` dans `robots.ts`,
   mais accessible.
+- **Le stockage des photos de biens n'est pas branché.** `/api/properties/images`
+  écrit dans le bucket Supabase `property-images` en lisant `SUPABASE_URL` et
+  `SUPABASE_SERVICE_ROLE_KEY` ; ni le bucket ni les variables n'existent, et le repli
+  écrit sur le disque local, en lecture seule sur Vercel. Tant que ce n'est pas fait,
+  toute photo part en 500 — et comme le formulaire crée le bien **avant** d'envoyer les
+  images, chaque tentative laisse une fiche orpheline.
 - **`middleware` déprécié** en Next 16 au profit de `proxy`. Warning au build.
-- **Scripts jetables à la racine** : `test-*.js`, `check-admins.js`.
-- **`prisma/dev.db`** a été désindexée mais reste dans l'historique git, avec 4 contacts
-  réels et un hash admin. Le secret est à considérer comme compromis.
+- **Secrets restés dans l'historique git.** Deux, et la suppression du fichier n'y
+  change rien : `prisma/dev.db`, désindexée mais toujours dans l'historique avec 4
+  contacts réels et un hash admin ; et `scripts/sync-to-hostinger.js`, supprimé depuis,
+  qui portait en clair l'identifiant MySQL Tétouan `u486564963_abysr`. Les deux sont à
+  considérer comme compromis. Une purge d'historique réécrirait les commits, ce que les
+  conventions interdisent : la bonne réponse est la rotation côté fournisseur.
 
 ## Conventions
 

@@ -10,7 +10,7 @@
     "dev:clean:win": "start-dev.bat",
     "build": "prisma generate && next build",
     "build:deploy": "prisma generate && prisma migrate deploy && next build",
-    "start": "node server.js",
+    "start": "next start",
     "lint": "eslint",
     "deploy": "npm run build && npm run postbuild",
     "db:reset": "echo 'REFUSE: db push --force-reset viserait la base de PRODUCTION (le pooler repond depuis la machine de dev). Migrations a la main + MCP, voir CLAUDE.md.' && exit 1",
