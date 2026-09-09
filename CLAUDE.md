@@ -131,6 +131,13 @@ pixel : si `districts` change, l'image est à régénérer.
 partagent : échéances (`HORIZONS`, `HORIZON_BADGES`), pays et fuseau déduits de
 l'indicatif, états de relance (`etatRelance`, `RANG_RELANCE`, `RELANCE_STYLES`).
 
+**Le téléphone est stocké en trois morceaux** : `indicatif|codePays|numéro`, par
+exemple `+212|MA|65413987`. Lu brut en base, ça ressemble à une corruption ; c'est le
+format que le sélecteur de pays du formulaire écrit, et c'est le `codePays` qui permet à
+`leads.ts` de déduire pays et fuseau (`phone.split('|')[1]`). `formatPhoneDisplay` et
+`numeroInternational` le recomposent pour l'affichage, `tel:` et `wa.me`. Ne pas
+« réparer » ce champ, et ne jamais le concaténer à la main.
+
 **Deux étages, reliés par le téléphone normalisé.** Le formulaire écrit dans `contacts` ;
 le CRM travaille sur `buyers` / `sellers`. `GET /api/contacts` fusionne les trois,
 déduplique sur `type + phoneNormalized`, rattache la qualification restée sur le contact,
