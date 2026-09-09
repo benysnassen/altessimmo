@@ -63,13 +63,20 @@ le CSS servi et les `.woff2` dans `.next/static/media/`. Zéro = elle ne se char
 ### Deux arbres de routes coexistent
 `src/app/[locale]/biens/` (Prisma) et `src/app/biens/` (Supabase). **Ne pas fusionner.**
 
-### `.env` et `.env.local` divergent
-Prisma lit `.env`, Next privilégie `.env.local`. `.env.local` porte les bonnes valeurs
-depuis la bascule ; `.env` contient encore un `HOST` placeholder pour `DATABASE_URL` et
-un `MASTER_KEY` différent de celui de Vercel. À aligner. Non résolu.
+### `.env` ne porte que les URL de base
+Prisma lit `.env`, Next privilégie `.env.local`. Les deux fichiers ont divergé — `HOST`
+placeholder dans `DATABASE_URL`, `MASTER_KEY` périmé — parce qu'ils dupliquaient les
+mêmes secrets. `.env` est désormais réduit à `DATABASE_URL` et `DIRECT_URL`, alignés sur
+la production ; `JWT_SECRET` et `MASTER_KEY` ne vivent plus que dans `.env.local`.
+N'y remets pas de secret en double : c'est la duplication qui a créé l'écart.
 
 Pour connaître les valeurs qui font foi, celles de la production :
 `npx vercel env pull <fichier> --environment=production`.
+
+⚠️ Conséquence : le pooler **répond** maintenant depuis la machine de dev
+(`npx prisma migrate status` → « Database schema is up to date! »). Un
+`prisma migrate dev` lancé par distraction atteindrait donc réellement la base de
+production et pourrait la réinitialiser. L'interdiction plus bas n'est plus théorique.
 
 ## Base de données
 
