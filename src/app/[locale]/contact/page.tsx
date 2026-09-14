@@ -11,9 +11,9 @@ type Props = {
 // Titres/descriptions propres à la page ; le reste (baseUrl, OG, twitter,
 // alternates, keywords) vient de getLocalizedMetadata pour éviter le doublon.
 const contactTitles: Record<string, string> = {
-  fr: `Contact - Altessimmo ${zonesBrandLabel} | Acheter ou vendre`,
-  en: `Contact - Altessimmo ${zonesBrandLabel} | Buying or selling`,
-  ar: `اتصل بنا - Altessimmo ${zonesProseAr} | شراء أو بيع`,
+  fr: `Contact - Snassen ${zonesBrandLabel} | Acheter ou vendre`,
+  en: `Contact - Snassen ${zonesBrandLabel} | Buying or selling`,
+  ar: `اتصل بنا - Snassen ${zonesProseAr} | شراء أو بيع`,
 };
 
 const contactDescriptions: Record<string, string> = {
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: '/contact',
     title: contactTitles[locale] ?? contactTitles.fr,
     description: contactDescriptions[locale] ?? contactDescriptions.fr,
-    imageAlt: `Altessimmo ${zonesBrandLabel} - Contact`,
+    imageAlt: `Snassen ${zonesBrandLabel} - Contact`,
   });
 }
 
