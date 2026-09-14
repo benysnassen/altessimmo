@@ -9,7 +9,7 @@ export const site = {
   zones: ["Rabat"],
   zonesAr: ["الرباط"],
 
-  baseUrl: "https://rabat.altessimmo.com",
+  baseUrl:"https://snassen.com",
 
   /** Prix moyen du m² en MAD, affiché par le MarketTicker. */
   pricePerSqm: 18000,
@@ -20,7 +20,7 @@ export const site = {
    * Image Open Graph unique du site (1200x630), composée à partir du logo
    * vectoriel. Le sous-titre y est figé : régénérer si `districts` change.
    */
-  ogImage: "/og-rabat-altessimmo.png",
+  ogImage: "/og-snassen.png",
 
   districts: [
     "Agdal", "Hay Riad", "Souissi", "Hassan",
@@ -84,5 +84,5 @@ export const seoKeywords: string[] = [
   ]),
   ...site.districts.map((district) => `immobilier ${district} ${site.city}`),
   "investissement Maroc",
-  "Altessimmo",
+  "Snassen",
 ];
