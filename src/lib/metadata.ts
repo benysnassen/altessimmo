@@ -26,15 +26,15 @@ type LocalizedMetadataOptions = {
 
 const metadata: Record<string, LocaleMetadata> = {
   fr: {
-    title: `Altessimmo ${zonesBrandLabel} - Villas, appartements et terrains`,
+    title: `Snassen ${zonesBrandLabel} - Villas, appartements et terrains`,
     description: `Villas, appartements et terrains à ${zonesProseFr}. Un seul interlocuteur, du premier appel à la signature.`,
   },
   en: {
-    title: `Altessimmo ${zonesBrandLabel} - Villas, apartments and land`,
+    title: `Snassen ${zonesBrandLabel} - Villas, apartments and land`,
     description: `Villas, apartments and land in ${zonesProseEn}. One person to talk to, from the first call to signing.`,
   },
   ar: {
-    title: `Altessimmo ${zonesProseAr} - فيلات وشقق وأراضٍ`,
+    title: `Snassen ${zonesProseAr} - فيلات وشقق وأراضٍ`,
     description: `فيلات وشقق وأراضٍ في ${zonesProseAr}. محاور واحد، من أول اتصال حتى التوقيع.`,
   },
 };
@@ -56,11 +56,11 @@ export function getLocalizedMetadata(
 
   return {
     metadataBase: new URL(baseUrl),
-    // Un titre de page est absolu : le template "%s | Altessimmo" du layout
-    // parent s'y appliquerait sinon, d'où un « | Altessimmo » en double.
+    // Un titre de page est absolu : le template "%s | Snassen" du layout
+    // parent s'y appliquerait sinon, d'où un « | Snassen » en double.
     title: options.title
       ? { absolute: options.title }
-      : { default: title, template: "%s | Altessimmo" },
+      : { default: title, template: "%s | Snassen" },
     description,
     keywords: seoKeywords,
     alternates: {
@@ -75,7 +75,7 @@ export function getLocalizedMetadata(
       title,
       description,
       url: pageUrl,
-      siteName: 'Altessimmo',
+      siteName: 'Snassen',
       images: [
         {
           url: imageUrl,

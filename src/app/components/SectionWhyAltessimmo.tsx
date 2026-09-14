@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from '@/i18n/routing';
 import { zonesProseFr } from '@/config/site';
 
-export default function SectionWhyAltessimmo() {
+export default function SectionWhySnassen() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center bg-black text-white overflow-hidden px-6 md:px-12">
       
@@ -39,7 +39,7 @@ export default function SectionWhyAltessimmo() {
           viewport={{ once: true }}
           className="font-display text-4xl md:text-6xl font-normal tracking-widest mb-8"
         >
-          Pourquoi <span className="text-white/70">Altessimmo</span> ?
+          Pourquoi <span className="text-white/70">Snassen</span> ?
         </motion.h2>
 
         {/* Divider line */}

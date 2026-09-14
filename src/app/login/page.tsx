@@ -135,7 +135,7 @@ export default function LoginPage() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-black/60 font-light text-sm leading-relaxed"
             >
-              Accès sécurisé au tableau de bord Altessimmo
+              Accès sécurisé au tableau de bord Snassen
             </motion.p>
           </div>
 

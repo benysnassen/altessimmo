@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       data: {
         username: username || 'admin',
         password: hashedPassword,
-        email: 'admin@altessimmo.com',
+        email: 'admin@snassen.com',
         lastLogin: new Date(),
         isActive: true,
       },

@@ -7,7 +7,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-8">
         <div className="flex justify-between items-center">
           <div className="font-display text-xl font-normal text-white tracking-widest">
-            Altessimmo
+            Snassen
           </div>
           <div className="hidden md:flex space-x-12">
               <Link href="/" className="text-white/60 hover:text-white transition-colors duration-500 font-light tracking-widest text-sm uppercase">

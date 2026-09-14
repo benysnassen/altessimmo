@@ -27,7 +27,7 @@ export default function Footer() {
 
         {/* Texte centré */}
         <p className="text-xs text-white/40 tracking-widest uppercase text-center">
-          © {new Date().getFullYear()} Altessimmo {site.city}
+          © {new Date().getFullYear()} Snassen {site.city}
         </p>
 
         {/* Icône WhatsApp - FLOTTANTE */}
