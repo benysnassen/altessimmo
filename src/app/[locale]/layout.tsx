@@ -161,7 +161,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             aria-label="Snassen - Accueil"
           >
             <Image
-              src="/logo-rabat-Snassen-white.svg"
+              src="/logo-snassen-white.svg"
               alt="Snassen Rabat"
               width={284}
               height={49}
