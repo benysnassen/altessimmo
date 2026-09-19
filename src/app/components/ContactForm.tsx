@@ -375,6 +375,7 @@ export default function ContactForm() {
 
 {/* ===== 4. GOLFE / MAGHREB / MOYEN-ORIENT ===== */}
 <option value="+971|AE">🇦🇪 +971</option>
+<option value="+974|QA">🇶🇦 +974</option>
 <option value="+966|SA">🇸🇦 +966</option>
 <option value="+213|DZ">🇩🇿 +213</option>
 <option value="+216|TN">🇹🇳 +216</option>

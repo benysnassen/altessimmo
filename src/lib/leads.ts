@@ -57,6 +57,7 @@ export const COUNTRY_TIMEZONES: Record<string, string> = {
   GB: 'Europe/London',
   US: 'America/New_York',
   AE: 'Asia/Dubai',
+  QA: 'Asia/Qatar',
   SA: 'Asia/Riyadh',
   DZ: 'Africa/Algiers',
   TN: 'Africa/Tunis',

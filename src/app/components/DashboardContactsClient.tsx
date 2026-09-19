@@ -160,6 +160,9 @@ const COUNTRY_OPTIONS = [
   { code: "IT", dialCode: "+39", flag: "🇮🇹", label: "Italie" },
   { code: "DE", dialCode: "+49", flag: "🇩🇪", label: "Allemagne" },
   { code: "GB", dialCode: "+44", flag: "🇬🇧", label: "Royaume-Uni" },
+  { code: "AE", dialCode: "+971", flag: "🇦🇪", label: "Émirats arabes unis" },
+  { code: "QA", dialCode: "+974", flag: "🇶🇦", label: "Qatar" },          {/* 👈 AJOUT */}
+  { code: "SA", dialCode: "+966", flag: "🇸🇦", label: "Arabie saoudite" },
   { code: "CA", dialCode: "+1", flag: "🇨🇦", label: "Canada" },
   { code: "US", dialCode: "+1", flag: "🇺🇸", label: "Etats-Unis" },
 ];
@@ -234,6 +237,7 @@ const getCountryCode = (phone: string): string => {
     "+44": "GB", // Royaume-Uni
     "+1": "US", // États-Unis (sera géré séparément pour le Canada)
     "+971": "AE", // Émirats arabes unis
+    "+974": "QA", // Qatar                  👈 AJOUT
     "+966": "SA", // Arabie saoudite
     "+213": "DZ", // Algérie
     "+216": "TN", // Tunisie
