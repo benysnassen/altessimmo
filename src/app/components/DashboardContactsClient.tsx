@@ -161,7 +161,7 @@ const COUNTRY_OPTIONS = [
   { code: "DE", dialCode: "+49", flag: "🇩🇪", label: "Allemagne" },
   { code: "GB", dialCode: "+44", flag: "🇬🇧", label: "Royaume-Uni" },
   { code: "AE", dialCode: "+971", flag: "🇦🇪", label: "Émirats arabes unis" },
-  { code: "QA", dialCode: "+974", flag: "🇶🇦", label: "Qatar" },          {/* 👈 AJOUT */}
+  { code: "QA", dialCode: "+974", flag: "🇶🇦", label: "Qatar" },
   { code: "SA", dialCode: "+966", flag: "🇸🇦", label: "Arabie saoudite" },
   { code: "CA", dialCode: "+1", flag: "🇨🇦", label: "Canada" },
   { code: "US", dialCode: "+1", flag: "🇺🇸", label: "Etats-Unis" },
