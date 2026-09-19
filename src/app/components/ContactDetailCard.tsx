@@ -2,20 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Phone, 
-  Mail, 
-  Calendar, 
-  Shield, 
-  DollarSign, 
-  MessageSquare, 
-  Building2,
-  ShoppingCart,
-  Edit3, 
+import {
+  Phone,
+  Mail,
+  Calendar,
+  Shield,
+  DollarSign,
+  MessageSquare,
+  Edit3,
   XCircle,
   StickyNote,
   CalendarClock,
-  Link2
+  Link2,
 } from 'lucide-react';
 import StarRating from './StarRating';
 import {
@@ -28,16 +26,26 @@ import {
 } from '@/lib/leads';
 import BuyerPropertyInterestsSection from './BuyerPropertyInterestsSection';
 
+// ─── Composants utilitaires ───────────────────────────────────────────────
+
 // Composant Badge réutilisable
-const Badge = ({ config, size = 'md' }: { config: any, size?: 'sm' | 'md' | 'lg' }) => {
+const Badge = ({
+  config,
+  size = 'md',
+}: {
+  config: any;
+  size?: 'sm' | 'md' | 'lg';
+}) => {
   const sizeClasses = {
     sm: 'px-2 py-1 text-xs',
     md: 'px-3 py-1 text-sm',
-    lg: 'px-4 py-2 text-base'
+    lg: 'px-4 py-2 text-base',
   };
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border ${config.color} ${sizeClasses[size]}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-full border ${config.color} ${sizeClasses[size]}`}
+    >
       <span>{config.icon}</span>
       <span>{config.label}</span>
     </span>
@@ -46,18 +54,20 @@ const Badge = ({ config, size = 'md' }: { config: any, size?: 'sm' | 'md' | 'lg'
 
 // Composant Drapeau
 const FlagIcon = ({ countryCode }: { countryCode: string }) => {
-  const flagEmojis: { [key: string]: string } = {
-    'MA': '🇲🇦', 'DZ': '🇩🇿', 'FR': '🇫🇷', 'US': '🇺🇸', 'ES': '🇪🇸',
-    'IT': '🇮🇹', 'DE': '🇩🇪', 'GB': '🇬🇧', 'CA': '🇨🇦', 'AU': '🇦🇺',
-    'ZA': '🇿🇦', 'EG': '🇪🇬', 'TN': '🇹🇳', 'LY': '🇱🇾'
-  };
-
   return (
-    <span className="text-lg" role="img" aria-label={`Flag of ${countryCode}`}>
-      {flagEmojis[countryCode] || '🏳️'}
-    </span>
+    <img
+      src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${countryCode}.svg`}
+      alt={`Drapeau ${countryCode}`}
+      className="w-6 h-4 rounded-sm object-cover border border-white/20"
+      onError={(e) => {
+        // Fallback si l'image ne charge pas
+        e.currentTarget.style.display = 'none';
+      }}
+    />
   );
 };
+
+// ─── Interfaces ────────────────────────────────────────────────────────────
 
 interface Contact {
   id: string;
@@ -74,7 +84,14 @@ interface Contact {
   nextActionAt?: string | null;
   horizon?: Horizon | null;
   sourcePage?: string | null;
-  status: 'NEW' | 'CONTACTED' | 'INTERESTED' | 'VIEWING' | 'OFFER' | 'SOLD' | 'ARCHIVED';
+  status:
+    | 'NEW'
+    | 'CONTACTED'
+    | 'INTERESTED'
+    | 'VIEWING'
+    | 'OFFER'
+    | 'SOLD'
+    | 'ARCHIVED';
   createdAt: string;
   updatedAt: string;
 }
@@ -84,8 +101,13 @@ interface ContactDetailCardProps {
   onClose: () => void;
   onUpdateNote: (contactId: string, personalNote: string) => void;
   onUpdateRating: (contactId: string, rating: number | null) => void;
-  onUpdateNextAction: (contactId: string, nextActionAt: string | null) => Promise<void>;
+  onUpdateNextAction: (
+    contactId: string,
+    nextActionAt: string | null,
+  ) => Promise<void>;
 }
+
+// ─── Helpers de formatage ─────────────────────────────────────────────────
 
 // Montants abreges : 1.5M, 800K. Au niveau du module, l'historique des envois
 // s'en sert aussi.
@@ -104,6 +126,8 @@ const formatAmount = (amount: string) => {
   }
 };
 
+// ─── Sous-composant : Historique des envois ──────────────────────────────
+
 type Envoi = {
   id: string;
   message: string | null;
@@ -118,7 +142,13 @@ type Envoi = {
  * Ce que le prospect a dit, envoi apres envoi. La fiche ne montre que l'etat
  * courant ; c'est ici qu'on retrouve l'argumentaire du rappel.
  */
-const HistoriqueEnvois = ({ phone, type }: { phone: string; type: 'BUYER' | 'SELLER' }) => {
+const HistoriqueEnvois = ({
+  phone,
+  type,
+}: {
+  phone: string;
+  type: 'BUYER' | 'SELLER';
+}) => {
   const [envois, setEnvois] = useState<Envoi[]>([]);
   const [charge, setCharge] = useState(false);
 
@@ -155,11 +185,14 @@ const HistoriqueEnvois = ({ phone, type }: { phone: string; type: 'BUYER' | 'SEL
                 {new Date(envoi.createdAt).toLocaleString('fr-FR')}
               </span>
               {i === 0 && (
-                <span className="text-[10px] uppercase tracking-wider text-white/50">la plus recente</span>
+                <span className="text-[10px] uppercase tracking-wider text-white/50">
+                  la plus recente
+                </span>
               )}
               {envoi.horizon && (
                 <span className="text-[11px] md:text-xs text-white/60">
-                  {HORIZON_BADGES[envoi.horizon].emoji} {HORIZON_BADGES[envoi.horizon].label}
+                  {HORIZON_BADGES[envoi.horizon].emoji}{' '}
+                  {HORIZON_BADGES[envoi.horizon].label}
                 </span>
               )}
             </div>
@@ -180,7 +213,9 @@ const HistoriqueEnvois = ({ phone, type }: { phone: string; type: 'BUYER' | 'SEL
                 </span>
               )}
               {envoi.sourcePage && (
-                <span className="text-white/40 text-[11px] md:text-xs break-all">{envoi.sourcePage}</span>
+                <span className="text-white/40 text-[11px] md:text-xs break-all">
+                  {envoi.sourcePage}
+                </span>
               )}
             </div>
           </div>
@@ -189,6 +224,8 @@ const HistoriqueEnvois = ({ phone, type }: { phone: string; type: 'BUYER' | 'SEL
     </div>
   );
 };
+
+// ─── Sous-composant : Bloc relance ────────────────────────────────────────
 
 /**
  * Quand rappeler ce prospect. Les raccourcis couvrent le geste courant — on
@@ -200,7 +237,10 @@ const BlocRelance = ({
   onUpdateNextAction,
 }: {
   contact: Contact;
-  onUpdateNextAction: (contactId: string, nextActionAt: string | null) => Promise<void>;
+  onUpdateNextAction: (
+    contactId: string,
+    nextActionAt: string | null,
+  ) => Promise<void>;
 }) => {
   const [enCours, setEnCours] = useState(false);
   const etat = etatRelance(contact.nextActionAt);
@@ -217,7 +257,7 @@ const BlocRelance = ({
   };
 
   const raccourcis: { libelle: string; jours: number }[] = [
-    { libelle: "Demain", jours: 1 },
+    { libelle: 'Demain', jours: 1 },
     { libelle: 'Dans 3 j', jours: 3 },
     { libelle: 'Dans 1 sem.', jours: 7 },
     { libelle: 'Dans 1 mois', jours: 30 },
@@ -239,12 +279,16 @@ const BlocRelance = ({
             className={`inline-flex items-center gap-1 px-2 py-1 rounded-sm border text-xs ${RELANCE_STYLES[etat].classe}`}
           >
             <CalendarClock className="w-3 h-3" />
-            {new Date(contact.nextActionAt as string).toLocaleDateString('fr-FR', {
-              weekday: 'short',
-              day: 'numeric',
-              month: 'long',
-            })}
-            {etat !== 'a_venir' && ` — ${RELANCE_STYLES[etat].libelle.toLowerCase()}`}
+            {new Date(contact.nextActionAt as string).toLocaleDateString(
+              'fr-FR',
+              {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'long',
+              },
+            )}
+            {etat !== 'a_venir' &&
+              ` — ${RELANCE_STYLES[etat].libelle.toLowerCase()}`}
           </span>
         )}
       </div>
@@ -264,9 +308,13 @@ const BlocRelance = ({
           type="date"
           disabled={enCours}
           min={jourISO()}
-          value={contact.nextActionAt ? jourISO(new Date(contact.nextActionAt)) : ''}
+          value={
+            contact.nextActionAt ? jourISO(new Date(contact.nextActionAt)) : ''
+          }
           onChange={(e) =>
-            poser(e.target.value ? new Date(`${e.target.value}T12:00:00`) : null)
+            poser(
+              e.target.value ? new Date(`${e.target.value}T12:00:00`) : null,
+            )
           }
           className="px-2 py-1.5 rounded-sm border border-white/20 bg-black/20 text-white/80 text-xs focus:border-white/50 focus:outline-none disabled:opacity-40"
         />
@@ -284,7 +332,15 @@ const BlocRelance = ({
   );
 };
 
-const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating, onUpdateNextAction }: ContactDetailCardProps) => {
+// ─── Composant principal ──────────────────────────────────────────────────
+
+const ContactDetailCard = ({
+  contact,
+  onClose,
+  onUpdateNote,
+  onUpdateRating,
+  onUpdateNextAction,
+}: ContactDetailCardProps) => {
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteValue, setNoteValue] = useState(contact.personalNote || '');
   const [currentRating, setCurrentRating] = useState(contact.rating);
@@ -313,7 +369,7 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating, onU
       setCurrentRating(rating);
       await onUpdateRating(contact.id, rating);
     } catch (error) {
-      console.error('Erreur lors de la mise à jour de l\'évaluation:', error);
+      console.error("Erreur lors de la mise à jour de l'évaluation:", error);
     }
   };
 
@@ -323,116 +379,157 @@ const ContactDetailCard = ({ contact, onClose, onUpdateNote, onUpdateRating, onU
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
-  const formatPhoneDisplay = (phone: string) => {
-    // Format: +213 777-888-999
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.length >= 9) {
-      return `+${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)}-${cleaned.slice(6, 9)}-${cleaned.slice(9)}`;
-    }
-    return phone;
+  const formatPhoneNumber = (num: string): string => {
+    if (num.length <= 3) return num;
+    if (num.length <= 6) return `${num.slice(0, 3)}-${num.slice(3)}`;
+    if (num.length <= 9)
+      return `${num.slice(0, 3)}-${num.slice(3, 6)}-${num.slice(6)}`;
+    return `${num.slice(0, 3)}-${num.slice(3, 6)}-${num.slice(6, 9)}-${num.slice(9)}`;
   };
 
+  // ─── Détection pays ───────────────────────────────────────────────────
 
   const getCountryCode = (phone: string): string => {
-    // Supporte le format : +1|US|123456789
+    // Supporte le format maison : +1|US|123456789
     if (phone.includes('|')) {
       const parts = phone.split('|');
       if (parts.length >= 2) return parts[1];
     }
-  
+
     const countryCodes: { [key: string]: string } = {
-      '+212': 'MA', '+213': 'DZ', '+33': 'FR', '+34': 'ES', '+39': 'IT',
-      '+49': 'DE', '+44': 'GB', '+1': 'US', '+971': 'AE', '+966': 'SA',
-      '+216': 'TN', '+20': 'EG', '+90': 'TR', '+7': 'RU', '+86': 'CN',
-      '+81': 'JP', '+82': 'KR', '+91': 'IN', '+55': 'BR', '+54': 'AR',
-      '+61': 'AU', '+27': 'ZA',
+      '+212': 'MA',
+      '+213': 'DZ',
+      '+33': 'FR',
+      '+34': 'ES',
+      '+39': 'IT',
+      '+49': 'DE',
+      '+44': 'GB',
+      '+1': 'US',
+      '+971': 'AE',
+      '+966': 'SA',
+      '+216': 'TN',
+      '+20': 'EG',
+      '+90': 'TR',
+      '+7': 'RU',
+      '+86': 'CN',
+      '+81': 'JP',
+      '+82': 'KR',
+      '+91': 'IN',
+      '+55': 'BR',
+      '+54': 'AR',
+      '+61': 'AU',
+      '+27': 'ZA',
+      // 👇 ajoutés pour cohérence avec COUNTRY_OPTIONS
+      '+32': 'BE',
+      '+31': 'NL',
+      '+41': 'CH',
     };
-  
-    // Cas spécial pour +1 (Canada ou US)
+
+    // Cas spécial +1 : distinguer CA vs US via area code canadien
     if (phone.startsWith('+1')) {
-      const canadianAreaCodes = ['514', '438', '416', '604', '819', '905', '450'];
+      const canadianAreaCodes = [
+        '204', '226', '236', '249', '250', '263', '289', '306', '343', '354',
+        '365', '367', '368', '382', '387', '403', '416', '418', '428', '431',
+        '437', '438', '450', '468', '474', '506', '514', '519', '548', '579',
+        '581', '584', '587', '604', '613', '639', '647', '672', '683', '705',
+        '709', '742', '753', '778', '780', '782', '807', '819', '825', '867',
+        '873', '879', '902', '905',
+      ];
       const areaCode = phone.replace(/\D/g, '').slice(1, 4);
       return canadianAreaCodes.includes(areaCode) ? 'CA' : 'US';
     }
-  
-    for (const [prefix, code] of Object.entries(countryCodes)) {
-      if (phone.startsWith(prefix)) return code;
+
+    // Trier par longueur décroissante pour éviter qu'un préfixe court (ex. +1)
+    // masque un préfixe plus long (ex. +1XX inexistant, mais robustesse future).
+    const prefixes = Object.keys(countryCodes).sort(
+      (a, b) => b.length - a.length,
+    );
+    for (const prefix of prefixes) {
+      if (phone.startsWith(prefix)) return countryCodes[prefix];
     }
-  
+
     return 'MA'; // par défaut
   };
-  
-  const splitPhoneParts = (phone: string): { code: string; number: string } => {
+
+  // ─── Découpe téléphone ────────────────────────────────────────────────
+
+  const splitPhoneParts = (
+    phone: string,
+  ): { code: string; number: string } => {
     if (phone.includes('|')) {
-      const [code, , rawNumber] = phone.split('|');
+      const [code, , rawNumber = ''] = phone.split('|');
       const cleaned = rawNumber.replace(/\D/g, '');
       return { code, number: cleaned };
     }
-  
+
     const match = phone.match(/^(\+\d+)\s*(.*)$/);
     if (match) {
       const code = match[1];
       const number = match[2].replace(/\D/g, '');
       return { code, number };
     }
-  
+
     return { code: '', number: phone.replace(/\D/g, '') };
   };
-  
 
-  const formatPhoneNumber = (num: string): string => {
-    if (num.length <= 3) return num;
-    if (num.length <= 6) return `${num.slice(0, 3)}-${num.slice(3)}`;
-    if (num.length <= 9) return `${num.slice(0, 3)}-${num.slice(3, 6)}-${num.slice(6)}`;
-    return `${num.slice(0, 3)}-${num.slice(3, 6)}-${num.slice(6, 9)}-${num.slice(9)}`;
-  };
-
-  
-// Fonction pour formater le numéro de téléphone avec des traits d'union
-
-// Composant Drapeau
-const FlagIcon = ({ countryCode }: { countryCode: string }) => {
-  return (
-    <img
-      src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${countryCode}.svg`}
-      alt={`Drapeau ${countryCode}`}
-      className="w-6 h-4 rounded-sm object-cover border border-white/20"
-      onError={(e) => {
-        // Fallback si l'image ne charge pas
-        e.currentTarget.style.display = 'none';
-      }}
-    />
-  );
-};
-
-
-
-
+  // ─── Configs d'affichage ──────────────────────────────────────────────
 
   const contactTypeConfig = {
-    BUYER: { label: 'Acheteur',
-       color: 'bg-green-500/20 text-green-300 border-green-500/30',
-       icon: '🛒' },
-    SELLER: { label: 'Vendeur', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30', icon: '🏠' }
+    BUYER: {
+      label: 'Acheteur',
+      color: 'bg-green-500/20 text-green-300 border-green-500/30',
+      icon: '🛒',
+    },
+    SELLER: {
+      label: 'Vendeur',
+      color: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+      icon: '🏠',
+    },
   };
-
-
-
-
 
   const contactStatusConfig = {
-    NEW: { label: 'Nouveau', color: 'bg-gray-500/20 text-gray-300 border-gray-500/30', icon: '⭐' },
-    CONTACTED: { label: 'Contacté', color: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30', icon: '📞' },
-    INTERESTED: { label: 'Intéressé', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30', icon: '👀' },
-    VIEWING: { label: 'Visite', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30', icon: '👁️' },
-    OFFER: { label: 'Offre', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30', icon: '💰' },
-    SOLD: { label: 'Vendu', color: 'bg-green-500/20 text-green-300 border-green-500/30', icon: '✅' },
-    ARCHIVED: { label: 'Archivé', color: 'bg-red-500/20 text-red-300 border-red-500/30', icon: '📁' }
+    NEW: {
+      label: 'Nouveau',
+      color: 'bg-gray-500/20 text-gray-300 border-gray-500/30',
+      icon: '⭐',
+    },
+    CONTACTED: {
+      label: 'Contacté',
+      color: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+      icon: '📞',
+    },
+    INTERESTED: {
+      label: 'Intéressé',
+      color: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+      icon: '👀',
+    },
+    VIEWING: {
+      label: 'Visite',
+      color: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+      icon: '👁️',
+    },
+    OFFER: {
+      label: 'Offre',
+      color: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
+      icon: '💰',
+    },
+    SOLD: {
+      label: 'Vendu',
+      color: 'bg-green-500/20 text-green-300 border-green-500/30',
+      icon: '✅',
+    },
+    ARCHIVED: {
+      label: 'Archivé',
+      color: 'bg-red-500/20 text-red-300 border-red-500/30',
+      icon: '📁',
+    },
   };
+
+  // ─── Rendu ────────────────────────────────────────────────────────────
 
   return (
     <motion.div
@@ -451,7 +548,9 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
       >
         <div className="flex justify-between items-start mb-4 md:mb-6">
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg md:text-xl font-light text-white mb-2 truncate">{contact.name}</h3>
+            <h3 className="text-lg md:text-xl font-light text-white mb-2 truncate">
+              {contact.name}
+            </h3>
             <div className="flex gap-2 flex-wrap">
               <Badge config={contactTypeConfig[contact.type]} />
               <Badge config={contactStatusConfig[contact.status]} />
@@ -463,7 +562,9 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
                 onClose();
                 // Déclencher l'édition du contact
                 setTimeout(() => {
-                  const event = new CustomEvent('editContact', { detail: contact });
+                  const event = new CustomEvent('editContact', {
+                    detail: contact,
+                  });
                   window.dispatchEvent(event);
                 }, 100);
               }}
@@ -482,62 +583,73 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
             </button>
           </div>
         </div>
-        
+
         <div className="space-y-3 md:space-y-4">
           <div className="grid grid-cols-1 gap-2 md:gap-3">
-          <div className="flex items-center gap-2">
-  <Phone className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
-  <FlagIcon countryCode={getCountryCode(contact.phone)} />
+            <div className="flex items-center gap-2">
+              <Phone className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
+              <FlagIcon countryCode={getCountryCode(contact.phone)} />
 
-  {/* Téléphone formaté proprement */}
-  {(() => {
-    const { code, number } = splitPhoneParts(contact.phone);
-    return (
-      <span className="flex gap-1 items-center text-white/80 font-mono tracking-wider text-xs md:text-sm">
-        <span>{code}</span>
-        <span className="opacity-50">|</span>
-        <span>{formatPhoneNumber(number)}</span>
-      </span>
-    );
-  })()}
-</div>
+              {/* Téléphone formaté proprement */}
+              {(() => {
+                const { code, number } = splitPhoneParts(contact.phone);
+                return (
+                  <span className="flex gap-1 items-center text-white/80 font-mono tracking-wider text-xs md:text-sm">
+                    <span>{code}</span>
+                    <span className="opacity-50">|</span>
+                    <span>{formatPhoneNumber(number)}</span>
+                  </span>
+                );
+              })()}
+            </div>
 
             {contact.email && (
               <div className="flex items-center gap-2">
                 <Mail className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
-                <span className="text-white/80 text-xs md:text-sm break-all">{contact.email}</span>
+                <span className="text-white/80 text-xs md:text-sm break-all">
+                  {contact.email}
+                </span>
               </div>
             )}
             <div className="flex items-center gap-2">
               <Calendar className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
-              <span className="text-white/80 text-xs md:text-sm">{formatDate(contact.createdAt)}</span>
+              <span className="text-white/80 text-xs md:text-sm">
+                {formatDate(contact.createdAt)}
+              </span>
             </div>
             {contact.confidential && (
               <div className="flex items-center gap-2">
                 <Shield className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
-                <span className="text-white/80 text-xs md:text-sm">Confidentiel</span>
+                <span className="text-white/80 text-xs md:text-sm">
+                  Confidentiel
+                </span>
               </div>
             )}
             {contact.horizon && (
               <div className="flex items-center gap-2">
                 <CalendarClock className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
                 <span className="text-white/80 text-xs md:text-sm">
-                  {HORIZON_BADGES[contact.horizon].emoji} {HORIZON_BADGES[contact.horizon].label}
+                  {HORIZON_BADGES[contact.horizon].emoji}{' '}
+                  {HORIZON_BADGES[contact.horizon].label}
                 </span>
               </div>
             )}
             {contact.sourcePage && (
               <div className="flex items-center gap-2">
                 <Link2 className="w-3 h-3 md:w-4 md:h-4 text-white/40 flex-shrink-0" />
-                <span className="text-white/80 text-xs md:text-sm break-all">{contact.sourcePage}</span>
+                <span className="text-white/80 text-xs md:text-sm break-all">
+                  {contact.sourcePage}
+                </span>
               </div>
             )}
           </div>
-          
+
           {/* Note personnelle */}
           <div className="border-t border-white/10 pt-3 md:pt-4">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2 md:mb-3">
-              <h4 className="text-xs md:text-sm font-light text-white/60 uppercase tracking-wider">Note personnelle</h4>
+              <h4 className="text-xs md:text-sm font-light text-white/60 uppercase tracking-wider">
+                Note personnelle
+              </h4>
               {!isEditingNote && (
                 <button
                   onClick={() => setIsEditingNote(true)}
@@ -548,7 +660,7 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
                 </button>
               )}
             </div>
-            
+
             {isEditingNote ? (
               <div className="space-y-2">
                 <textarea
@@ -582,10 +694,12 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
               </div>
             )}
           </div>
-          
+
           {/* Évaluation */}
           <div className="border-t border-white/10 pt-3 md:pt-4">
-            <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">Évaluation</h4>
+            <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">
+              Évaluation
+            </h4>
             <div className="flex items-center gap-2 md:gap-3">
               <StarRating
                 rating={currentRating ?? null}
@@ -604,21 +718,27 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
               )}
             </div>
           </div>
-          
+
           {(contact.budget || contact.estimation) && (
             <div className="border-t border-white/10 pt-3 md:pt-4">
-              <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">Montants</h4>
+              <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">
+                Montants
+              </h4>
               <div className="space-y-1 md:space-y-2">
                 {contact.budget && (
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-3 h-3 md:w-4 md:h-4 text-green-400 flex-shrink-0" />
-                    <span className="text-green-300 font-mono text-xs md:text-sm break-all">{formatAmount(contact.budget)}</span>
+                    <span className="text-green-300 font-mono text-xs md:text-sm break-all">
+                      {formatAmount(contact.budget)}
+                    </span>
                   </div>
                 )}
                 {contact.estimation && (
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-3 h-3 md:w-4 md:h-4 text-blue-400 flex-shrink-0" />
-                    <span className="text-blue-300 font-mono text-xs md:text-sm break-all">{formatAmount(contact.estimation)}</span>
+                    <span className="text-blue-300 font-mono text-xs md:text-sm break-all">
+                      {formatAmount(contact.estimation)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -628,17 +748,24 @@ const FlagIcon = ({ countryCode }: { countryCode: string }) => {
           {contact.type === 'BUYER' && (
             <BuyerPropertyInterestsSection buyerId={contact.id} />
           )}
-          
-          <BlocRelance contact={contact} onUpdateNextAction={onUpdateNextAction} />
+
+          <BlocRelance
+            contact={contact}
+            onUpdateNextAction={onUpdateNextAction}
+          />
 
           <HistoriqueEnvois phone={contact.phone} type={contact.type} />
 
           {contact.message && (
             <div className="border-t border-white/10 pt-3 md:pt-4">
-              <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">Message</h4>
+              <h4 className="text-xs md:text-sm font-light text-white/60 mb-2 md:mb-3 uppercase tracking-wider">
+                Message
+              </h4>
               <div className="flex items-start gap-2">
                 <MessageSquare className="w-3 h-3 md:w-4 md:h-4 text-white/40 mt-1 flex-shrink-0" />
-                <p className="text-white/80 leading-relaxed text-xs md:text-sm break-words">{contact.message}</p>
+                <p className="text-white/80 leading-relaxed text-xs md:text-sm break-words">
+                  {contact.message}
+                </p>
               </div>
             </div>
           )}

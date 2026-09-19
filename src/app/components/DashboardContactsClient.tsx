@@ -155,6 +155,7 @@ const COUNTRY_OPTIONS = [
   { code: "FR", dialCode: "+33", flag: "🇫🇷", label: "France" },
   { code: "ES", dialCode: "+34", flag: "🇪🇸", label: "Espagne" },
   { code: "BE", dialCode: "+32", flag: "🇧🇪", label: "Belgique" },
+  { code: "CH", dialCode: "+41", flag: "🇨🇭", label: "Suisse" },
   { code: "NL", dialCode: "+31", flag: "🇳🇱", label: "Pays-Bas" },
   { code: "IT", dialCode: "+39", flag: "🇮🇹", label: "Italie" },
   { code: "DE", dialCode: "+49", flag: "🇩🇪", label: "Allemagne" },
@@ -225,6 +226,9 @@ const getCountryCode = (phone: string): string => {
     "+212": "MA", // Maroc
     "+33": "FR", // France
     "+34": "ES", // Espagne
+    "+32": "BE", // Belgique
+    "+31": "NL", // Pays-Bas
+    "+41": "CH", // Suisse
     "+39": "IT", // Italie
     "+49": "DE", // Allemagne
     "+44": "GB", // Royaume-Uni

@@ -50,6 +50,7 @@ export const COUNTRY_TIMEZONES: Record<string, string> = {
   ES: 'Europe/Madrid',
   BE: 'Europe/Brussels',
   NL: 'Europe/Amsterdam',
+  CH: 'Europe/Zurich',
   IT: 'Europe/Rome',
   CA: 'America/Toronto',
   DE: 'Europe/Berlin',

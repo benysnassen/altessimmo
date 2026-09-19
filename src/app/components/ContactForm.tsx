@@ -356,31 +356,41 @@ export default function ContactForm() {
                 }}
                 className="w-28 md:w-32 px-2 md:px-3 py-3 border border-black/20 bg-transparent text-black font-light focus:border-black focus:outline-none transition-colors duration-300 rounded-sm appearance-none cursor-pointer text-sm h-12"
               >
-                <option value="+212|MA">🇲🇦 +212</option>
-                    <option value="+33|FR">🇫🇷 +33</option>
-                    <option value="+34|ES">🇪🇸 +34</option>
-                    <option value="+32|BE">🇧🇪 +32</option>
-                    <option value="+31|NL">🇳🇱 +31</option>
-                    <option value="+39|IT">🇮🇹 +39</option>
-                    <option value="+1|CA">🇨🇦 +1</option>
-                    <option value="+49|DE">🇩🇪 +49</option>
-                    <option value="+44|GB">🇬🇧 +44</option>
-                    <option value="+1|US">🇺🇸 +1</option>
-                    <option value="+971|AE">🇦🇪 +971</option>
-                    <option value="+966|SA">🇸🇦 +966</option>
-                    <option value="+213|DZ">🇩🇿 +213</option>
-                    <option value="+216|TN">🇹🇳 +216</option>
-                    <option value="+20|EG">🇪🇬 +20</option>
-                    <option value="+90|TR">🇹🇷 +90</option>
-                    <option value="+7|RU">🇷🇺 +7</option>
-                    <option value="+86|CN">🇨🇳 +86</option>
-                    <option value="+81|JP">🇯🇵 +81</option>
-                    <option value="+82|KR">🇰🇷 +82</option>
-                    <option value="+91|IN">🇮🇳 +91</option>
-                    <option value="+55|BR">🇧🇷 +55</option>
-                    <option value="+54|AR">🇦🇷 +54</option>
-                    <option value="+61|AU">🇦🇺 +61</option>
-                    <option value="+27|ZA">🇿🇦 +27</option>
+                {/* ===== 1. MARCHÉ PRINCIPAL ===== */}
+<option value="+212|MA">🇲🇦 +212</option>
+
+{/* ===== 2. DIASPORA MRE (par poids démographique) ===== */}
+<option value="+33|FR">🇫🇷 +33</option>
+<option value="+32|BE">🇧🇪 +32</option>
+<option value="+34|ES">🇪🇸 +34</option>
+<option value="+41|CH">🇨🇭 +41</option>
+<option value="+31|NL">🇳🇱 +31</option>
+<option value="+39|IT">🇮🇹 +39</option>
+<option value="+49|DE">🇩🇪 +49</option>
+<option value="+44|GB">🇬🇧 +44</option>
+
+{/* ===== 3. AMÉRIQUE DU NORD (MRE + investisseurs) ===== */}
+<option value="+1|CA">🇨🇦 +1</option>
+<option value="+1|US">🇺🇸 +1</option>
+
+{/* ===== 4. GOLFE / MAGHREB / MOYEN-ORIENT ===== */}
+<option value="+971|AE">🇦🇪 +971</option>
+<option value="+966|SA">🇸🇦 +966</option>
+<option value="+213|DZ">🇩🇿 +213</option>
+<option value="+216|TN">🇹🇳 +216</option>
+<option value="+20|EG">🇪🇬 +20</option>
+<option value="+90|TR">🇹🇷 +90</option>
+
+{/* ===== 5. RESTE DU MONDE (ordre alphabétique) ===== */}
+<option value="+54|AR">🇦🇷 +54</option>
+<option value="+61|AU">🇦🇺 +61</option>
+<option value="+55|BR">🇧🇷 +55</option>
+<option value="+86|CN">🇨🇳 +86</option>
+<option value="+91|IN">🇮🇳 +91</option>
+<option value="+81|JP">🇯🇵 +81</option>
+<option value="+82|KR">🇰🇷 +82</option>
+<option value="+7|RU">🇷🇺 +7</option>
+<option value="+27|ZA">🇿🇦 +27</option>
               </select>
 
               {/* Chevron */}
