@@ -33,6 +33,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // La racine est servie par src/app/page.tsx : elle renvoie un 200 avec les
+  // balises OG, puis redirige. Sans ça, next-intl la redirige en 307 vers /fr/
+  // et les crawlers d'aperçu (WhatsApp, Facebook) n'ont aucune balise à lire.
+  if (pathname === "/") {
+    return NextResponse.next();
+  }
+  
   // 2. Pour les autres routes, appliquer i18n
   return intlMiddleware(request);
 }
