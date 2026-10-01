@@ -9,7 +9,7 @@ export const site = {
   zones: ["Rabat"],
   zonesAr: ["الرباط"],
 
-  baseUrl:"https://snassen.com",
+  baseUrl:"https://www.snassen.com",
 
   /** Prix moyen du m² en MAD, affiché par le MarketTicker. */
   pricePerSqm: 18000,
