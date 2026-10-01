@@ -9,12 +9,30 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-import { site, zonesBrandLabel, zonesProseFr, zonesProseEn, zonesProseAr, districtsProseFr, districtsProseEn, seoKeywords } from "@/config/site";
+import {
+  site,
+  zonesBrandLabel,
+  zonesProseFr,
+  zonesProseEn,
+  zonesProseAr,
+  districtsProseFr,
+  districtsProseEn,
+  seoKeywords,
+} from "@/config/site";
 import { fontVariables } from "@/lib/fonts";
+
+type Locale = (typeof routing.locales)[number];
+
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
+
+const GA_ID = "G-VDNN5GYFNP";
+
+function isLocale(value: string): value is Locale {
+  return (routing.locales as readonly string[]).includes(value);
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -26,63 +44,91 @@ export function generateViewport(): Viewport {
   };
 }
 
-const titles = {
+const titles: Record<Locale, string> = {
   fr: `Snassen ${zonesBrandLabel} - Villas, appartements et terrains`,
   en: `Snassen ${zonesBrandLabel} - Villas, apartments and land`,
   ar: `Snassen ${zonesProseAr} - فيلات وشقق وأراضٍ`,
 };
 
-const descriptions = {
+const descriptions: Record<Locale, string> = {
   fr: `Villas, appartements et terrains à ${zonesProseFr} : ${districtsProseFr}. Un seul interlocuteur, du premier appel à la signature.`,
   en: `Villas, apartments and land in ${zonesProseEn}: ${districtsProseEn}. One person to talk to, from the first call to signing.`,
   ar: `فيلات وشقق وأراضٍ في ${zonesProseAr}. محاور واحد، من أول اتصال حتى التوقيع.`,
 };
 
-// Métadonnées internationalisées
+// Codes Open Graph : ar_MA plutot que ar_AR, qui n'est pas une locale valide.
+const ogLocales: Record<Locale, string> = {
+  fr: "fr_FR",
+  en: "en_US",
+  ar: "ar_MA",
+};
+
+// Metadonnees internationalisees.
+// Toutes les URLs sont relatives : Next les resout contre metadataBase,
+// ce qui garantit des URLs absolues sans redirection pour WhatsApp et les crawlers.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
+  const current = isLocale(locale) ? locale : routing.defaultLocale;
+
+  const title = titles[current];
+  const description = descriptions[current];
 
   return {
     metadataBase: new URL(site.baseUrl),
     title: {
-      default: titles[locale as keyof typeof titles] || titles.fr,
+      default: title,
       template: "%s | Snassen",
     },
-    description: descriptions[locale as keyof typeof descriptions] || descriptions.fr,
+    description,
     keywords: seoKeywords,
     authors: [{ name: "Snassen", url: site.baseUrl }],
     creator: "Snassen",
     publisher: "Snassen",
     alternates: {
-      canonical: `${site.baseUrl}/${locale}`,
+      canonical: `/${current}`,
       languages: {
-        'fr': '/fr',
-        'en': '/en',
-        'ar': '/ar',
-      }
+        fr: "/fr",
+        en: "/en",
+        ar: "/ar",
+        "x-default": `/${routing.defaultLocale}`,
+      },
     },
     openGraph: {
       type: "website",
-      locale: locale === 'fr' ? 'fr_FR' : locale === 'en' ? 'en_US' : 'ar_AR',
-      url: `${site.baseUrl}/${locale}`,
+      locale: ogLocales[current],
+      alternateLocale: routing.locales
+        .filter((l) => l !== current)
+        .map((l) => ogLocales[l]),
+      url: `/${current}`,
       siteName: "Snassen",
-      title: titles[locale as keyof typeof titles] || titles.fr,
-      description: descriptions[locale as keyof typeof descriptions] || descriptions.fr,
+      title,
+      description,
       images: [
         {
           url: site.ogImage,
           width: 1200,
           height: 630,
-          alt: `Snassen ${zonesBrandLabel} - Villas, appartements et terrains`,
+          alt: title,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: titles[locale as keyof typeof titles] || titles.fr,
-      description: descriptions[locale as keyof typeof descriptions] || descriptions.fr,
+      title,
+      description,
       creator: "@Snassen",
       images: [site.ogImage],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
     },
     icons: {
       // Le .ico est deja emis par la convention `src/app/favicon.ico`.
@@ -96,19 +142,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
 
-  // Valider la locale
-  if (!routing.locales.includes(locale as any)) {
+  if (!isLocale(locale)) {
     notFound();
   }
 
   const messages = await getMessages();
+  const isRtl = locale === "ar";
 
-  // Signal SEO local : décrit l'agence, sa ville et sa zone de chalandise.
+  // Signal SEO local : decrit l'agence, sa ville et sa zone de chalandise.
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
     name: "Snassen",
-    description: descriptions[locale as keyof typeof descriptions] || descriptions.fr,
+    description: descriptions[locale],
     url: `${site.baseUrl}/${locale}`,
     image: `${site.baseUrl}${site.ogImage}`,
     address: {
@@ -125,44 +171,22 @@ export default async function LocaleLayout({ children, params }: Props) {
   };
 
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={fontVariables}>
-      <head>
+    <html lang={locale} dir={isRtl ? "rtl" : "ltr"} className={fontVariables}>
+      <body>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 
-        {/* Google Analytics */}
-        <Script
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-VDNN5GYFNP"
-        />
-        <Script
-          id="google-analytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-VDNN5GYFNP', {
-                page_path: window.location.pathname,
-              });
-            `,
-          }}
-        />
-      </head>
-
-      <body>
         <NextIntlClientProvider messages={messages}>
           <Link
             href={`/${locale}`}
             className="fixed top-4 left-4 sm:top-6 sm:left-8 md:top-8 md:left-16 z-50 inline-flex items-center"
-            aria-label="Snassen - Accueil"
+            aria-label={`Snassen ${zonesBrandLabel} - ${locale === "en" ? "Home" : "Accueil"}`}
           >
             <Image
               src="/logo-snassen-white.svg"
-              alt="Snassen Rabat"
+              alt={`Snassen ${zonesBrandLabel}`}
               width={284}
               height={49}
               priority
@@ -176,6 +200,20 @@ export default async function LocaleLayout({ children, params }: Props) {
 
           <Footer />
         </NextIntlClientProvider>
+
+        {/* Google Analytics */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_ID}');
+          `}
+        </Script>
       </body>
     </html>
   );
